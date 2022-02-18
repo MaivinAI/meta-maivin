@@ -183,6 +183,18 @@
 			MX8MP_IOMUXC_SAI1_RXC__GPIO4_IO01		0x184	/* SODIMM 222 */
 		>;
 	};
+
+	powerdown_enable: pwdn_en {
+		fsl,pins = <
+			MX8MP_IOMUXC_SAI3_TXD__GPIO5_IO01		0x142	/* SODIMM 46  */
+		>;
+	};
+
+	reset_enable: reset_en {
+		fsl,pins = <
+			MX8MP_IOMUXC_SAI3_RXD__GPIO4_IO30		0x142	/* SODIMM 48 */
+		>;
+	};
 };
 
 /* Verdin PCIE_1, for M.2 card slot */
@@ -276,11 +288,13 @@
 		mipi_csi;
 		camera_mipi_lanes = <4>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_gpio5>, <&pinctrl_gpio6>,<&pinctrl_csi_3v3>;
-		pwn-gpios = <&gpio1 8 GPIO_ACTIVE_HIGH>;
+		pinctrl-0 = <&pinctrl_gpio5>, <&pinctrl_gpio6>,<&pinctrl_csi_3v3>,<&powerdown_enable>,<&reset_enable>;
+		pwn-gpios = <&gpio4 3 GPIO_ACTIVE_HIGH>;
+		pwn_en-gpios = <&gpio5 1 GPIO_ACTIVE_HIGH>;
 		PVDD-supply = <&reg_3p3v>;
 		reg = <0x42>;
 		rst-gpios = <&gpio1 7 GPIO_ACTIVE_LOW>;
+		rst_en-gpios = <&gpio4 30 GPIO_ACTIVE_HIGH>;
 		vref-supply = <&csi_3v3>;
 		status = "okay";
 
