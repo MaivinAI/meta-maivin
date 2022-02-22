@@ -10,14 +10,6 @@ index 7361b37005c0..9dc85fb8d4e9 100644
  #include <media/v4l2-device.h>
  #include <media/v4l2-ctrls.h>
  
-@@ -40,7 +41,7 @@ static int pwdn_gpio, reset_gpio;
- 
- int gpios_available(void)
- {
--	return (pwdn_gpio >= 0) && (reset_gpio >= 0);
-+	return 1;
- }
- 
  /**********************************************************************
 @@ -3352,6 +3353,17 @@ static int ar0521_parse_and_get_gpios(struct device *dev)
  		return err;
