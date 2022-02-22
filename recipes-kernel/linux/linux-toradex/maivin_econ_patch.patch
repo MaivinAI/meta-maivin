@@ -1,5 +1,5 @@
 diff --git a/drivers/media/platform/imx8/ar0521.c b/drivers/media/platform/imx8/ar0521.c
-index 7361b37005c0..9dc85fb8d4e9 100644
+index eb2edd101aa1..10730aba307a 100644
 --- a/drivers/media/platform/imx8/ar0521.c
 +++ b/drivers/media/platform/imx8/ar0521.c
 @@ -21,6 +21,7 @@
@@ -10,26 +10,7 @@ index 7361b37005c0..9dc85fb8d4e9 100644
  #include <media/v4l2-device.h>
  #include <media/v4l2-ctrls.h>
  
- /**********************************************************************
-@@ -3352,6 +3353,17 @@ static int ar0521_parse_and_get_gpios(struct device *dev)
- 		return err;
- 	}
- 
-+	dev_info(dev, "setting GPIOS!!");
-+
-+	gpio_set_value(pwdn_gpio, 0);
-+	gpio_set_value(reset_gpio, 1);
-+
-+	int power_down_value = gpio_get_value(pwdn_gpio);
-+	int reset_value = gpio_get_value(reset_gpio);
-+
-+	dev_info(dev, "current value of power down: %d", power_down_value);
-+	dev_info(dev, "current value of reset: %d", reset_value);
-+
- 	return 0;
- }
- 
-@@ -3402,6 +3414,14 @@ static int ar0521_probe(struct i2c_client *client,
+@@ -3410,6 +3411,14 @@ static int ar0521_probe(struct i2c_client *client,
  	toggle_gpio(reset_gpio, 1);
  	msleep(500);
  
@@ -41,9 +22,9 @@ index 7361b37005c0..9dc85fb8d4e9 100644
 +	if (ret < 0)
 +		return ret;
 +
- 	ret = ar0521_verify_mcu(client);
- 	if (ret) {
- 		dev_err(dev, "Error occurred when verifying MCU\n");
+	ret = ar0521_verify_mcu(client);
+	if (ret)
+	{
 diff --git a/drivers/media/platform/imx8/ar0521.h b/drivers/media/platform/imx8/ar0521.h
 index 05bdb30bbb4f..db3a1f401771 100644
 --- a/drivers/media/platform/imx8/ar0521.h
