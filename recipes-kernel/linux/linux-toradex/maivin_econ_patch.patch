@@ -1,0 +1,40 @@
+diff --git a/drivers/media/platform/imx8/ar0521.c b/drivers/media/platform/imx8/ar0521.c
+index 7361b37005c0..9dc85fb8d4e9 100644
+--- a/drivers/media/platform/imx8/ar0521.c
++++ b/drivers/media/platform/imx8/ar0521.c
+@@ -21,6 +21,7 @@
+ #include <linux/i2c.h>
+ #include <linux/of_gpio.h>
+ #include <linux/pinctrl/consumer.h>
++#include <linux/regulator/consumer.h>
+ #include <media/v4l2-device.h>
+ #include <media/v4l2-ctrls.h>
+ 
+@@ -3402,6 +3414,14 @@ static int ar0521_probe(struct i2c_client *client,
+ 	toggle_gpio(reset_gpio, 1);
+ 	msleep(500);
+ 
++	ar0521_data.vref = devm_regulator_get(dev, "vref");
++	if (IS_ERR(ar0521_data.vref))
++		return PTR_ERR(ar0521_data.vref);
++
++	ret = regulator_enable(ar0521_data.vref);
++	if (ret < 0)
++		return ret;
++
+ 	ret = ar0521_verify_mcu(client);
+ 	if (ret) {
+ 		dev_err(dev, "Error occurred when verifying MCU\n");
+diff --git a/drivers/media/platform/imx8/ar0521.h b/drivers/media/platform/imx8/ar0521.h
+index 05bdb30bbb4f..db3a1f401771 100644
+--- a/drivers/media/platform/imx8/ar0521.h
++++ b/drivers/media/platform/imx8/ar0521.h
+@@ -244,6 +244,8 @@ struct ar0521 {
+ 	uint16_t mipi_lane_config;
+ 	uint16_t mipi_clk_config;
+ 
++	struct regulator *vref;
++
+ 	struct v4l2_ctrl *ctrls[];
+ 	
+ };

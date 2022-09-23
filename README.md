@@ -1,29 +1,9 @@
-# README #
+# Maivin for Yocto
 
-This README would normally document whatever steps are necessary to get your application up and running.
+This repository contains meta-maivin which provides the layers to support
+building a Yocto-based BSP with support for booting on the Maivin AI Vision
+Starter Kit.
 
-### What is this repository for? ###
+The maivin-bsp project provides the manifest.xml and build configurations.
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
-
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+Visit https://support.deepviewml.com for support and documentation.
