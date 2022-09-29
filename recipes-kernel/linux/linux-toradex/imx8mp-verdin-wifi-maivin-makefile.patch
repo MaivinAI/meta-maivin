@@ -1,0 +1,26 @@
+From dd954dec03421cbc5e870e1d5dd645e2b07f4f96 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?S=C3=A9bastien=20Taylor?= <sebastien@au-zone.com>
+Date: Wed, 28 Sep 2022 23:49:09 -0600
+Subject: [PATCH] Added Device Tree for the Maivin AI Vision Starter Kit.
+
+---
+ arch/arm64/boot/dts/freescale/Makefile | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/freescale/Makefile b/arch/arm64/boot/dts/freescale/Makefile
+index 6ed3d38461b8..23434a08476b 100644
+--- a/arch/arm64/boot/dts/freescale/Makefile
++++ b/arch/arm64/boot/dts/freescale/Makefile
+@@ -85,7 +85,8 @@ dtb-$(CONFIG_ARCH_MXC) += imx8mp-evk.dtb imx8mp-evk-root.dtb imx8mp-evk-inmate.d
+ 			  imx8mp-verdin-nonwifi-yavia.dtb \
+ 			  imx8mp-verdin-wifi-dahlia.dtb \
+ 			  imx8mp-verdin-wifi-dev.dtb \
+-			  imx8mp-verdin-wifi-yavia.dtb
++			  imx8mp-verdin-wifi-yavia.dtb \
++			  imx8mp-verdin-wifi-maivin.dtb
+ dtb-$(CONFIG_ARCH_MXC) += imx8mp-ddr4-evk.dtb
+ dtb-$(CONFIG_ARCH_MXC) += imx8mq-evk.dtb imx8mq-evk-rpmsg.dtb imx8mq-evk-pcie1-m2.dtb imx8mq-evk-usd-wifi.dtb \
+ 			  imx8mq-evk-usdhc2-m2.dtb imx8mq-evk-pcie-ep.dtb
+-- 
+2.25.1
+

@@ -10,8 +10,9 @@
 #include "imx8mp-verdin-dev.dtsi"
 
 / {
-	model = "Au-Zone Maivin board";
-	compatible = "toradex,verdin-imx8mp-nonwifi",
+	model = "Maivin AI Vision Starter Kit";
+	compatible = "au-zone,maivin-imx8mp",
+		     "toradex,verdin-imx8mp-nonwifi",
 		     "toradex,verdin-imx8mp",
 		     "fsl,imx8mp";
 
@@ -42,6 +43,12 @@
 		regulator-name = "3V3_SW";
 	};
 };
+
+&eeprom_carrier_board {
+	status = "okay";
+};
+
+
 
 &eqos {
 	status = "okay";
@@ -102,6 +109,12 @@
 	temp-sensor@4b {
 		compatible = "ti,tmp102", "tmp102";
 		reg = <0x4b>;
+	};
+
+	eeprom@54 {
+		compatible = "st,24c02";
+		pagesize = <16>;
+		reg = <0x54>;
 	};
 };
 
@@ -225,6 +238,13 @@
 
 /* Verdin UART_3, used as the Linux Console */
 &uart3 {
+	status = "okay";
+};
+
+/* Maivin Internal UART (also used by Bluetooth with alternate pins) */
+&uart4 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_uart4>;
 	status = "okay";
 };
 
