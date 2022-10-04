@@ -10,6 +10,8 @@ SRC_URI += "file://maivin_econ_patch.patch"
 SRC_URI += "file://dac_5571.cfg"
 SRC_URI += "file://cameras.cfg"
 
+KERNEL_DEVICETREE += "freescale/imx8mp-verdin-wifi-maivin.dtb"
+
 do_configure_append() {
 	cp ${WORKDIR}/imx8mp-verdin-wifi-maivin.dts ${S}/arch/arm64/boot/dts/freescale/imx8mp-verdin-wifi-maivin.dts
 }
