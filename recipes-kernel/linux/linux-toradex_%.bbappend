@@ -1,4 +1,4 @@
-FILESEXTRAPATHS_prepend := "${THISDIR}/linux-toradex:"
+FILESEXTRAPATHS_append := "${THISDIR}/linux-toradex:"
 KBUILD_BUILD_VERSION_append = "-Maivin"
 
 SRC_URI += "file://imx8mp-verdin-wifi-maivin.dts"
