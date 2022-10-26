@@ -1,2 +1,2 @@
-SUMMARY = "Maivin"
-DESCRIPTION = "Maivin Torizon"
+SUMMARY = "Torizon for Maivin"
+DESCRIPTION = "Torizon for Maivin"
