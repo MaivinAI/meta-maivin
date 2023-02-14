@@ -7,6 +7,9 @@ SRC_URI += "\
     file://imx8mp-verdin-wifi-maivin.dts\
 "
 
+KERNEL_DEVICETREE += "freescale/imx8mp-verdin-nonwifi-maivin.dtb"
+KERNEL_DEVICETREE += "freescale/imx8mp-verdin-wifi-maivin.dtb"
+
 do_configure:prepend() {
     cp ${WORKDIR}/imx8mp-verdin-maivin.dtsi ${S}/arch/arm64/boot/dts/freescale/imx8mp-verdin-maivin.dtsi
     cp ${WORKDIR}/imx8mp-verdin-nonwifi-maivin.dts ${S}/arch/arm64/boot/dts/freescale/imx8mp-verdin-nonwifi-maivin.dts
