@@ -1,0 +1,19 @@
+// SPDX-License-Identifier: GPL-2.0-or-later OR MIT
+/*
+ * Copyright 2022 Toradex
+ */
+
+/dts-v1/;
+
+#include "imx8mp-verdin.dtsi"
+#include "imx8mp-verdin-nonwifi.dtsi"
+#include "imx8mp-verdin-maivin.dtsi"
+
+/ {
+	model = "Maivin AI Vision Starter Kit";
+	compatible = "au-zone,verdin-imx8mp-nonwifi-maivin",
+			 "toradex,verdin-imx8mp-nonwifi-dev",
+		     "toradex,verdin-imx8mp-nonwifi",
+		     "toradex,verdin-imx8mp",
+		     "fsl,imx8mp";
+};
