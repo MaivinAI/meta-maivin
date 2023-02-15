@@ -30,4 +30,4 @@ You will need to add to your conf/local.conf file the following line after the m
 include conf/machine/verdin-imx8mp-maivin.conf
 ```
 
-(1): https://developer.toradex.com/linux-bsp/os-development/build-yocto/build-a-reference-image-with-yocto-projectopenembedded/
+[1]: https://developer.toradex.com/linux-bsp/os-development/build-yocto/build-a-reference-image-with-yocto-projectopenembedded/
