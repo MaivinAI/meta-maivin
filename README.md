@@ -4,7 +4,7 @@ Yocto meta-maivin adds Maivin support to the Toradex Yocto build.  This branch i
 
 ## Build Instructions
 
-Toradex provides instructions in [Build a Reference Image with Yocto Project](1) which describes how to build and flash the image using Toradex Easy Installer.  You will need to perform two steps to add meta-maivin to the build which are detailed below.
+Toradex provides instructions in [Build a Reference Image with Yocto Project][1] which describes how to build and flash the image using Toradex Easy Installer.  You will need to perform two steps to add meta-maivin to the build which are detailed below.
 
 ## Add meta-maivin
 
