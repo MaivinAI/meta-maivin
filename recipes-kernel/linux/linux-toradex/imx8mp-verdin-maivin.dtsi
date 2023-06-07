@@ -262,6 +262,8 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart4>;
 	status = "okay";
+	/delete-property/ uart-has-rtscts;
+	/delete-node/ bluetooth;
 };
 
 /* Verdin USB_1 */
@@ -290,6 +292,7 @@
 };
 
 &iomuxc {
+	pinctrl-names = "default";
 	pinctrl-0 =
 		<&pinctrl_gpio1>,
 		<&pinctrl_gpio2>,
@@ -300,6 +303,12 @@
 		<&pinctrl_gpio_hog3>,
 		<&pinctrl_hdmi_hog>,
 		<&led_control>;
+
+	pinctrl_bt_uart: btuartgrp {
+		fsl,pins =
+			<MX8MP_IOMUXC_UART4_RXD__UART4_DCE_RX		0x1c4>,	/* SODIMM 151 */
+			<MX8MP_IOMUXC_UART4_TXD__UART4_DCE_TX		0x1c4>;	/* SODIMM 153 */
+	};
 
 	pinctrl_flexspi0: flexspi0grp {
 		fsl,pins = <
