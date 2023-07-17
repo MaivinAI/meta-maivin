@@ -91,6 +91,19 @@
 	status = "okay";
 };
 
+&i2c1 {
+	status = "okay";
+
+	gpio@70 {
+		compatible = "nxp,pca9538";
+		reg = <0x70>;
+		// pinctrl-names = "default";
+		// pinctrl-0 = <&pinctrl_pca9538>;
+		gpio-controller;
+		#gpio-cells = <2>;
+	};
+};
+
 /* Verdin I2C_2_DSI */
 &i2c2 {
 	status = "okay";
@@ -197,12 +210,18 @@
 
 /* Verdin PCIE_1 */
 &pcie {
+	status = "disabled";
+	pinctrl-names = "default";
+	pinctrl-0 = <&pinctrl_m2>;
+	reset-gpio = <&gpio3 9 GPIO_ACTIVE_LOW>;	/* /M2_RST (SODIMM 62) */
+	disable-gpio = <&gpio3 6 GPIO_ACTIVE_LOW>;	/* CARD_DISABLE (SODIMM 56) */
 	epdev_on-supply = <&reg_3p3v>;
-	status = "okay";
+	ext_osc = <0>;
 };
 
 &pcie_phy {
-	status = "okay";
+	status = "disabled";
+	ext_osc = <0>;
 };
 
 /* Verdin PWM_1 */
@@ -302,7 +321,8 @@
 		<&pinctrl_gpio_hog2>,
 		<&pinctrl_gpio_hog3>,
 		<&pinctrl_hdmi_hog>,
-		<&led_control>;
+		<&led_control>,
+		<&pinctrl_m2>;
 
 	pinctrl_bt_uart: btuartgrp {
 		fsl,pins =
@@ -313,8 +333,6 @@
 	pinctrl_flexspi0: flexspi0grp {
 		fsl,pins = <
 			MX8MP_IOMUXC_NAND_READY_B__GPIO3_IO16		0x1C4	/* SODIMM 64 */
-			MX8MP_IOMUXC_NAND_DATA00__FLEXSPI_A_DATA00	0x82	/* SODIMM 56 */
-			MX8MP_IOMUXC_NAND_DATA03__FLEXSPI_A_DATA03	0x82	/* SODIMM 62 */
 		>;
 	};
 
@@ -348,6 +366,12 @@
 		fsl,pins = <
 			MX8MP_IOMUXC_NAND_ALE__GPIO3_IO00		0x82	/* SODIMM 52 */
 		>;
+	};
+
+	pinctrl_m2: m2-grp {
+		fsl,pins =
+			<MX8MP_IOMUXC_NAND_DATA03__GPIO3_IO09		0x82>,	/* SODIMM 62 */
+			<MX8MP_IOMUXC_NAND_DATA00__GPIO3_IO06		0x82>;	/* SODIMM 56 */
 	};
 
 	pinctrl_m2_3v3: m2-3v3-grp {
