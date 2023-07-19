@@ -93,15 +93,6 @@
 
 &i2c1 {
 	status = "okay";
-
-	gpio@70 {
-		compatible = "nxp,pca9538";
-		reg = <0x70>;
-		// pinctrl-names = "default";
-		// pinctrl-0 = <&pinctrl_pca9538>;
-		gpio-controller;
-		#gpio-cells = <2>;
-	};
 };
 
 /* Verdin I2C_2_DSI */
@@ -176,6 +167,23 @@
 		compatible = "st,24c02";
 		pagesize = <16>;
 		reg = <0x54>;
+	};
+
+	gpio@70 {
+		compatible = "nxp,pca9538";
+		reg = <0x70>;
+		gpio-controller;
+		#gpio-cells = <2>;
+		gpio-line-names =
+			"IMU_RST",
+			"IMU_BOOT",
+			"IMU_INT",
+			"TIMEPULSE",
+			"",
+			"",
+			"",
+			"GPS_RST";
+		status = "okay";
 	};
 };
 
