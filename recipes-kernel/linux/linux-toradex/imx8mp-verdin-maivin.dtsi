@@ -25,16 +25,6 @@
 		startup-delay-us = <50000>;	/* TODO: Determine the right value */
 	};
 
-	m2_3v3: regulator-m2-3v3 {
-		compatible = "regulator-fixed";
-		regulator-name = "M2_3V3";
-		regulator-max-microvolt = <3300000>;
-		regulator-min-microvolt = <3300000>;
-		pinctrl-0 = <&pinctrl_m2_3v3>;
-		gpio = <&gpio3 1 GPIO_ACTIVE_HIGH>;
-		enable-active-high;
-	};
-
 	/* Carrier Board Supply 3V3_SW */
 	reg_3v3: regulator-3v3-sw {
 		compatible = "regulator-fixed";
@@ -330,7 +320,8 @@
 		<&pinctrl_gpio_hog3>,
 		<&pinctrl_hdmi_hog>,
 		<&led_control>,
-		<&pinctrl_m2>;
+		<&pinctrl_m2>,
+                <&pinctrl_m2_3v3>
 
 	pinctrl_bt_uart: btuartgrp {
 		fsl,pins =
