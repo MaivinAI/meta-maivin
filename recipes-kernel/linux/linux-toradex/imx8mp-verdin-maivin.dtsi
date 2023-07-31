@@ -33,6 +33,7 @@
 		pinctrl-0 = <&pinctrl_m2_3v3>;
 		gpio = <&gpio3 1 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
+		regulator-always-on;
 	};
 
 	/* Carrier Board Supply 3V3_SW */
@@ -134,8 +135,8 @@
 		csi_id = <0>;
 		status = "okay";
 
-		pwn-gpios = <&gpio1 7 GPIO_ACTIVE_HIGH>;
-		rst-gpios = <&gpio4 3 GPIO_ACTIVE_LOW>;
+		rst-gpios = <&gpio1 7 GPIO_ACTIVE_LOW>;
+		pwn-gpios = <&gpio1 8 GPIO_ACTIVE_HIGH>;
 
 		port {
 			os08a20_mipi_0_ep: endpoint {
@@ -425,6 +426,6 @@
 
 	pinctrl_csi_pwn: csi_pwn {
 		fsl,pins =
-			<MX8MP_IOMUXC_SAI1_RXD1__GPIO4_IO03		0x184>;	/* SODIMM 220 */
+			<MX8MP_IOMUXC_GPIO1_IO08__GPIO1_IO08		0x184>;	/* SODIMM 220 */
 	};
 };
