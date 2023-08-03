@@ -1,0 +1,10 @@
+
+
+# Maivin Carrier Temperature Sensor
+SUBSYSTEM=="hwmon", DEVPATH=="/devices/platform/soc@0/30800000.bus/30a50000.i2c/i2c-3/3-004b/hwmon/hwmon0", RUN+="/etc/udev/scripts/carrier_temp.sh"
+
+# Maivin Carrier EEPROM
+SUBSYSTEM=="i2c", DEVPATH=="/devices/platform/soc@0/30800000.bus/30a50000.i2c/i2c-3/3-0057", RUN+="/etc/udev/scripts/carrier_eeprom.sh"
+
+# Maivin-1 Rear IO EEPROM
+SUBSYSTEM=="i2c", DEVPATH=="/devices/platform/soc@0/30800000.bus/30a50000.i2c/i2c-3/3-0054", RUN+="/etc/udev/scripts/rear_eeprom.sh"

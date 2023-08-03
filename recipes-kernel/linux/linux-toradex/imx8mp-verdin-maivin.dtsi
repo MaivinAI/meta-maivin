@@ -94,73 +94,28 @@
 	status = "okay";
 };
 
+/* Verdin Internal I2C Bus */
 &i2c1 {
 	status = "okay";
 };
 
-/* Verdin I2C_2_DSI */
+/* Verdin I2C_2 */
 &i2c2 {
-	status = "okay";
-
-	clock-frequency = <400000>;
-	scl-gpios = <&gpio5 16 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
-	sda-gpios = <&gpio5 17 (GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN)>;
-
-	dac@d {
-		compatible = "ti,dac081c081", "ti,dac5571";
-		reg = <0x0d>;
-		vref-supply = <&csi_3v3>;
-	};
+	status = "disabled";
 };
 
-/* Verdin I2C_4_CSI */
+/* Verdin I2C_4 */
 &i2c3 {
-	clock-frequency = <400000>;
-	status = "okay";
-
-	dac@d {
-		compatible = "ti,dac081c081", "ti,dac5571";
-		reg = <0x0d>;
-		vref-supply = <&csi_3v3>;
-	};
+	status = "disabled";
 };
 
 /* Verdin I2C_1 */
 &i2c4 {
 	status = "okay";
 
-	/* To be compatible with old versions of the board */
-	temp-sensor@4a {
-		compatible = "ti,tmp102","tmp102";
-		reg = <0x4a>;
-	};
-
 	temp-sensor@4b {
 		compatible = "ti,tmp102", "tmp102";
 		reg = <0x4b>;
-	};
-
-	eeprom@54 {
-		compatible = "st,24c02";
-		pagesize = <16>;
-		reg = <0x54>;
-	};
-
-	gpio@70 {
-		compatible = "nxp,pca9538";
-		reg = <0x70>;
-		gpio-controller;
-		#gpio-cells = <2>;
-		gpio-line-names =
-			"IMU_RST",
-			"IMU_BOOT",
-			"IMU_INT",
-			"TIMEPULSE",
-			"",
-			"",
-			"",
-			"GPS_RST";
-		status = "okay";
 	};
 };
 
@@ -180,19 +135,19 @@
 	ext_osc = <0>;
 };
 
-/* Verdin PWM_1 */
+/* Verdin PWM_1 - LED */
 &pwm1 {
 	status = "okay";
 };
 
 /* Verdin PWM_2 */
 &pwm2 {
-	status = "okay";
+	status = "disabled";
 };
 
 /* Verdin PWM_3_DSI */
 &pwm3 {
-	status = "okay";
+	status = "disabled";
 };
 
 &reg_usdhc2_vmmc {
@@ -206,7 +161,7 @@
 	assigned-clock-parents = <&clk IMX8MP_AUDIO_PLL1_OUT>;
 	assigned-clock-rates = <24576000>;
 	fsl,sai-mclk-direction-output;
-	status = "okay";
+	status = "disabled";
 };
 
 &sdma2 {
@@ -232,7 +187,13 @@
 	status = "okay";
 };
 
-/* Maivin Internal UART (also used by Bluetooth with alternate pins) */
+/* Maivin Internal UART (also used by Bluetooth with alternate pins)
+ *
+ * The Bluetooth UART is removed here by default as it cannot be done from a
+ * device tree overlay.  For usage that requires the Bluetooth and UART then
+ * refer to imx8mp-verdin-wifi.dtsi Bluetooth configuration and add it as a
+ * device tree overlay.
+ */
 &uart4 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_uart4>;
@@ -243,11 +204,11 @@
 
 /* Verdin USB_1 */
 &usb3_0 {
-	status = "okay";
+	status = "disabled";
 };
 
 &usb3_phy0 {
-	status = "okay";
+	status = "disabled";
 };
 
 /* Verdin USB_2 */
