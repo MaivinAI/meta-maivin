@@ -6,6 +6,7 @@ SRC_URI = "\
     file://maivin.rules \
     file://carrier_temp.sh \
     file://carrier_eeprom.sh \
+    file://reario_eeprom.sh \
 "
 
 do_install () {
@@ -16,5 +17,5 @@ do_install () {
 
     install -m 0755 ${WORKDIR}/carrier_temp.sh ${D}${sysconfdir}/udev/scripts/
     install -m 0755 ${WORKDIR}/carrier_eeprom.sh ${D}${sysconfdir}/udev/scripts/
-    install -m 0755 ${WORKDIR}/rear_eeprom.sh ${D}${sysconfdir}/udev/scripts/
+    install -m 0755 ${WORKDIR}/reario_eeprom.sh ${D}${sysconfdir}/udev/scripts/
 }

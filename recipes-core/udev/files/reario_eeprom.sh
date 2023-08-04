@@ -4,7 +4,7 @@
 #
 
 if [ "$ACTION" = "add" ]; then
-    ln -s "/sys$DEVPATH/eeprom" /dev/rear_eeprom
+    ln -s "/sys$DEVPATH/eeprom" /dev/reario_eeprom
 elif [ "$ACTION" = "remove" ]; then
-    rm -f /dev/rear_eeprom
+    rm -f /dev/reario_eeprom
 fi
