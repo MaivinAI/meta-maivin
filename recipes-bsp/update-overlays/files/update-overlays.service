@@ -1,0 +1,10 @@
+[Unit]
+Description=update overlays in /boot from /etc/overlays.txt
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/update-overlays
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target

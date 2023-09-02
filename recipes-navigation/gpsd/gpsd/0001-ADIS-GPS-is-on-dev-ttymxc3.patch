@@ -1,0 +1,21 @@
+From ceef10c53197292bcefd8a99612415aef9ba6e9a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?S=C3=A9bastien=20Taylor?= <sebastien@au-zone.com>
+Date: Fri, 7 Jul 2023 22:11:08 -0600
+Subject: [PATCH] ADIS GPS is on /dev/ttymxc3
+
+---
+ packaging/deb/etc_default_gpsd | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/packaging/deb/etc_default_gpsd b/packaging/deb/etc_default_gpsd
+index a72fa69..3eb4d18 100644
+--- a/packaging/deb/etc_default_gpsd
++++ b/packaging/deb/etc_default_gpsd
+@@ -3,6 +3,6 @@
+ # change the options.
+ START_DAEMON="true"
+ GPSD_OPTIONS="-n"
+-DEVICES=""
++DEVICES="/dev/ttymxc3"
+ USBAUTO="true"
+ GPSD_SOCKET="/run/gpsd.sock"
