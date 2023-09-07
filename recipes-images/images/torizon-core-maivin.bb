@@ -62,6 +62,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     libglslc-imx-dev \
     visionpack-base \
     videostream-camhost \
+    gpscfg \
     gpsd \
     gpsd-conf \
     gps-utils \
