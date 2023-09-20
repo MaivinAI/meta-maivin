@@ -1,0 +1,13 @@
+[Unit]
+Description=Maivin u-Center Server
+Wants=network-online.target
+After=network-online.target
+Conflicts=gpsd.service
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/sbin/ser2net -d -C '50100:raw:600:/dev/ttymxc3:38400 8DATABITS NONE 1STOPBIT'
+
+[Install]
+WantedBy=multi-user.target
