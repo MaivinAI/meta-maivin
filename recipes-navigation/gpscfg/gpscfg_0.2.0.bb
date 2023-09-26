@@ -7,7 +7,7 @@ SRC_URI = "gitsm://github.com/MaivinAI/gpscfg.git;protocol=ssh;branch=main"
 
 include gpscfg.inc
 
-SRCREV = "fcdd7a5078b3db0eb4dc5f0de9f96302aaeed11b"
+SRCREV = "3f66680021cc5a1bbc7e68d42431bf9e4b06d5ab"
 
 S = "${WORKDIR}/git"
 

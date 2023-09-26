@@ -10,6 +10,7 @@ SRC_URI += " \
     crate://crates.io/atty/0.2.14 \
     crate://crates.io/autocfg/1.1.0 \
     crate://crates.io/bitflags/1.3.2 \
+    crate://crates.io/bitflags/2.4.0 \
     crate://crates.io/bumpalo/3.13.0 \
     crate://crates.io/cc/1.0.83 \
     crate://crates.io/cfg-if/0.1.10 \
