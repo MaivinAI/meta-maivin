@@ -9,4 +9,6 @@ REQUIRED_DISTRO_FEATURES = "systemd"
 SYSTEMD_SERVICE:${PN} = "gpsd.service"
 SYSTEMD_AUTO_ENABLE = "enable"
 
+RDEPENDS:${PN} = "gpscfg"
+
 FILES:${PN} += "${systemd_system_unitdir}"
