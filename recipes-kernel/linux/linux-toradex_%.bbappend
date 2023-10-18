@@ -4,6 +4,7 @@ KBUILD_BUILD_VERSION:append = "-maivin"
 SRC_URI:append = " file://imx8mp-verdin-maivin.dtsi"
 SRC_URI:append = " file://imx8mp-verdin-nonwifi-maivin.dts"
 SRC_URI:append = " file://imx8mp-verdin-wifi-maivin.dts"
+SRC_URI:append = " file://kernel_driver.patch" 
 
 KERNEL_DEVICETREE:append = " freescale/imx8mp-verdin-nonwifi-maivin.dtb"
 KERNEL_DEVICETREE:append = " freescale/imx8mp-verdin-wifi-maivin.dtb"
