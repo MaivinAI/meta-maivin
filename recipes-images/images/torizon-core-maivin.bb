@@ -72,6 +72,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     gps-utils \
     parted \
     libgpiod-tools \
+    zenoh \
 "
 
 nss_altfiles_set_users_groups () {

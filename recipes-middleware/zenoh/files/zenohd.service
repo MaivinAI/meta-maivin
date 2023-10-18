@@ -1,0 +1,9 @@
+[Unit]
+Description=Zenoh Message Router
+
+[Service]
+Restart=on-failure
+ExecStart=/usr/bin/zenohd
+
+[Install]
+WantedBy=multi-user.target
