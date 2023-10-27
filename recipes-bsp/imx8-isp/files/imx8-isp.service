@@ -9,7 +9,7 @@ Restart=on-failure
 RestartSec=5s
 Environment=ISP_LOG_LEVEL=8
 WorkingDirectory=/usr/share/imx8-isp
-ExecStart=/usr/bin/isp_media_server CAMERA0
+ExecStart=/usr/bin/isp_media_server CAMERA0 CAMERA1
 
 [Install]
 WantedBy=multi-user.target

@@ -9,6 +9,7 @@ SRC_URI = "\
     file://imx8-isp.service \
     file://OS08A20_MODES.txt \
     file://Sensor0_Entry.cfg \
+    file://Sensor1_Entry.cfg \
     file://dewarp_config/sensor_dwe_os08a20_4K_config.json \
     file://dewarp_config/sensor_dwe_os08a20_1080P_config.json \
 "
