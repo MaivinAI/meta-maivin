@@ -58,6 +58,7 @@ do_install() {
 
     cp ${WORKDIR}/OS08A20_MODES.txt ${D}/${datadir}/imx8-isp
     cp ${WORKDIR}/Sensor0_Entry.cfg ${D}/${datadir}/imx8-isp
+    cp ${WORKDIR}/Sensor1_Entry.cfg ${D}/${datadir}/imx8-isp
 
     cp ${B}/generated/release/bin/*.xml ${D}/${datadir}/imx8-isp
     cp ${B}/generated/release/bin/*.drv ${D}/${datadir}/imx8-isp
