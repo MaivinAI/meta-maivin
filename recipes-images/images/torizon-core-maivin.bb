@@ -61,6 +61,10 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     imx-gpu-viv \
     libglslc-imx-dev \
     visionpack-base \
+    visionpack-python \
+    python3-cffi \
+    python3-numpy \
+    python3-typeguard \
     videostream-camhost \
     gpscfg \
     gpsd \
