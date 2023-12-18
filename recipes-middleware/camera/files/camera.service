@@ -1,0 +1,19 @@
+[Unit]
+Description=Maivin Camera Service
+After=imx8-isp.service NetworkManager-wait-online.service
+Wants=imx8-isp.service NetworkManager-wait-online.service
+
+StartLimitAction=reboot
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/camera
+Restart=always
+RestartSec=5
+ExecStartPre=/bin/sleep 2
+
+[Install]
+WantedBy=multi-user.target

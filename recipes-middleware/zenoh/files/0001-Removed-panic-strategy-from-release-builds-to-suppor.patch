@@ -1,0 +1,22 @@
+From cfab727c0355e264475348e7e8354f074743bdb9 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?S=C3=A9bastien=20Taylor?= <sebastien@au-zone.com>
+Date: Sat, 21 Oct 2023 12:06:45 -0600
+Subject: [PATCH] Removed panic strategy from release builds to support Yocto
+ configuration.
+
+---
+ Cargo.toml | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/Cargo.toml b/Cargo.toml
+index 077c726..8b203f4 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -87,4 +87,3 @@ debug = false     # If you want debug symbol in release mode, set the env variab
+ lto = "fat"
+ codegen-units = 1
+ opt-level = 3
+-panic = "abort"
+-- 
+2.25.1
+

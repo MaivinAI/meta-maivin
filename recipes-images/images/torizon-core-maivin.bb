@@ -62,10 +62,14 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     libglslc-imx-dev \
     visionpack-base \
     visionpack-python \
+    deepview-rt-modelrunner \
     python3-cffi \
     python3-numpy \
     python3-typeguard \
     videostream-camhost \
+    camera \
+    camerapose \
+    navsat \
     gpscfg \
     gpsd \
     gpsd-conf \
@@ -73,6 +77,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     parted \
     libgpiod-tools \
     zenoh \
+    libzenohc \
 "
 
 nss_altfiles_set_users_groups () {

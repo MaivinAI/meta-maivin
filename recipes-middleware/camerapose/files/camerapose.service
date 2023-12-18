@@ -1,0 +1,15 @@
+[Unit]
+Description=Camera Pose Service
+After=NetworkManager-wait-online.service
+Wants=NetworkManager-wait-online.service
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/camerapose
+Restart=always
+RestartSec=30
+ExecStartPre=/bin/sleep 1
+
+[Install]
+WantedBy=multi-user.target

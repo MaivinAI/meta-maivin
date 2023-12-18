@@ -1,9 +1,12 @@
 [Unit]
 Description=Zenoh Message Router
+After=NetworkManager-wait-online.service
+Wants=NetworkManager-wait-online.service
 
 [Service]
+EnvironmentFile=/etc/default/zenohd
 Restart=on-failure
-ExecStart=/usr/bin/zenohd
+ExecStart=/usr/bin/zenohd -l tcp/0.0.0.0:7447
 
 [Install]
 WantedBy=multi-user.target

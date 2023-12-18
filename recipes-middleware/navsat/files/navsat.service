@@ -1,0 +1,15 @@
+[Unit]
+Description=Maivin NavSat Service
+After=gpsd.service NetworkManager-wait-online.service
+Wants=gpsd.service NetworkManager-wait-online.service
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/navsat
+Restart=always
+RestartSec=30
+ExecStartPre=/bin/sleep 1
+
+[Install]
+WantedBy=multi-user.target
