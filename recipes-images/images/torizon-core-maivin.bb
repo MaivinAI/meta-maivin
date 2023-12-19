@@ -29,6 +29,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     udev-toradex-rules \
     udev-maivin-rules \
     update-overlays \
+    avahi-autoipd \
     iproute2 \
     iputils \
     iptables \
@@ -39,7 +40,10 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     networkmanager-nmcli \
     networkmanager-wifi \
     modemmanager \
+    mwifiexap \
+    dnsmasq \
     wireguard-tools \
+    iperf3 \
     fluent-bit \
     neofetch \
     mmc-utils \
@@ -78,6 +82,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     libgpiod-tools \
     zenoh \
     libzenohc \
+    tmux \
 "
 
 nss_altfiles_set_users_groups () {
