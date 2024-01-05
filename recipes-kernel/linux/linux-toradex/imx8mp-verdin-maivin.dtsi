@@ -85,7 +85,7 @@
 };
 
 &flexcan2 {
-	status = "okay";
+	status = "disabled";
 };
 
 &flexspi {
