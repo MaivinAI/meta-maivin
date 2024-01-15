@@ -29,6 +29,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     udev-toradex-rules \
     udev-maivin-rules \
     update-overlays \
+    avahi-autoipd \
     iproute2 \
     iputils \
     iptables \
@@ -39,7 +40,10 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     networkmanager-nmcli \
     networkmanager-wifi \
     modemmanager \
+    mwifiexap \
+    dnsmasq \
     wireguard-tools \
+    iperf3 \
     fluent-bit \
     neofetch \
     mmc-utils \
@@ -62,6 +66,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     libglslc-imx-dev \
     visionpack-base \
     visionpack-python \
+    deepview-rt-modelrunner \
     python3-cffi \
     python3-numpy \
     python3-typeguard \
@@ -72,6 +77,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     gps-utils \
     parted \
     libgpiod-tools \
+    tmux \
 "
 
 nss_altfiles_set_users_groups () {
