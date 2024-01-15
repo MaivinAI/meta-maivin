@@ -1,7 +1,7 @@
 SUMMARY = "Torizon for Maivin"
 DESCRIPTION = "Torizon for Maivin Platform"
 
-inherit core-image
+require recipes-images/images/torizon-core-container.inc
 
 IMAGE_VARIANT = "Maivin"
 IMAGE_FEATURES += "ssh-server-openssh"
@@ -78,6 +78,20 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     parted \
     libgpiod-tools \
     tmux \
+    docker-ce \
+    docker-compose \
+    docker-compose-up \
+    docker-integrity-checker \
+    docker-watchdog \
+    docker-auto-prune \
+"
+
+IMAGE_VARIANT = "Docker"
+
+inherit extrausers
+
+EXTRA_USERS_PARAMS += "\
+usermod -a -G docker torizon; \
 "
 
 nss_altfiles_set_users_groups () {
