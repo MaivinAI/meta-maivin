@@ -1,7 +1,8 @@
 SUMMARY = "Torizon for Maivin"
 DESCRIPTION = "Torizon for Maivin Platform"
 
-require recipes-images/images/torizon-core-container.inc
+inherit core-image
+inherit extrausers
 
 IMAGE_VARIANT = "Maivin"
 IMAGE_FEATURES += "ssh-server-openssh"
@@ -11,6 +12,9 @@ do_rootfs[cleandirs] += "${IMAGE_ROOTFS}"
 TEZI_IMAGE_NAME = "${IMAGE_BASENAME}${IMAGE_BASENAME_SUFFIX}"
 IMAGE_NAME = "${IMAGE_BASENAME}${IMAGE_BASENAME_SUFFIX}${IMAGE_VERSION_SUFFIX}"
 IMAGE_LINK_NAME = "${IMAGE_BASENAME}${IMAGE_BASENAME_SUFFIX}"
+
+# Enough free space for a full image update
+IMAGE_OVERHEAD_FACTOR = "4"
 
 # Base packages
 CORE_IMAGE_BASE_INSTALL:append = " \
@@ -84,14 +88,8 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     docker-integrity-checker \
     docker-watchdog \
     docker-auto-prune \
-"
-
-IMAGE_VARIANT = "Docker"
-
-inherit extrausers
-
-EXTRA_USERS_PARAMS += "\
-usermod -a -G docker torizon; \
+    packagegroup-core-full-cmdline-multiuser \
+    packagegroup-core-full-cmdline-utils \
 "
 
 nss_altfiles_set_users_groups () {
@@ -125,3 +123,7 @@ PSEUDO_PASSWD:prepend = "${@bb.utils.contains('DISTRO_FEATURES', 'stateless-syst
 # due to limited hardware resources, remove Colibri iMX6 Solo 256MB
 # from the list of supported IDs in the Tezi image
 TORADEX_PRODUCT_IDS:remove:colibri-imx6 = "0014 0016"
+
+EXTRA_USERS_PARAMS += "\
+usermod -a -G docker torizon; \
+"
