@@ -9,7 +9,7 @@ Restart=on-failure
 RestartSec=5s
 Environment=ISP_LOG_LEVEL=8
 WorkingDirectory=/usr/share/imx8-isp
-ExecStartPre/usr/bin/sleep 5
+ExecStartPre=/usr/bin/sleep 5
 ExecStart=/usr/bin/isp_media_server DUAL_CAMERA
 
 [Install]

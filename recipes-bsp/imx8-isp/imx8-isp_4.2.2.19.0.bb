@@ -84,7 +84,7 @@ COMPATIBLE_MACHINE = "(mx8mp-nxp-bsp)"
 
 REQUIRED_DISTRO_FEATURES = "systemd"
 SYSTEMD_SERVICE:${PN} = "imx8-isp.service"
-SYSTEMD_AUTO_ENABLE = "disable"
+SYSTEMD_AUTO_ENABLE = "enable"
 
 FILES_SOLIBSDEV = ""
 

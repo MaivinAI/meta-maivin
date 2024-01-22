@@ -70,10 +70,14 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     libglslc-imx-dev \
     visionpack-base \
     visionpack-python \
+    visionpack-apps \
     deepview-rt-modelrunner \
     python3-cffi \
     python3-numpy \
     python3-typeguard \
+    python3-pip \
+    python3-wheel \
+    python3-setuptools \
     videostream-camhost \
     gpscfg \
     gpsd \
