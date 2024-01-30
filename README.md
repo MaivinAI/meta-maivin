@@ -22,12 +22,4 @@ At the bottom of your conf/bblayers.conf you will need to add the meta-maivin la
 ${TOPDIR}/../layers/meta-maivin
 ```
 
-## Add Machine Configuration
-
-You will need to add to your conf/local.conf file the following line after the machine include to ensure the Maivin DTB files are copied to /boot.
-
-```
-include conf/machine/verdin-imx8mp-maivin.conf
-```
-
 [1]: https://developer.toradex.com/linux-bsp/os-development/build-yocto/build-a-reference-image-with-yocto-projectopenembedded/
