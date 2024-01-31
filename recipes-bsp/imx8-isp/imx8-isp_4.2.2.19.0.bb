@@ -6,6 +6,7 @@ DEPENDS = "libdrm virtual/libg2d libtinyxml2"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI = "\
     ${FSL_MIRROR}/isp-imx-${PV}.bin;fsl-eula=true \
+    file://imx8_media_dev.conf \
     file://imx8-isp.service \
     file://OS08A20_MODES.txt \
     file://Sensor0_Entry.cfg \
@@ -50,6 +51,7 @@ EXTRA_OECMAKE += " \
 "
 
 do_install() {
+    install -d ${D}/${sysconfdir}/modprobe.d/
     install -d ${D}/${bindir}
     install -d ${D}/${libdir}
     install -d ${D}/${includedir}
@@ -76,6 +78,7 @@ do_install() {
     rm -f ${D}/${libdir}/libov2775.so
     rm -f ${D}/${libdir}/libjsoncpp.so
 
+    install -m 0755 ${WORKDIR}/imx8_media_dev.conf ${D}/${sysconfdir}/modprobe.d/imx8_media_dev.conf
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/imx8-isp.service ${D}${systemd_system_unitdir}
 }
@@ -88,6 +91,9 @@ SYSTEMD_AUTO_ENABLE = "enable"
 
 FILES_SOLIBSDEV = ""
 
+SRC_URI:append = " file://imx8_media_dev.conf"
+
+FILES:${PN} += "${sysconfdir}"
 FILES:${PN} += "${libdir}"
 FILES:${PN} += "${bindir}"
 FILES:${PN} += "${datadir}"
