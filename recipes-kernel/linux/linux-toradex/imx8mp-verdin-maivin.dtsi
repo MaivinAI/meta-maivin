@@ -114,12 +114,12 @@
 
 /* Verdin I2C_2 */
 &i2c2 {
-	status = "disabled";
+	status = "okay";
 };
 
 /* Verdin I2C_4 */
 &i2c3 {
-	status = "disabled";
+	status = "okay";
 };
 
 /* Verdin I2C_1 */
