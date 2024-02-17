@@ -40,6 +40,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     module-init-tools \
     ostree-customize-plymouth \
     ostree-devicetree-overlays \
+    ostree-maivin \
     networkmanager \
     networkmanager-nmcli \
     networkmanager-wifi \
