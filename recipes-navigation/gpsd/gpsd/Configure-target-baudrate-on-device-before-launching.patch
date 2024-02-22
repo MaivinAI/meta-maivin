@@ -1,0 +1,21 @@
+From 34068f99afbd8ba4eb37a3502d038bde0b18414d Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?S=C3=A9bastien=20Taylor?= <sebastien@au-zone.com>
+Date: Mon, 5 Feb 2024 10:34:59 -0700
+Subject: [PATCH] Configure target baudrate on device before launching gpsd.
+
+---
+ systemd/gpsd.service.in | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/systemd/gpsd.service.in b/systemd/gpsd.service.in
+index 768e3dc..985f00e 100644
+--- a/systemd/gpsd.service.in
++++ b/systemd/gpsd.service.in
+@@ -8,6 +8,7 @@ After=chronyd.service
+ Type=forking
+ EnvironmentFile=-/etc/default/gpsd
+ EnvironmentFile=-/etc/sysconfig/gpsd
++ExecStartPre=/usr/bin/gpscfg -p /dev/ttymxc3 -b 38400
+ ExecStart=@SBINDIR@/gpsd $GPSD_OPTIONS $OPTIONS $DEVICES
+ 
+ [Install]

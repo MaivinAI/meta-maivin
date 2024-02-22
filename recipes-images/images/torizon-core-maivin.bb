@@ -2,6 +2,7 @@ SUMMARY = "Torizon for Maivin"
 DESCRIPTION = "Torizon for Maivin Platform"
 
 inherit core-image
+inherit extrausers
 
 IMAGE_VARIANT = "Maivin"
 IMAGE_FEATURES += "ssh-server-openssh"
@@ -11,6 +12,9 @@ do_rootfs[cleandirs] += "${IMAGE_ROOTFS}"
 TEZI_IMAGE_NAME = "${IMAGE_BASENAME}${IMAGE_BASENAME_SUFFIX}"
 IMAGE_NAME = "${IMAGE_BASENAME}${IMAGE_BASENAME_SUFFIX}${IMAGE_VERSION_SUFFIX}"
 IMAGE_LINK_NAME = "${IMAGE_BASENAME}${IMAGE_BASENAME_SUFFIX}"
+
+# Enough free space for a full image update
+IMAGE_OVERHEAD_FACTOR = "4"
 
 # Base packages
 CORE_IMAGE_BASE_INSTALL:append = " \
@@ -30,19 +34,24 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     udev-maivin-rules \
     update-overlays \
     avahi-autoipd \
+    avahi-autoipd \
     iproute2 \
     iputils \
     iptables \
     module-init-tools \
     ostree-customize-plymouth \
     ostree-devicetree-overlays \
+    ostree-maivin \
     networkmanager \
     networkmanager-nmcli \
     networkmanager-wifi \
     modemmanager \
     mwifiexap \
     dnsmasq \
+    mwifiexap \
+    dnsmasq \
     wireguard-tools \
+    iperf3 \
     iperf3 \
     fluent-bit \
     neofetch \
@@ -66,10 +75,14 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     libglslc-imx-dev \
     visionpack-base \
     visionpack-python \
+    visionpack-apps \
     deepview-rt-modelrunner \
     python3-cffi \
     python3-numpy \
     python3-typeguard \
+    python3-pip \
+    python3-wheel \
+    python3-setuptools \
     videostream-camhost \
     camera \
     camerapose \

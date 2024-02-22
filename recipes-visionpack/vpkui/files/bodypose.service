@@ -1,0 +1,20 @@
+[Unit]
+Description=Body Pose Sample
+Requires=imx8-isp.service NetworkManager-wait-online.service
+After=imx8-isp.service NetworkManager-wait-online.service
+Conflicts=detection.service headpose.service facedetect.service faceblur.service segmentation.service
+
+StartLimitAction=reboot
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/bodyposegl_headless -f -d /dev/video2
+Restart=always
+RestartSec=2
+ExecStartPre=/bin/sleep 1
+
+[Install]
+WantedBy=multi-user.target
