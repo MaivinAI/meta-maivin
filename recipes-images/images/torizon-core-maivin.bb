@@ -87,14 +87,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     parted \
     libgpiod-tools \
     tmux \
-    docker-ce \
-    docker-compose \
-    docker-compose-up \
-    docker-integrity-checker \
-    docker-watchdog \
-    docker-auto-prune \
-    packagegroup-core-full-cmdline-multiuser \
-    packagegroup-core-full-cmdline-utils \
+    libhailort hailo-pci hailo-firmware \
 "
 
 nss_altfiles_set_users_groups () {

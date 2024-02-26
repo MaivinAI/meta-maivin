@@ -138,7 +138,7 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&pinctrl_m2_ctl>;
 	reset-gpio = <&gpio3 9 GPIO_ACTIVE_LOW>;	/* /M2_RST (SODIMM 62) */
-	// disable-gpio = <&gpio3 6 GPIO_ACTIVE_LOW>;	/* CARD_DISABLE (SODIMM 56) */ /* Enabling this causes an error with the gpio */
+	disable-gpio = <&gpio3 6 GPIO_ACTIVE_LOW>;	/* CARD_DISABLE (SODIMM 56) */
 	epdev_on-supply = <&m2_3v3>;
 };
 
