@@ -87,7 +87,10 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     parted \
     libgpiod-tools \
     tmux \
-    libhailort hailo-pci hailo-firmware \
+    hailo-pci \
+    hailo-firmware \
+    libhailort \
+    hailortcli \
 "
 
 nss_altfiles_set_users_groups () {
@@ -121,7 +124,3 @@ PSEUDO_PASSWD:prepend = "${@bb.utils.contains('DISTRO_FEATURES', 'stateless-syst
 # due to limited hardware resources, remove Colibri iMX6 Solo 256MB
 # from the list of supported IDs in the Tezi image
 TORADEX_PRODUCT_IDS:remove:colibri-imx6 = "0014 0016"
-
-EXTRA_USERS_PARAMS += "\
-usermod -a -G docker torizon; \
-"
