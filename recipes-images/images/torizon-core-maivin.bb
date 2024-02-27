@@ -91,6 +91,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     hailo-firmware \
     libhailort \
     hailortcli \
+    pyhailort \
 "
 
 nss_altfiles_set_users_groups () {
