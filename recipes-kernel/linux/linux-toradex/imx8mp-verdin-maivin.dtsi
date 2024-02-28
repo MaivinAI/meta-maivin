@@ -33,7 +33,7 @@
 		regulator-max-microvolt = <3300000>;
 		regulator-min-microvolt = <3300000>;
 		pinctrl-names = "default";
-		pinctrl-0 = <&pinctrl_m2>;
+		pinctrl-0 = <&pinctrl_m2_reg>;
 		gpio = <&gpio3 1 GPIO_ACTIVE_HIGH>;
 		enable-active-high;
 		regulator-always-on;
@@ -136,16 +136,14 @@
 &pcie {
 	status = "disabled";
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_m2>;
+	pinctrl-0 = <&pinctrl_m2_ctl>;
 	reset-gpio = <&gpio3 9 GPIO_ACTIVE_LOW>;	/* /M2_RST (SODIMM 62) */
 	disable-gpio = <&gpio3 6 GPIO_ACTIVE_LOW>;	/* CARD_DISABLE (SODIMM 56) */
-	epdev_on-supply = <&reg_3p3v>;
-	ext_osc = <0>;
+	epdev_on-supply = <&m2_3v3>;
 };
 
 &pcie_phy {
 	status = "disabled";
-	ext_osc = <0>;
 };
 
 /* Verdin PWM_1 - LED */
@@ -279,11 +277,16 @@
 			<MX8MP_IOMUXC_NAND_ALE__GPIO3_IO00		0x82>;	/* SODIMM 52 - WDI */
 	};
 
-	pinctrl_m2: m2 {
+	pinctrl_m2_reg: m2_reg {
 		fsl,pins =
-			<MX8MP_IOMUXC_NAND_CE0_B__GPIO3_IO01		0x82>,  /* SODIMM 54 - M2_PWR_EN */
-			<MX8MP_IOMUXC_NAND_DATA00__GPIO3_IO06		0x82>,	/* SODIMM 56 - CARD_PWR_OFF */
-			<MX8MP_IOMUXC_NAND_DATA03__GPIO3_IO09		0x82>;	/* SODIMM 62 - M2_RST */
+			<MX8MP_IOMUXC_NAND_CE0_B__GPIO3_IO01		0x82>;  /* SODIMM 54 - M2_PWR_EN */
+	};
+
+	pinctrl_m2_ctl: m2_ctl {
+		fsl,pins =
+			<MX8MP_IOMUXC_SD2_RESET_B__GPIO2_IO19		0x1c4>,	/* PMIC_EN_PCIe_CLK, unused */
+			<MX8MP_IOMUXC_NAND_DATA00__GPIO3_IO06		0x4>,	/* SODIMM 56 - CARD_PWR_OFF */
+			<MX8MP_IOMUXC_NAND_DATA03__GPIO3_IO09		0x4>;	/* SODIMM 62 - M2_RST */
 	};
 
 	pinctrl_csi_3v3: csi_3v3 {

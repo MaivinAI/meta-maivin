@@ -34,7 +34,6 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     udev-maivin-rules \
     update-overlays \
     avahi-autoipd \
-    avahi-autoipd \
     iproute2 \
     iputils \
     iptables \
@@ -96,6 +95,11 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     zenoh \
     libzenohc \
     tmux \
+    hailo-pci \
+    hailo-firmware \
+    libhailort \
+    hailortcli \
+    pyhailort \
 "
 
 nss_altfiles_set_users_groups () {
