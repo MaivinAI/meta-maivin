@@ -4,26 +4,25 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=e153ccee5db0d7cbd514bc6ba454f981"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI = "\
-    git://bitbucket.org/au-zone/maivin-camera.git;protocol=ssh;branch=RVN-185;name=camera \
-    git://github.com/MaivinAI/zenoh-ros-type.git;protocol=https;branch=main;name=zenoh-ros-type;destsuffix=zenoh-ros-type \
+    https://maivin.deepviewml.com/services/camera/maivin-camera-${PV} \
     file://camera.service \
+    file://LICENSE \
 "
+SRC_URI[sha256sum] = "fde132629756418e82af4167903299d3761e83aa90c8d122574b5aa6afabe0f6"
 
-include camera.inc
-
-SRCREV_FORMAT = "camera_zenoh-ros-type"
-SRCREV_camera = "56e707de3344e29e893940f4598d0092be7294d3"
-SRCREV_zenoh-ros-type = "dccfc85e0284d3f1663d960bdb686c867895d51c"
 DEPENDS = "videostream"
 RDEPENDS-${PN} = "imx8-isp"
 
-S = "${WORKDIR}/git"
+S = "${WORKDIR}"
 
-inherit features_check systemd pkgconfig cargo
+inherit features_check systemd
 
 do_install:append () {
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/camera.service ${D}${systemd_system_unitdir}
+
+    install -d ${D}${bindir}
+    install -m 0755 ${WORKDIR}/maivin-camera-${PV} ${D}${bindir}/camera
 }
 
 REQUIRED_DISTRO_FEATURES = "systemd"
