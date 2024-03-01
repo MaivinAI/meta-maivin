@@ -86,6 +86,8 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     camera \
     camerapose \
     navsat \
+    detect \
+    recorder \
     gpscfg \
     gpsd \
     gpsd-conf \

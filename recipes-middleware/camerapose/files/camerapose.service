@@ -8,8 +8,6 @@ Type=simple
 User=root
 ExecStart=/usr/bin/camerapose
 Restart=always
-RestartSec=30
-ExecStartPre=/bin/sleep 1
 
 [Install]
 WantedBy=multi-user.target

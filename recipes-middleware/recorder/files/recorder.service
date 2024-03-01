@@ -1,0 +1,16 @@
+[Unit]
+Description=Maivin MCAP Recorder Service
+After=zenohd.service NetworkManager-wait-online.service
+Wants=zenohd.service NetworkManager-wait-online.service
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/recorder
+WorkingDirectory=/home/torizon
+EnvironmentFile=/etc/recorder.conf
+User=torizon
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
