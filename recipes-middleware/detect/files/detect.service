@@ -2,12 +2,12 @@
 Description=Maivin Detection Service
 After=camera.service zenohd.service NetworkManager-wait-online.service
 Wants=camera.service zenohd.service NetworkManager-wait-online.service
-ConditionPathExists=/var/lib/detect/default.rtm
 
 [Service]
 Type=simple
 User=root
-ExecStart=/usr/bin/detect --model /var/lib/detect/default.rtm
+ExecStart=/usr/bin/detect
+EnvironmentFile=/etc/default/detect
 Restart=always
 
 [Install]

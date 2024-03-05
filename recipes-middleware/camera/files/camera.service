@@ -7,7 +7,7 @@ Wants=imx8-isp.service zenohd.service NetworkManager-wait-online.service
 Type=simple
 User=root
 ExecStart=/usr/bin/camera
-EnvironmentFile=/etc/camera.conf
+EnvironmentFile=/etc/default/camera
 Restart=always
 
 [Install]

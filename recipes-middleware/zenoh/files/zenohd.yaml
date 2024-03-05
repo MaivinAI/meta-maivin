@@ -22,3 +22,6 @@ connect:
 scouting:
   multicast:
    enabled: false
+  gossip:
+   enabled: true
+   multihop: false
