@@ -1,7 +1,7 @@
 [Unit]
 Description=Camera Pose Service
-After=NetworkManager-wait-online.service
-Wants=NetworkManager-wait-online.service
+After=zenohd.service NetworkManager-wait-online.service
+Wants=zenohd.service NetworkManager-wait-online.service
 
 [Service]
 Type=simple

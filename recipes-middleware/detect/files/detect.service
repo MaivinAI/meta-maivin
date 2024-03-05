@@ -1,7 +1,7 @@
 [Unit]
 Description=Maivin Detection Service
-After=camera.service NetworkManager-wait-online.service
-Wants=camera.service NetworkManager-wait-online.service
+After=camera.service zenohd.service NetworkManager-wait-online.service
+Wants=camera.service zenohd.service NetworkManager-wait-online.service
 ConditionPathExists=/var/lib/detect/default.rtm
 
 [Service]

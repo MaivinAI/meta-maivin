@@ -1,7 +1,7 @@
 [Unit]
 Description=Maivin NavSat Service
-After=gpsd.service NetworkManager-wait-online.service
-Wants=gpsd.service NetworkManager-wait-online.service
+After=gpsd.service zenohd.service NetworkManager-wait-online.service
+Wants=gpsd.service zenohd.service NetworkManager-wait-online.service
 
 [Service]
 Type=simple
