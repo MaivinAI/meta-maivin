@@ -33,6 +33,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     udev-toradex-rules \
     udev-maivin-rules \
     update-overlays \
+    usermount \
     avahi-autoipd \
     iproute2 \
     iputils \
@@ -94,7 +95,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     gps-utils \
     parted \
     libgpiod-tools \
-    zenoh \
+    zenohd \
     libzenohc \
     tmux \
     hailo-pci \

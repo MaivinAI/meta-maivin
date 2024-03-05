@@ -1,5 +1,6 @@
 [Unit]
 Description=update overlays in /boot from /etc/overlays.txt
+ConditionPathExists=/etc/overlays.txt
 
 [Service]
 Type=oneshot

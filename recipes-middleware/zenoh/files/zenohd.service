@@ -6,7 +6,7 @@ Wants=NetworkManager-wait-online.service
 [Service]
 EnvironmentFile=/etc/default/zenohd
 Restart=on-failure
-ExecStart=/usr/bin/zenohd -l tcp/0.0.0.0:7447
+ExecStart=/usr/bin/zenohd --config /etc/zenohd.yaml
 
 [Install]
 WantedBy=multi-user.target

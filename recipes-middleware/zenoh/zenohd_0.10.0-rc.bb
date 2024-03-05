@@ -7,6 +7,7 @@ SRC_URI = "\
     https://download.eclipse.org/zenoh/zenoh/${PV}/${TARGET_ARCH}-unknown-linux-gnu/zenoh-${PV}-${TARGET_ARCH}-unknown-linux-gnu.zip \
     file://zenohd.service \
     file://zenohd.default \
+    file://zenohd.yaml \
 "
 
 SRC_URI[sha256sum] = "9abb0af0557576bf94345b39c296db290d920e85ead44c1fb27b5f0db1c13aba"
@@ -22,6 +23,7 @@ do_install () {
     install -d ${D}${systemd_system_unitdir}
 
     install -m 0644 ${WORKDIR}/zenohd.default ${D}${sysconfdir}/default/zenohd
+    install -m 0644 ${WORKDIR}/zenohd.yaml ${D}${sysconfdir}
     install -m 0644 ${WORKDIR}/zenohd.service ${D}${systemd_system_unitdir}
 
     ${bindir}/env unzip -q -o ${DL_DIR}/zenoh-${PV}-${TARGET_ARCH}-unknown-linux-gnu.zip -d ${D}${libdir}
@@ -31,11 +33,12 @@ do_install () {
 
 REQUIRED_DISTRO_FEATURES = "systemd"
 SYSTEMD_SERVICE:${PN} = "zenohd.service"
-SYSTEMD_AUTO_ENABLE = "disable"
+SYSTEMD_AUTO_ENABLE = "enable"
 
 FILES:${PN}-dev = ""
 FILES:${PN} += "${bindir}/zenohd"
 FILES:${PN} += "${libdir}/libzenoh_plugin_storage_manager.so"
 FILES:${PN} += "${libdir}/libzenoh_plugin_rest.so"
 FILES:${PN} += "${sysconfdir}/default/zenohd"
+FILES:${PN} += "${sysconfdir}/zenohd.yaml"
 FILES:${PN} += "${systemd_system_unitdir}"

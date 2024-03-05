@@ -1,0 +1,41 @@
+# This is the configuration file for the detect systemd service file.  When
+# running systemctl start detect the service will use these configurations.
+# If running detect directly, you must continue to use the command-line options.
+
+# A model is required for the detect application.
+MODEL = "/usr/share/detect/peopledetect.rtm"
+
+# An optional decoder model can be used for two-stage models.  Refer to the
+# ModelPack documentation for two-stage models for details.
+DECODER_MODEL = ""
+
+# Annotation labels can display various information.  This controls the string
+# annotation published to the boxes2d topic.  The following values are supported.
+#
+#    index - Label index integer as a string.
+#    score - Floating-point score (0..1) as a string.
+#    label - Label string, fallback to index of model does not contain labels.
+#    label-score - The string will be the the combination of Label and Score
+#                  from above using the following format: "Label Score".
+LABELS = "Label"
+
+# Score threshold sets the minimum detection score before a bounding box is
+# generated for the inferred object.
+THRESHOLD = "0.45"
+
+# Detection IOU controls the minimum overlap for merging boxes during NMS.  A
+# larger number will produce more boxes with some overlap while a smaller number
+# will generate fewer boxes.
+IOU = "0.45"
+
+# Maximum number of boxes which can be generated.
+MAX_BOXES = "50"
+
+# The label offset is required for certain models to account for differences
+# in background class handling relative to the labels.txt.  It should usually
+# be zero but some odd configurations will sometimes require 1 or -1 for offset.
+LABEL_OFFSET = "0"
+
+# The model can be run using different computation engines.  The default engine
+# is the i.MX 8M Plus NPU.  Other options are the CPU or the GPU.
+ENGINE = "NPU"

@@ -1,0 +1,24 @@
+# Zenohd configuration file for Maivin.  The zenohd service is setup to run as
+# a router and listen on the localhost interface on port 7447.  Maivin services
+# are configured to connect to the zenohd service on the localhost interface in
+# client-only mode.  The multicast discovery feature is disabled as we do not
+# want Maivin services transmitted across the network.
+#
+# To allow remote connections to Maivin the listen endpoint should be updated to
+# listen on tcp/0.0.0.0:7447 to allow connections from any interface.
+#
+# To have the Maivin forward services to another device configure the connect
+# endpoint to the desired device.  For example a PC with the IP address 1.2.3.4
+# would be configured using the endpoint "tcp/1.2.3.4:7447".
+#
+# Another option is to use the Zenoh REST API plug-in for zenohd which provides
+# an HTTP server hosting the REST API.  Refer to Zenoh REST API for details.
+mode: "router"
+listen:
+  endpoints:
+    - "tcp/127.0.0.1:7447"
+connect:
+  endpoints:
+scouting:
+  multicast:
+   enabled: false

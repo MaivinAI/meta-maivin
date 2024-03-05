@@ -29,7 +29,7 @@ do_install:append () {
 
 REQUIRED_DISTRO_FEATURES = "systemd"
 SYSTEMD_SERVICE:${PN} = "camerapose.service"
-SYSTEMD_AUTO_ENABLE = "disable"
+SYSTEMD_AUTO_ENABLE = "enable"
 
 FILES:${PN} += "${bindir}"
 FILES:${PN} += "${systemd_system_unitdir}"

@@ -6,10 +6,10 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI = "\
     https://maivin.deepviewml.com/services/recorder/maivin-recorder-${PV} \
     file://recorder.service \
-    file://recorder.conf \
+    file://recorder.default \
     file://LICENSE \
 "
-SRC_URI[sha256sum] = "79fec9c560e4aee5be8fa1da749cd3e3eae8d45a871e9bff4ddc1034186f37a0"
+SRC_URI[sha256sum] = "3a2b676f85ec25fcea0eed06a93d5b3f8226cdb8cb2c5e64b9feae66f40c7409"
 
 S = "${WORKDIR}"
 
@@ -19,8 +19,8 @@ do_install:append () {
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/recorder.service ${D}${systemd_system_unitdir}
 
-    install -d ${D}${sysconfdir}
-    install -m 0644 ${WORKDIR}/recorder.conf ${D}${sysconfdir}
+    install -d ${D}${sysconfdir}/default
+    install -m 0644 ${WORKDIR}/recorder.default ${D}${sysconfdir}/default/recorder
 
     install -d ${D}${bindir}
     install -m 0755 ${WORKDIR}/maivin-recorder-${PV} ${D}${bindir}/recorder

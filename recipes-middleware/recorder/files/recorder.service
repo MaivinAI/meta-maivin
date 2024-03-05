@@ -5,11 +5,10 @@ Wants=zenohd.service NetworkManager-wait-online.service
 
 [Service]
 Type=simple
-User=root
+User=torizon
 ExecStart=/usr/bin/recorder
 WorkingDirectory=/home/torizon
-EnvironmentFile=/etc/recorder.conf
-User=torizon
+EnvironmentFile=/etc/default/recorder
 Restart=always
 
 [Install]

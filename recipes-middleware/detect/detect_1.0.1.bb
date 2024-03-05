@@ -1,4 +1,4 @@
-DESCRIPTION = "Maivin MCAP Recorder"
+DESCRIPTION = "Maivin Detection Service"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=e153ccee5db0d7cbd514bc6ba454f981"
 
@@ -8,9 +8,10 @@ SRC_URI = "\
     https://github.com/DeepViewML/peopledetect/releases/download/1.0/peopledetect.rtm;name=peopledetect \
     https://github.com/DeepViewML/facedetect/releases/download/1.0/facedetect.rtm;name=facedetect \
     file://detect.service \
+    file://detect.default \
     file://LICENSE \
 "
-SRC_URI[detect.sha256sum] = "ff80facf9131e49f5e78962f9fe4afbf900e0cf2eccd93a1f1662c543a67a855"
+SRC_URI[detect.sha256sum] = "c1070fd96aa08625a046676c9c07f625cf2387f4bce109783e62ccc0cd5c3ea3"
 SRC_URI[peopledetect.sha256sum] = "d80c410d54eb33a83df8ac7bfd5d3bca5ba321bb5ac02c318d3817b6d5726b3d"
 SRC_URI[facedetect.sha256sum] = "374b081671c42f2d4b73ed6fe71e46bfaa73ec122a6b0c532310afd367a53a82"
 
@@ -25,6 +26,9 @@ do_install:append () {
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/detect.service ${D}${systemd_system_unitdir}
 
+    install -d ${D}${sysconfdir}/default
+    install -m 0644 ${WORKDIR}/detect.default ${D}${sysconfdir}/default/detect
+
     install -d ${D}${bindir}
     install -m 0755 ${WORKDIR}/maivin-detect-${PV} ${D}${bindir}/detect
 
@@ -38,5 +42,6 @@ SYSTEMD_SERVICE:${PN} = "detect.service"
 SYSTEMD_AUTO_ENABLE = "enable"
 
 FILES:${PN} += "${systemd_system_unitdir}"
+FILES:${PN} += "${sysconfdir}"
 FILES:${PN} += "${bindir}"
 FILES:${PN} += "${datadir}"
