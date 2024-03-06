@@ -1,4 +1,16 @@
 # Maivin MCAP Recorder Configuration
 
-# Controls the storage location for the MCAP recordings.
-STORAGE="/home/torizon/recordings"
+# Controls the storage location for the MCAP recordings.  If using an SD Card
+# this should point to /media/DATA or adjusted for the SD Card mount point.
+STORAGE = "/home/torizon/recordings"
+
+# Record the following topics.  If certain topics are unavailable the recording
+# will still be performed but the missing topics will be logged in a warning
+# message.  If none of the topics are available the recording will terminate.
+TOPICS = "              \
+    /imu                \
+    /gps                \
+    /camera/info        \
+    /camera/h264        \
+    /detect/boxes2d     \
+"
