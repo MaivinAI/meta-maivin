@@ -19,7 +19,7 @@ STREAM_SIZE = "1920 1080"
 # Camera mirror setting can flip the camera image to match the orientation of
 # the camera. The camera can also be mirroed horizontally to provide a mirror
 # image.  Accepted values are "none", "horizontal", "vertical", and "both".
-MIRROR = "none"
+MIRROR = "both"
 
 # Controls the H.264 streaming mode.
 H264 = "true"
