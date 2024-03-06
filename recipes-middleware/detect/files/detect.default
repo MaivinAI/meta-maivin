@@ -5,9 +5,9 @@
 # A model is required for the detect application.
 MODEL = "/usr/share/detect/peopledetect.rtm"
 
-# An optional decoder model can be used for two-stage models.  Refer to the
-# ModelPack documentation for two-stage models for details.
-DECODER_MODEL = ""
+# An optional decoder model can be used for two-stage models.  Leave commented
+# out unless required, cannot be empty if defined.
+# DECODER_MODEL = ""
 
 # Annotation labels can display various information.  This controls the string
 # annotation published to the boxes2d topic.  The following values are supported.
@@ -17,7 +17,7 @@ DECODER_MODEL = ""
 #    label - Label string, fallback to index of model does not contain labels.
 #    label-score - The string will be the the combination of Label and Score
 #                  from above using the following format: "Label Score".
-LABELS = "Label"
+LABELS = "label"
 
 # Score threshold sets the minimum detection score before a bounding box is
 # generated for the inferred object.

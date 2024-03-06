@@ -1,12 +1,12 @@
 [Unit]
-Description=Camera Pose Service
+Description=Maivin IMU Service
 After=zenohd.service NetworkManager-wait-online.service
 Wants=zenohd.service NetworkManager-wait-online.service
 
 [Service]
 Type=simple
 User=root
-ExecStart=/usr/bin/camerapose
+ExecStart=/usr/bin/imu
 Restart=always
 
 [Install]

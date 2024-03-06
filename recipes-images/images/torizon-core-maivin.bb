@@ -85,7 +85,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     python3-setuptools \
     videostream-camhost \
     camera \
-    camerapose \
+    imu \
     navsat \
     detect \
     recorder \
