@@ -1,7 +1,8 @@
 [Unit]
 Description=Maivin MCAP Recorder Service
-After=zenohd.service NetworkManager-wait-online.service
 Wants=zenohd.service NetworkManager-wait-online.service
+After=zenohd.service NetworkManager-wait-online.service
+After=camera.service detect.service navsat.service imu.service
 
 [Service]
 Type=simple

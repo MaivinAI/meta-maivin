@@ -8,7 +8,7 @@ SRC_URI = "\
     file://navsat.service \
     file://LICENSE \
 "
-SRC_URI[sha256sum] = "f5ce164262b8747af84797db2156d6206acc785e639e6d1ffc2310f3a720ea23"
+SRC_URI[sha256sum] = "4f64627fee5efe7e861e8e4555e7d9e1bb71bc91bfd95ba8bc3a1cade80851d0"
 
 S = "${WORKDIR}"
 
