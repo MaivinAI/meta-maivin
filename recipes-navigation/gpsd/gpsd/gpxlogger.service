@@ -6,7 +6,7 @@ After=gpsd.service
 [Service]
 Type=simple
 User=torizon
-ExecStart=/usr/bin/gpxlogger --reconnect --output "%Y-%m-%d_%H:%M:%S.gpx"
+ExecStart=/usr/bin/gpxlogger --reconnect --output %%Y-%%m-%%d_%%H:%%M:%%S.gpx
 WorkingDirectory=/home/torizon
 Restart=always
 
