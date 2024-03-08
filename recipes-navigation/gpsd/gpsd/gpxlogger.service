@@ -1,0 +1,14 @@
+[Unit]
+Description=GPS Logging Service
+Requires=gpsd.service
+After=gpsd.service
+
+[Service]
+Type=simple
+User=torizon
+ExecStart=/usr/bin/gpxlogger --reconnect --output "%Y-%m-%d_%H:%M:%S.gpx"
+WorkingDirectory=/home/torizon
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

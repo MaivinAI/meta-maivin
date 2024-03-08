@@ -1,0 +1,15 @@
+[Unit]
+Description=Face Detection UI Demo
+Requires=NetworkManager-wait-online.service
+After=NetworkManager-wait-online.service
+Conflicts=detectionui.service headposeui.service segmentationui.service faceblurui.service bodyposeui.service
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/facedetectgl_headless
+EnvironmentFile=/etc/default/vpkui
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

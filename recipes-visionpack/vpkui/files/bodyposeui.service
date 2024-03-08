@@ -1,0 +1,15 @@
+[Unit]
+Description=Body Pose UI Demo
+Requires=NetworkManager-wait-online.service
+After=NetworkManager-wait-online.service
+Conflicts=detectionui.service headposeui.service facedetectui.service faceblurui.service segmentationui.service
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/bodyposegl_headless
+EnvironmentFile=/etc/default/vpkui
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

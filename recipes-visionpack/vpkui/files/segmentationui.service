@@ -1,0 +1,15 @@
+[Unit]
+Description=People Segmentation UI Demo
+Requires=NetworkManager-wait-online.service
+After=NetworkManager-wait-online.service
+Conflicts=detectionui.service headposeui.service facedetectui.service faceblurui.service bodyposeui.service
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/segmentationgl_headless
+EnvironmentFile=/etc/default/vpkui
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
