@@ -1,11 +1,12 @@
 SUMMARY = "Torizon for Maivin"
 DESCRIPTION = "Torizon for Maivin Platform"
 
-inherit core-image
+require recipes-images/images/torizon-core-common.inc
+
 inherit extrausers
 
 IMAGE_VARIANT = "Maivin"
-IMAGE_FEATURES += "ssh-server-openssh"
+IMAGE_FEATURES += "ssh-server-openssh bash-completion-pkgs"
 
 do_rootfs[cleandirs] += "${IMAGE_ROOTFS}"
 
@@ -33,7 +34,6 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     udev-toradex-rules \
     udev-maivin-rules \
     update-overlays \
-    usermount \
     avahi-autoipd \
     iproute2 \
     iputils \
@@ -46,12 +46,12 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     networkmanager-nmcli \
     networkmanager-wifi \
     modemmanager \
+    mobile-broadband-provider-info \
     mwifiexap \
     dnsmasq \
     mwifiexap \
     dnsmasq \
     wireguard-tools \
-    iperf3 \
     iperf3 \
     fluent-bit \
     neofetch \
@@ -60,6 +60,9 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     curl \
     htop \
     jq \
+    rac \
+    hdparm \
+    sysbench \
     v4l-utils \
     openssh-sftp-server \
     rsync \
@@ -73,6 +76,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     imx-vpuwrap \
     imx-gpu-viv \
     libglslc-imx-dev \
+    libturbojpeg \
     visionpack-base \
     visionpack-python \
     visionpack-apps \
@@ -93,6 +97,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     gpsd \
     gpsd-conf \
     gps-utils \
+    u-center \
     parted \
     libgpiod-tools \
     zenohd \
@@ -103,6 +108,16 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     libhailort \
     hailortcli \
     pyhailort \
+    docker-ce \
+    docker-compose \
+    docker-compose-up \
+    docker-integrity-checker \
+    docker-watchdog \
+    docker-auto-prune \
+"
+
+EXTRA_USERS_PARAMS += "\
+usermod -a -G docker torizon; \
 "
 
 nss_altfiles_set_users_groups () {
