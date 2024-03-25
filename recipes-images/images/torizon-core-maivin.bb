@@ -6,6 +6,7 @@ inherit extrausers
 
 IMAGE_VARIANT = "Maivin"
 IMAGE_FEATURES += "ssh-server-openssh bash-completion-pkgs"
+IMAGE_FEATURES += "tools-debug"
 
 do_rootfs[cleandirs] += "${IMAGE_ROOTFS}"
 
@@ -113,6 +114,8 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     docker-integrity-checker \
     docker-watchdog \
     docker-auto-prune \
+    perf \
+    valgrind \
 "
 
 nss_altfiles_set_users_groups () {
