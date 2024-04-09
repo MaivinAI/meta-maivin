@@ -116,6 +116,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     docker-auto-prune \
     perf \
     valgrind \
+    coz \
 "
 
 nss_altfiles_set_users_groups () {
