@@ -87,6 +87,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     python3-pip \
     python3-wheel \
     python3-setuptools \
+    edgefirst-schemas \
     camera \
     imu \
     navsat \
