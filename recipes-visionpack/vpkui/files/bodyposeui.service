@@ -1,8 +1,8 @@
 [Unit]
 Description=Body Pose UI Demo
-Requires=NetworkManager-wait-online.service
-After=NetworkManager-wait-online.service
-Conflicts=detectionui.service headposeui.service facedetectui.service faceblurui.service segmentationui.service
+Requires=NetworkManager-wait-online.service camera.service
+After=NetworkManager-wait-online.service camera.service
+Conflicts=detectionui.service headposeui.service facedetectui.service faceblurui.service segmentationui.service peopledetectui.service
 
 [Service]
 Type=simple

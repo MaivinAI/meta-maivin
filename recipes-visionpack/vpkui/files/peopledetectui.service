@@ -1,13 +1,13 @@
 [Unit]
-Description=Head Pose UI Demo
+Description=People Detection UI Demo
 Requires=NetworkManager-wait-online.service camera.service
 After=NetworkManager-wait-online.service camera.service
-Conflicts=detectionui.service segmentationui.service facedetectui.service faceblurui.service bodyposeui.service peopledetectui.service
+Conflicts=detectionui.service segmentationui.service headposeui.service facedetectui.service faceblurui.service bodyposeui.service
 
 [Service]
 Type=simple
 User=root
-ExecStart=/usr/bin/headposegl_headless
+ExecStart=/usr/bin/peopledetectgl_headless
 EnvironmentFile=/etc/default/vpkui
 Restart=always
 

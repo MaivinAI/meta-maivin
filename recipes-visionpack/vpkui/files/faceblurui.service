@@ -1,8 +1,8 @@
 [Unit]
 Description=Face Blur UI Demo
-Requires=NetworkManager-wait-online.service
-After=NetworkManager-wait-online.service
-Conflicts=detectionui.service headposeui.service facedetectui.service segmentationui.service bodyposeui.service
+Requires=NetworkManager-wait-online.service camera.service
+After=NetworkManager-wait-online.service camera.service
+Conflicts=detectionui.service headposeui.service facedetectui.service segmentationui.service bodyposeui.service peopledetectui.service
 
 [Service]
 Type=simple
