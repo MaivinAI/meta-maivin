@@ -44,7 +44,7 @@ ENGINE = "NPU"
 # This option will enable the graph caching which significantly speeds up load
 # times for models.  If you encounter issues set to 0 to disable.
 # https://support.deepviewml.com/hc/en-us/articles/4422857692557-NPU-Model-Cache
-VIV_VX_ENABLE_CACHE_GRAPH_BINARY = "1"
+VIV_VX_ENABLE_CACHE_GRAPH_BINARY = "0"
 
 # Control the NPU graph cache storage location.
 VIV_VX_CACHE_BINARY_GRAPH_DIR = "/var/cache"

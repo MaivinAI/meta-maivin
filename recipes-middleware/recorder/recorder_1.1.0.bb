@@ -9,7 +9,7 @@ SRC_URI = "\
     file://recorder.default \
     file://LICENSE \
 "
-SRC_URI[sha256sum] = "000df77d5f2b282fd15018b0b67c47ddaaddaf177c04ea3ba84e048d1eebf92a"
+SRC_URI[sha256sum] = "d0506cedee8f80453fb698bcd091819411091bee3b48c1e98b38866a9bbdf3be"
 
 S = "${WORKDIR}"
 
@@ -29,6 +29,8 @@ do_install:append () {
 REQUIRED_DISTRO_FEATURES = "systemd"
 SYSTEMD_SERVICE:${PN} = "recorder.service"
 SYSTEMD_AUTO_ENABLE = "disable"
+
+INSANE_SKIP:${PN} += "already-stripped"
 
 FILES:${PN} += "${systemd_system_unitdir}"
 FILES:${PN} += "${sysconfdir}"

@@ -11,7 +11,7 @@ SRC_URI = "\
     file://detect.default \
     file://LICENSE \
 "
-SRC_URI[detect.sha256sum] = "d46602e63bbdac1604988ec5819f0141e7f88d3e7946a5fc71c5f12f435d2cdf"
+SRC_URI[detect.sha256sum] = "125e1f65f5c3c297eb6effd8049819764ed0862b7d065a294cb562992f067485"
 SRC_URI[peopledetect.sha256sum] = "d80c410d54eb33a83df8ac7bfd5d3bca5ba321bb5ac02c318d3817b6d5726b3d"
 SRC_URI[facedetect.sha256sum] = "374b081671c42f2d4b73ed6fe71e46bfaa73ec122a6b0c532310afd367a53a82"
 
@@ -40,6 +40,8 @@ do_install:append () {
 REQUIRED_DISTRO_FEATURES = "systemd"
 SYSTEMD_SERVICE:${PN} = "detect.service"
 SYSTEMD_AUTO_ENABLE = "enable"
+
+INSANE_SKIP:${PN} += "already-stripped"
 
 FILES:${PN} += "${systemd_system_unitdir}"
 FILES:${PN} += "${sysconfdir}"
