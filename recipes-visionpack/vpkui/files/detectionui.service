@@ -1,8 +1,8 @@
 [Unit]
-Description=People Detection UI Demo
-Requires=NetworkManager-wait-online.service
-After=NetworkManager-wait-online.service
-Conflicts=segmentationui.service headposeui.service facedetectui.service faceblurui.service bodyposeui.service
+Description=Maivin Detect GUI Demo
+Requires=NetworkManager-wait-online.service camera.service
+After=NetworkManager-wait-online.service camera.service
+Conflicts=segmentationui.service headposeui.service facedetectui.service faceblurui.service bodyposeui.service peopledetectui.service
 
 [Service]
 Type=simple

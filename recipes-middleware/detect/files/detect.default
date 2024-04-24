@@ -9,14 +9,19 @@ MODEL = "/usr/share/detect/peopledetect.rtm"
 # out unless required, cannot be empty if defined.
 # DECODER_MODEL = ""
 
+# Enables publishing the visualization message
+VISUALIZATION = "true"
+
 # Annotation labels can display various information.  This controls the string
-# annotation published to the boxes2d topic.  The following values are supported.
+# annotation published to the visualization topic.  The following values are supported.
 #
 #    index - Label index integer as a string.
 #    score - Floating-point score (0..1) as a string.
-#    label - Label string, fallback to index of model does not contain labels.
+#    label - Label string, fallback to index if model does not contain labels.
 #    label-score - The string will be the the combination of Label and Score
 #                  from above using the following format: "Label Score".
+#    track - The UUID of the tracked object. This is only available when tracking
+#            is enabled. Otherwise will show the score.
 LABELS = "label"
 
 # Score threshold sets the minimum detection score before a bounding box is
@@ -39,6 +44,27 @@ LABEL_OFFSET = "0"
 # The model can be run using different computation engines.  The default engine
 # is the i.MX 8M Plus NPU.  Other options are the CPU or the GPU.
 ENGINE = "NPU"
+
+# Turn on the ByteTrack tracker. This is useful for smoothing bounding boxes 
+# across frames, and for associating multiple detections over time to a single
+# object
+TRACK = "false"
+
+# The number of seconds a tracked object can be missing for before being removed
+# from tracking.
+TRACK_EXTRA_LIFESPAN = "2.0"
+
+# The high confidence threshold for the ByteTrack algorithm
+TRACK_HIGH_CONF = "0.7"
+
+# The tracking iou threshold for box association. Higher values will require 
+# boxes to have higher IOU to the predicted track location to be associated
+TRACK_IOU = "0.25"
+
+# The tracking update factor. Higher update factor will mean less smoothing 
+# but more rapid response to change. Use values from 0.0 to 1.0. Values outside this
+# range will cause unexpected behaviour
+TRACK_UPDATE = "0.25"
 
 # The NPU is very slow loading initial models because of graph creation times.
 # This option will enable the graph caching which significantly speeds up load
