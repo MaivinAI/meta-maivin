@@ -12,7 +12,7 @@ SRC_URI += "file://facedetectui.service"
 SRC_URI += "file://faceblurui.service"
 SRC_URI += "file://headposeui.service"
 SRC_URI += "file://bodyposeui.service"
-SRC_URI[sha256sum] = "b479dccd3abb8716c40140e2e4b22e9696f5b51ef67a20b6e087155010176600"
+SRC_URI[sha256sum] = "15460817a84d6f9e2fee73b87003b0678c4f3457a2bc17243c2406b16c5776f1"
 
 S = "${WORKDIR}/${PN}-${PV}"
 
