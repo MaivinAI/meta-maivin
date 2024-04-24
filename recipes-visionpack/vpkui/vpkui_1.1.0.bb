@@ -8,6 +8,7 @@ SRC_URI = "https://deepviewml.com/vpkui/vpkui-${PV}-linux-armv8.zip;subdir=${S}"
 SRC_URI += "file://vpkui.default"
 SRC_URI += "file://segmentationui.service"
 SRC_URI += "file://detectionui.service"
+SRC_URI += "file://peopledetectui.service"
 SRC_URI += "file://facedetectui.service"
 SRC_URI += "file://faceblurui.service"
 SRC_URI += "file://headposeui.service"
@@ -32,6 +33,7 @@ do_install () {
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/segmentationui.service ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/detectionui.service ${D}${systemd_system_unitdir}
+    install -m 0644 ${WORKDIR}/peopledetectui.service ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/facedetectui.service ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/faceblurui.service ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/headposeui.service ${D}${systemd_system_unitdir}
