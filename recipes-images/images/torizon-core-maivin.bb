@@ -93,6 +93,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     navsat \
     detect \
     recorder \
+    publisher \
     gpscfg \
     gpsd \
     gpsd-conf \
