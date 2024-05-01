@@ -7,7 +7,7 @@ SRC_URI = "\
     https://maivin.deepviewml.com/services/publisher/maivin-publisher-${PV}-linux-arm64 \
     file://LICENSE \
 "
-SRC_URI[sha256sum] = "0cebbb1763017fa39bac20ee76c19058da922a3f74c244da08d1a422ba77be5c"
+SRC_URI[sha256sum] = "e862474a436db0c229cc9850b7d579ffa34b748aed73f83c0b4cad7ba9528cca"
 
 S = "${WORKDIR}"
 

@@ -7,4 +7,4 @@ STORAGE = "/home/torizon/recordings"
 # Record the following topics.  If certain topics are unavailable the recording
 # will still be performed but the missing topics will be logged in a warning
 # message.  If none of the topics are available the recording will terminate.
-TOPICS = "/imu /gps /camera/info /camera/h264 /detect/boxes2d /detect/visualization"
+TOPICS = "/imu /gps /camera/info /camera/h264 /detect/info /detect/boxes2d /detect/visualization"
