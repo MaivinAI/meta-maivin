@@ -4,6 +4,7 @@ KBUILD_BUILD_VERSION:append = "-maivin"
 SRC_URI:append = " file://trace.cfg"
 SRC_URI:append = " file://overlay.cfg"
 SRC_URI:append = " file://htu21.cfg"
+SRC_URI:append = " file://xfs.cfg"
 
 SRC_URI:append = " file://imx8mp-verdin-maivin.dtsi;subdir=git/arch/arm64/boot/dts/freescale"
 SRC_URI:append = " file://imx8mp-verdin-nonwifi-maivin.dts;subdir=git/arch/arm64/boot/dts/freescale"

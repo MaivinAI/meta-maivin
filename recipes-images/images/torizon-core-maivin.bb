@@ -25,6 +25,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     evtest \
     i2c-tools \
     e2fsprogs \
+    xfsprogs \
     kernel-modules \
     set-hostname \
     systemd-analyze \
