@@ -24,5 +24,10 @@ MIRROR = "both"
 # Controls the H.264 streaming mode.
 H264 = "true"
 
+# Controls the H.264 streaming bitrate
+# Accepted values are "auto", "mbps5", "mbps25", "mbps50", "mbps100".
+# The "auto" setting is about 10 mbps on Maivin 2
+H264_BITRATE = "auto"
+
 # Controls the JPEG streaming mode.
 JPEG = "false"
