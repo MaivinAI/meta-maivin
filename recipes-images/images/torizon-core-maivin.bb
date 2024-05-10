@@ -94,6 +94,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     imu \
     navsat \
     detect \
+    localtime \
     recorder \
     publisher \
     gpscfg \

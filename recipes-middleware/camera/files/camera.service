@@ -2,6 +2,7 @@
 Description=Maivin Camera Service
 After=imx8-isp.service zenohd.service NetworkManager-wait-online.service
 Wants=imx8-isp.service zenohd.service NetworkManager-wait-online.service
+Before=recorder.service
 
 [Service]
 Type=simple

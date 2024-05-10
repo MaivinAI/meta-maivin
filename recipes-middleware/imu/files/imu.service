@@ -2,6 +2,7 @@
 Description=Maivin IMU Service
 After=zenohd.service NetworkManager-wait-online.service
 Wants=zenohd.service NetworkManager-wait-online.service
+Before=recorder.service
 
 [Service]
 Type=simple

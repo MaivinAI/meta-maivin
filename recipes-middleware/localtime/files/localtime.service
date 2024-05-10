@@ -1,14 +1,12 @@
 [Unit]
-Description=Maivin MCAP Recorder Service
+Description=Maivin Local Time Service
 Wants=zenohd.service NetworkManager-wait-online.service
 After=zenohd.service NetworkManager-wait-online.service
+Before=recorder.service
 
 [Service]
 Type=simple
-User=torizon
-ExecStart=/usr/bin/recorder
-WorkingDirectory=/home/torizon
-EnvironmentFile=/etc/default/recorder
+ExecStart=/usr/bin/localtime
 Restart=always
 
 [Install]
