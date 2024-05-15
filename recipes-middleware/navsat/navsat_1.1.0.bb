@@ -8,7 +8,7 @@ SRC_URI = "\
     file://navsat.service \
     file://LICENSE \
 "
-SRC_URI[sha256sum] = "4f64627fee5efe7e861e8e4555e7d9e1bb71bc91bfd95ba8bc3a1cade80851d0"
+SRC_URI[sha256sum] = "d389c5e132b8e68cab4859ca6cbc337b11615b97294f6c9412ccdfd2426ed4a8"
 
 S = "${WORKDIR}"
 
@@ -25,6 +25,8 @@ do_install:append () {
 REQUIRED_DISTRO_FEATURES = "systemd"
 SYSTEMD_SERVICE:${PN} = "navsat.service"
 SYSTEMD_AUTO_ENABLE = "enable"
+
+INSANE_SKIP:${PN} += "already-stripped"
 
 FILES:${PN} += "${systemd_system_unitdir}"
 FILES:${PN} += "${bindir}"
