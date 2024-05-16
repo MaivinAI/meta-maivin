@@ -8,7 +8,7 @@ SRC_URI = "\
     file://imu.service \
     file://LICENSE \
 "
-SRC_URI[sha256sum] = "2cc59748258f9a4918bb1ecf3a4a1464f6739c0e3e4297bcd90d3d6c2f016ce5"
+SRC_URI[sha256sum] = "5428c99792bdc14b5d11aacdafb661c3362e3c9f251772e53248b5b8ae94b617"
 
 S = "${WORKDIR}"
 
@@ -25,6 +25,8 @@ do_install:append () {
 REQUIRED_DISTRO_FEATURES = "systemd"
 SYSTEMD_SERVICE:${PN} = "imu.service"
 SYSTEMD_AUTO_ENABLE = "enable"
+
+INSANE_SKIP:${PN} += "already-stripped"
 
 FILES:${PN} += "${systemd_system_unitdir}"
 FILES:${PN} += "${bindir}"
