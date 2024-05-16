@@ -9,7 +9,7 @@ SRC_URI = "\
     file://camera.default \
     file://LICENSE \
 "
-SRC_URI[sha256sum] = "e657abbd0eb13a5ed0dddb80733ab29b808c0d006cba42237cfc097debf01a28"
+SRC_URI[sha256sum] = "e44c966fbd171733e0ee4d9a4dbf92e153905721defa54bf5415cbf62449705f"
 
 DEPENDS = "videostream"
 RDEPENDS-${PN} = "imx8-isp"
@@ -32,6 +32,8 @@ do_install:append () {
 REQUIRED_DISTRO_FEATURES = "systemd"
 SYSTEMD_SERVICE:${PN} = "camera.service"
 SYSTEMD_AUTO_ENABLE = "enable"
+
+INSANE_SKIP:${PN} += "already-stripped"
 
 FILES:${PN} += "${systemd_system_unitdir}"
 FILES:${PN} += "${bindir}"

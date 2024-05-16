@@ -19,6 +19,7 @@ IMAGE_OVERHEAD_FACTOR = "4"
 
 # Base packages
 CORE_IMAGE_BASE_INSTALL:append = " \
+    ca-certificates \
     tdx-info \
     auto-provisioning \
     provision-device \
