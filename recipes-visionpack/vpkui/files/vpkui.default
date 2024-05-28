@@ -10,3 +10,12 @@ VIV_VX_ENABLE_CACHE_GRAPH_BINARY = "0"
 
 # Control the NPU graph cache storage location.
 VIV_VX_CACHE_BINARY_GRAPH_DIR = "/var/cache"
+
+# Control if the Au-Zone Overlay should be shown on the stream, by default its said to true
+SHOW_OVERLAY=true
+
+# Control if the Model Output should be shown on the stream, by default its said to true
+SHOW_MODEL_OUTPUT=true
+
+# Control if the Model Timing should be shown on the stream, by default its said to true
+SHOW_TIMING=true
