@@ -103,6 +103,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     gpsd-conf \
     gps-utils \
     u-center \
+    chrony \
     parted \
     libgpiod-tools \
     zenohd \
