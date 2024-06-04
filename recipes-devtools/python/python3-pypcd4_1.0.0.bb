@@ -20,7 +20,7 @@ cat > ${S}/setup.py <<-EOF
 from setuptools import setup
 
 setup(
-    name="${PYPI_PACKAGE}",
+    name="pypcd4",
     version="${PV}",
     license="${LICENSE}",
 )
