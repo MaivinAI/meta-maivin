@@ -126,6 +126,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     valgrind \
     oprofile \
     coz \
+    git \
 "
 
 nss_altfiles_set_users_groups () {
