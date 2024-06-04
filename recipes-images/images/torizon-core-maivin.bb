@@ -90,6 +90,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     python3-pip \
     python3-wheel \
     python3-setuptools \
+    python3-pypcd4 \
     edgefirst-schemas \
     camera \
     imu \
