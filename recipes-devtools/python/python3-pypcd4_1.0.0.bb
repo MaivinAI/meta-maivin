@@ -2,7 +2,7 @@
 SUMMARY = "Read and write PCL .pcd files in python"
 HOMEPAGE = "None"
 AUTHOR = "None <urasakikeisuke <keisuke.urasaki@map4.jp>>"
-LICENSE = "BSD"
+LICENSE = "BSD-3-Clause"
 LIC_FILES_CHKSUM = "file://LICENSE.txt;md5=a45b667fd241be0c9b43402e50458b4d"
 
 SRC_URI = "https://files.pythonhosted.org/packages/a1/bb/f26f8dca750f10e38fa35d1a4064406b12ae8fc525eb1ac4ee651e889c23/pypcd4-1.0.0.tar.gz"
