@@ -97,6 +97,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     imu \
     navsat \
     detect \
+    segment \
     localtime \
     recorder \
     publisher \
