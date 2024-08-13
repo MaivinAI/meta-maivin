@@ -11,7 +11,7 @@ SRC_URI = "\
     file://detect.default \
     file://LICENSE \
 "
-SRC_URI[detect.sha256sum] = "125e1f65f5c3c297eb6effd8049819764ed0862b7d065a294cb562992f067485"
+SRC_URI[detect.sha256sum] = "5cd0fbfe3ca6ea46fc44135ef36a7a17ed4f80e4c8813b4151f67958eea2e982"
 SRC_URI[peopledetect.sha256sum] = "d80c410d54eb33a83df8ac7bfd5d3bca5ba321bb5ac02c318d3817b6d5726b3d"
 SRC_URI[facedetect.sha256sum] = "374b081671c42f2d4b73ed6fe71e46bfaa73ec122a6b0c532310afd367a53a82"
 

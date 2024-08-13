@@ -1,0 +1,15 @@
+[Unit]
+Description=Maivin Segmentation Service
+After=camera.service zenohd.service NetworkManager-wait-online.service
+Wants=camera.service zenohd.service NetworkManager-wait-online.service
+Before=recorder.service
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/segment
+EnvironmentFile=/etc/default/segment
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
