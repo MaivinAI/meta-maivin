@@ -1,0 +1,7 @@
+# This is the configuration file for the Maivin Web UI Service
+
+# Document root directory for HTML, Javascript, and other static assets.
+# If modifying the default assets it is suggested to copy /usr/share/webui to
+# /usr/local/share/webui and make changes there while also updating the DOCROOT
+# option in this file to point to /usr/local/share/webui.
+DOCROOT = "/usr/share/webui"

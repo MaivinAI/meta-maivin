@@ -98,6 +98,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     navsat \
     detect \
     segment \
+    webui \
     localtime \
     recorder \
     publisher \

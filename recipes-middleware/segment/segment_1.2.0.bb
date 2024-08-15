@@ -30,7 +30,7 @@ do_install:append () {
     install -d ${D}${bindir}
     install -m 0755 ${WORKDIR}/maivin-segment-${PV} ${D}${bindir}/segment
 
-    install -d ${D}${datadir}/
+    install -d ${D}${datadir}/segment
     install -m 0644 ${WORKDIR}/peoplesegment.rtm ${D}${datadir}/segment
 }
 
