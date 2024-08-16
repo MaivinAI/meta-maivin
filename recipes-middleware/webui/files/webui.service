@@ -2,7 +2,6 @@
 Description=Maivin WebUI Service
 After=zenohd.service NetworkManager-wait-online.service
 Wants=zenohd.service NetworkManager-wait-online.service
-Before=webui.service
 
 [Service]
 Type=simple
