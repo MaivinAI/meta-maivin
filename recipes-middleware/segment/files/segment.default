@@ -5,6 +5,9 @@
 # A model is required for the segment application.
 MODEL = "/usr/share/segment/peoplesegment.rtm"
 
+# Enable mask compression to reduce network overhead when streaming.
+COMPRESSION = true
+
 # The model can be run using different computation engines.  The default engine
 # is the i.MX 8M Plus NPU.  Other options are the CPU or the GPU.
 ENGINE = "NPU"

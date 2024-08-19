@@ -96,6 +96,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     camera \
     imu \
     navsat \
+    radarpub \
     detect \
     segment \
     webui \
