@@ -9,7 +9,7 @@ SRC_URI = "\
     file://recorder.default \
     file://LICENSE \
 "
-SRC_URI[sha256sum] = "ed1249cac2124a29dda7ddf083c7c45c595a3afbc9b902b2f19ea46182f5b979"
+SRC_URI[sha256sum] = "753c22f64c625cc6007ca2fae0b661f1741e1169f70ac7f4de7f1e9a27f74c0f"
 
 S = "${WORKDIR}"
 
