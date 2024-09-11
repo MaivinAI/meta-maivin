@@ -6,7 +6,7 @@ After=zenohd.service NetworkManager-wait-online.service
 [Service]
 Type=simple
 ExecStart=/usr/bin/radarpub
-EnvironmentFile=/etc/default/recorder
+EnvironmentFile=/etc/default/radarpub
 Restart=always
 
 [Install]

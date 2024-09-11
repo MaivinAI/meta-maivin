@@ -1,1 +1,37 @@
 # Maivin Radar Publisher service
+
+# Radar center frequency band.
+# Options: low, medium, high
+CENTER_FREQUENCY = "medium"
+
+# The frequency sweep controls the detection range of the radar.  The following
+# breakdown gives a general range at which a vehicle-type object should be detected.
+#
+# ultra-low:   9m
+# low:        19m
+# medium:     56m
+# long:      130m
+#
+FREQUENCY_SWEEP = "short"
+
+# The range-toggle mode allows the radar to alternate between various frequency
+# sweep configurations.  Applications must handle range toggling as targets will
+# not be consistent between messages as the frequency alternates.
+#
+# WARNING: The radar cube model does NOT currently handle alternating frequencies
+# as it requires the dataset to be captured at a specific frequency sweep config.
+#
+# Options: off, short-medium, short-long, medium-long, long-ultra-short, medium-ultra-short, short-ultra-short
+RANGE_TOGGLE = "off"
+
+# The detection sensitivity only affects the radar target list (point-cloud) and
+# controls the sensitivity to recognize a target.  The default is medium, the
+# low and high sensitivity options will result in less and more targets, respectively.
+DETECTION_SENSITIVITY = "medium"
+
+# Enable streaming the low-level radar cube.  This can be used by the low-level
+# radar fusion model or to record MCAP files for the purpose of training this
+# model.  The radar cube capture consumes approximately 240mbps bandwidth over
+# the private Raivin ethernet connection and approximately 75% of one of the CPU
+# cores, enable it when required but otherwise should be left disabled.
+CUBE = "false"
