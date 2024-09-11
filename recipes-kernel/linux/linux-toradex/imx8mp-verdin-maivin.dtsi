@@ -87,7 +87,6 @@
 };
 
 &fec {
-	phy-supply = <&reg_eth2phy>;
 	status = "okay";
 };
 

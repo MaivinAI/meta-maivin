@@ -56,6 +56,8 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     dnsmasq \
     wireguard-tools \
     iperf3 \
+    ethtool \
+    rclone \
     fluent-bit \
     neofetch \
     mmc-utils \
