@@ -72,6 +72,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     openssh-sftp-server \
     rsync \
     vim-tiny \
+    kernel-module-dp83tg720 \
     kernel-module-isp-vvcam \
     kernel-module-imx-gpu-viv \
     imx8-isp \
