@@ -1,16 +1,22 @@
 # Maivin Radar Publisher service
 
-# Radar center frequency band.
+# Log level for the application, relevant sub-filters are radarpub and drvegrd
+# refer to RUST_LOG documentation for details.
+RUST_LOG = "info"
+
+# Radar center frequency band.  The low option is required when using the
+# ultra-short FREQUENCY_SWEEP option.
+#
 # Options: low, medium, high
 CENTER_FREQUENCY = "medium"
 
 # The frequency sweep controls the detection range of the radar.  The following
 # breakdown gives a general range at which a vehicle-type object should be detected.
 #
-# ultra-low:   9m
-# low:        19m
-# medium:     56m
-# long:      130m
+# ultra-short:  9m (requires CENTER_FREQUENCY="low")
+# short:       19m
+# medium:      56m
+# long:       130m
 #
 FREQUENCY_SWEEP = "short"
 
