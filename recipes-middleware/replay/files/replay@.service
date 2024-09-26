@@ -1,0 +1,15 @@
+[Unit]
+Description=Maivin MCAP Replayer Service
+Wants=zenohd.service NetworkManager-wait-online.service
+After=zenohd.service NetworkManager-wait-online.service
+Conflicts=camera.service detect.service segment.service imu.service navsat.service radarpub.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/replay %i.mcap
+WorkingDirectory=/media/DATA
+EnvironmentFile=/etc/default/replay
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
