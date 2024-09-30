@@ -1,0 +1,5 @@
+# Maivin Sensor Fusion Service
+
+# Log level for the application, relevant sub-filters are radarpub and drvegrd
+# refer to RUST_LOG documentation for details.
+RUST_LOG = "info"
