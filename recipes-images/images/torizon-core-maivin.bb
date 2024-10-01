@@ -95,7 +95,6 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     python3-setuptools \
     python3-lzf \
     python3-pypcd4 \
-    edgefirst-schemas \
     camera \
     imu \
     navsat \
