@@ -35,6 +35,15 @@ RANGE_TOGGLE = "off"
 # low and high sensitivity options will result in less and more targets, respectively.
 DETECTION_SENSITIVITY = "medium"
 
+# Enable clustering the radar targets into the /radar/clusters topic.  Clustering
+# options are listed below.
+CLUSTERING = "false"
+
+# Temporal clustering of the radar targets using the window size.  The window size
+# is the number of frames to cluster, each frame representing 55ms.  The window
+# clustering is a rolling window so it does not incur any additional latency.
+WINDOW_SIZE = "5"
+
 # Enable streaming the low-level radar cube.  This can be used by the low-level
 # radar fusion model or to record MCAP files for the purpose of training this
 # model.  The radar cube capture consumes approximately 240mbps bandwidth over
