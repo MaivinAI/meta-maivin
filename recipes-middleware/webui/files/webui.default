@@ -5,3 +5,30 @@
 # /usr/local/share/webui and make changes there while also updating the DOCROOT
 # option in this file to point to /usr/local/share/webui.
 DOCROOT = "/usr/share/webui"
+
+# The bin widths must cleanly divide the bin limits
+ANGLE_BIN_WIDTH = "104"
+ANGLE_BIN_LIMITS_MIN = "-703"
+ANGLE_BIN_LIMITS_MAX = "703"
+RANGE_BIN_WIDTH = "0.5"
+RANGE_BIN_LIMITS_MIN = "0"
+RANGE_BIN_LIMITS_MAX = "20"
+
+WINDOW_LENGTH = "18"
+BIN_THRESHOLD = "3"
+
+# If set to true, the application will use boxes instead, otherwise it uses masks.
+USE_BOX = "false"
+
+OCCLUSION_FILTER_LIMIT_DEGREES = "20"
+
+# Possible options are `disabled`, `power`, `rcs`, speed`, or `class`
+GRID_DRAW_PCD = "rcs"
+COMBINED_GRID_DRAW_PCD = "disabled"
+COMBINED_CAMERA_DRAW_PCD = "disabled"
+COMBINED_CAMERA_PCD_LABEL = "false"
+
+MASK_TOPIC = "/rt/detect/mask/"
+DETECT_TOPIC = "/rt/detect/boxes2d/"
+PCD_TOPIC = "/rt/radar/targets/"
+H264_TOPIC = "/rt/camera/h264/"

@@ -1,12 +1,12 @@
 [Unit]
-Description=Maivin WebUI Service
+Description=Maivin Web UI Server
 After=zenohd.service NetworkManager-wait-online.service
 Wants=zenohd.service NetworkManager-wait-online.service
 
 [Service]
 Type=simple
 User=root
-ExecStart=/usr/bin/webui
+ExecStart=/usr/bin/websrv
 EnvironmentFile=/etc/default/webui
 Restart=always
 

@@ -1,17 +1,15 @@
-DESCRIPTION = "Maivin Web UI"
+DESCRIPTION = "Maivin Web UI Server"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=e153ccee5db0d7cbd514bc6ba454f981"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI = "\
-    https://maivin.deepviewml.com/services/maivin-ui/maivin-ui-${PV};name=webui \
-    https://maivin.deepviewml.com/services/maivin-ui/maivin-ui-assets-${PV}.tar;subdir=webui;name=assets \
+    https://maivin.deepviewml.com/services/maivin-websrv/maivin-websrv-${PV} \
     file://webui.service \
     file://webui.default \
     file://LICENSE \
 "
-SRC_URI[webui.sha256sum] = "f24a877e411e08743e7763a3411138c80ebc049da44e9875c94e42b937025973"
-SRC_URI[assets.sha256sum] = "d2d6cf48d5a47563eb16ec61320c2b9a9abbe0ceb0be4d5a359ffe404793e4f4"
+SRC_URI[sha256sum] = "1441772a504bbef27822d45e6e82d3ec6856a6806e92cb0212a415de83206181"
 
 S = "${WORKDIR}"
 
@@ -25,10 +23,7 @@ do_install:append () {
     install -m 0644 ${WORKDIR}/webui.default ${D}${sysconfdir}/default/webui
 
     install -d ${D}${bindir}
-    install -m 0755 ${WORKDIR}/maivin-ui-${PV} ${D}${bindir}/webui
-
-    install -d ${D}${datadir}
-    cp -r ${S}/webui ${D}${datadir}
+    install -m 0755 ${WORKDIR}/maivin-websrv-${PV} ${D}${bindir}/websrv
 }
 
 REQUIRED_DISTRO_FEATURES = "systemd"
@@ -40,4 +35,3 @@ INSANE_SKIP:${PN} += "already-stripped"
 FILES:${PN} += "${systemd_system_unitdir}"
 FILES:${PN} += "${sysconfdir}"
 FILES:${PN} += "${bindir}"
-FILES:${PN} += "${datadir}"
