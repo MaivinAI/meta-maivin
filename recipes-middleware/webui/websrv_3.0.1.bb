@@ -9,7 +9,7 @@ SRC_URI = "\
     file://webui.default \
     file://LICENSE \
 "
-SRC_URI[sha256sum] = "1441772a504bbef27822d45e6e82d3ec6856a6806e92cb0212a415de83206181"
+SRC_URI[sha256sum] = "84bc13622311e46f6b9a12f007b66217b95e329dd037d1bf60900877e4474e5a"
 
 S = "${WORKDIR}"
 

@@ -101,6 +101,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     radarpub \
     detect \
     segment \
+    fusion \
     websrv \
     webui \
     localtime \
