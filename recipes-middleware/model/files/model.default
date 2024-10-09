@@ -3,7 +3,7 @@
 # If running model directly, you must continue to use the command-line options.
 
 # A model is required for the model application. This can be a segmentation model
-# or a detection model.
+# and/or a detection model.
 MODEL = "/usr/share/detect/peopledetect.rtm"
 
 # An optional decoder model can be used for two-stage models.  Leave commented
@@ -26,7 +26,7 @@ VISUALIZATION = "true"
 LABELS = "label"
 
 # Score threshold sets the minimum detection score before a bounding box is
-# generated for the inferred object.
+# generated for the inferred object for detection.
 THRESHOLD = "0.45"
 
 # Detection IOU controls the minimum overlap for merging boxes during NMS.  A
@@ -77,4 +77,4 @@ VIV_VX_ENABLE_CACHE_GRAPH_BINARY = "0"
 VIV_VX_CACHE_BINARY_GRAPH_DIR = "/var/cache"
 
 # Enable compression for segmentation masks
-MASK_COMPRESSION = "false"
+MASK_COMPRESSION = "true"
