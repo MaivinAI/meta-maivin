@@ -4,7 +4,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=0f5cddf357882b5f52de019ee365c75a"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI = "git://github.com/MaivinAI/webui.git;protocol=ssh;branch=main"
-SRCREV = "bd0bdef29ddaded0612672d4d15a2d1f59404d45"
+SRCREV = "58a3cb9cd30e7982f1966eb847d0dc7c15048bb6"
 
 S = "${WORKDIR}/git"
 
