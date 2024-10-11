@@ -2,7 +2,7 @@
 Description=Maivin MCAP Replayer Service
 Wants=zenohd.service NetworkManager-wait-online.service
 After=zenohd.service NetworkManager-wait-online.service
-Conflicts=camera.service detect.service segment.service imu.service navsat.service radarpub.service
+Conflicts=camera.service model.service imu.service navsat.service radarpub.service
 
 [Service]
 Type=simple
