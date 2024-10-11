@@ -1,7 +1,7 @@
 [Unit]
 Description=Maivin Sensor Fusion Service
-Wants=zenohd.service NetworkManager-wait-online.service radarpub.service segment.service
-After=zenohd.service NetworkManager-wait-online.service radarpub.service segment.service
+Wants=zenohd.service NetworkManager-wait-online.service radarpub.service model.service
+After=zenohd.service NetworkManager-wait-online.service radarpub.service model.service
 
 [Service]
 Type=simple

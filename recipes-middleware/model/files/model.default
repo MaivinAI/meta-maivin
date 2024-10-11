@@ -1,16 +1,21 @@
-# This is the configuration file for the detect systemd service file.  When
+# This is the configuration file for the model systemd service file.  When
 # running systemctl start detect the service will use these configurations.
-# If running detect directly, you must continue to use the command-line options.
+# If running model directly, you must continue to use the command-line options.
 
-# A model is required for the detect application.
-MODEL = "/usr/share/detect/peopledetect.rtm"
+# A model is required for the model application. This can be a segmentation model
+# and/or a detection model.
+MODEL = "/usr/share/detect/peoplesegment.rtm"
 
 # An optional decoder model can be used for two-stage models.  Leave commented
 # out unless required, cannot be empty if defined.
 # DECODER_MODEL = ""
 
-# Enables publishing the visualization message
-VISUALIZATION = "true"
+# Enables publishing the legacy visualization message for detection models.  It
+# is false by default which means only the primary model box and mask topics
+# will be available.  If using Foxglove Studio make sure you install the
+# EdgeFirst for Foxglove Plug-in, refer to the documentation for details.
+# https://support.deepviewml.com/hc/en-us/articles/26729068029709-How-to-Download-and-Install-Foxglove-Plugin-to-view-Maivin-Detect-and-Mask-Messages
+VISUALIZATION = "false"
 
 # Annotation labels can display various information.  This controls the string
 # annotation published to the visualization topic.  The following values are supported.
@@ -25,7 +30,7 @@ VISUALIZATION = "true"
 LABELS = "label"
 
 # Score threshold sets the minimum detection score before a bounding box is
-# generated for the inferred object.
+# generated for the inferred object for detection.
 THRESHOLD = "0.45"
 
 # Detection IOU controls the minimum overlap for merging boxes during NMS.  A
@@ -45,7 +50,7 @@ LABEL_OFFSET = "0"
 # is the i.MX 8M Plus NPU.  Other options are the CPU or the GPU.
 ENGINE = "NPU"
 
-# Turn on the ByteTrack tracker. This is useful for smoothing bounding boxes 
+# Turn on the ByteTrack tracker. This is useful for smoothing bounding boxes
 # across frames, and for associating multiple detections over time to a single
 # object
 TRACK = "false"
@@ -57,14 +62,20 @@ TRACK_EXTRA_LIFESPAN = "2.0"
 # The high confidence threshold for the ByteTrack algorithm
 TRACK_HIGH_CONF = "0.7"
 
-# The tracking iou threshold for box association. Higher values will require 
+# The tracking iou threshold for box association. Higher values will require
 # boxes to have higher IOU to the predicted track location to be associated
 TRACK_IOU = "0.25"
 
-# The tracking update factor. Higher update factor will mean less smoothing 
+# The tracking update factor. Higher update factor will mean less smoothing
 # but more rapid response to change. Use values from 0.0 to 1.0. Values outside this
 # range will cause unexpected behaviour
 TRACK_UPDATE = "0.25"
+
+# Enable compression for segmentation masks.  When enabled both the /model/mask
+# and /model/mask_compressed topics will be available.  The compressed mask
+# should be used from remote connections while the un-compressed topic should be
+# used from local connections to avoid redundant compress/decompress steps.
+MASK_COMPRESSION = "true"
 
 # The NPU is very slow loading initial models because of graph creation times.
 # This option will enable the graph caching which significantly speeds up load
