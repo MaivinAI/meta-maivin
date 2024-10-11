@@ -99,8 +99,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     imu \
     navsat \
     radarpub \
-    detect \
-    segment \
+    model \
     fusion \
     websrv \
     webui \
