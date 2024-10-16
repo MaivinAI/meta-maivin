@@ -6,6 +6,9 @@
 # option in this file to point to /usr/local/share/webui.
 DOCROOT = "/usr/share/webui"
 
+# Let user pick between RAIVIN & MAIVIN
+DEVICE = "RAIVIN"
+
 # The bin widths must cleanly divide the bin limits
 ANGLE_BIN_WIDTH = "10"
 ANGLE_BIN_LIMITS_MIN = "-70"
