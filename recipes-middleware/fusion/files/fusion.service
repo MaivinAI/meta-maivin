@@ -1,0 +1,13 @@
+[Unit]
+Description=Maivin Sensor Fusion Service
+Wants=zenohd.service NetworkManager-wait-online.service radarpub.service model.service
+After=zenohd.service NetworkManager-wait-online.service radarpub.service model.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/fusion
+EnvironmentFile=/etc/default/fusion
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

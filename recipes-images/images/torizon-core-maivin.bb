@@ -56,6 +56,8 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     dnsmasq \
     wireguard-tools \
     iperf3 \
+    ethtool \
+    rclone \
     fluent-bit \
     neofetch \
     mmc-utils \
@@ -70,6 +72,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     openssh-sftp-server \
     rsync \
     vim-tiny \
+    kernel-module-dp83tg720 \
     kernel-module-isp-vvcam \
     kernel-module-imx-gpu-viv \
     imx8-isp \
@@ -92,15 +95,17 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     python3-setuptools \
     python3-lzf \
     python3-pypcd4 \
-    edgefirst-schemas \
     camera \
     imu \
     navsat \
-    detect \
-    segment \
+    radarpub \
+    model \
+    fusion \
+    websrv \
     webui \
     localtime \
     recorder \
+    replay \
     publisher \
     gpscfg \
     gpsd \

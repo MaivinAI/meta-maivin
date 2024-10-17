@@ -1,0 +1,13 @@
+[Unit]
+Description=Maivin Radar Publisher Service
+Wants=zenohd.service NetworkManager-wait-online.service
+After=zenohd.service NetworkManager-wait-online.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/radarpub
+EnvironmentFile=/etc/default/radarpub
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

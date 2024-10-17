@@ -1,0 +1,14 @@
+# Maivin Sensor Fusion Service
+
+# Log level for the application, relevant sub-filters are radarpub and drvegrd
+# refer to RUST_LOG documentation for details.
+RUST_LOG = "info"
+
+# Required targets (raw or clustered) to acknowledge the target as real as
+# opposed to noise that is filtered out.
+THRESHOLD="3"
+
+# The radar topic to use for a source of targets.  This is typically
+# /radar/clusters which provides better target stability compared to the raw
+# /radar/targets topic.
+RADAR_INPUT_TOPIC= "rt/radar/clusters"
