@@ -9,7 +9,7 @@ SRC_URI = "\
     file://fusion.default \
     file://LICENSE \
 "
-SRC_URI[sha256sum] = "1bb8a4bb26c9f7cfb9aed2cab2ed9a84a2b02a4b1ff7edd7975b2de415a32dd6"
+SRC_URI[sha256sum] = "524b2b5c02020a8a3a5e68794f1de50f017336f66a21edd7c4acd3a41c857fe6"
 
 S = "${WORKDIR}"
 
