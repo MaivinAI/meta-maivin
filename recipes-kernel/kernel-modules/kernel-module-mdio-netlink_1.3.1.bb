@@ -13,13 +13,13 @@ S = "${WORKDIR}/git"
 MODULES_INSTALL_TARGET = "install"
 MODULES_MODULE_SYMVERS_LOCATION = "kernel"
 
+EXTRA_OEMAKE += "KDIR=${STAGING_KERNEL_DIR}"
+
 do_compile:prepend() {
-    export KDIR=/home/sebastien/maivin/yocto/build/tmp/work-shared/verdin-imx8mp/kernel-source
     cd kernel
 }
 
 do_install:prepend() {
-    export KDIR=/home/sebastien/maivin/yocto/build/tmp/work-shared/verdin-imx8mp/kernel-source
     cd kernel
 }
 
