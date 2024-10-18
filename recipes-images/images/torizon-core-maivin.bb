@@ -70,8 +70,10 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     sysbench \
     v4l-utils \
     openssh-sftp-server \
+    mdio-tools \
     rsync \
     vim-tiny \
+    kernel-module-mdio-netlink \
     kernel-module-dp83tg720 \
     kernel-module-isp-vvcam \
     kernel-module-imx-gpu-viv \
