@@ -17,8 +17,8 @@ RANGE_BIN_WIDTH = "0.5"
 RANGE_BIN_LIMITS_MIN = "0"
 RANGE_BIN_LIMITS_MAX = "20"
 
-WINDOW_LENGTH = "18"
-BIN_THRESHOLD = "3"
+WINDOW_LENGTH = "1"
+BIN_THRESHOLD = "1"
 
 # If set to true, the application will use boxes instead, otherwise it uses masks.
 USE_BOX = "false"
@@ -31,7 +31,9 @@ COMBINED_GRID_DRAW_PCD = "disabled"
 COMBINED_CAMERA_DRAW_PCD = "disabled"
 COMBINED_CAMERA_PCD_LABEL = "false"
 
+DRAW_UNKNOWN = "false"
+
 MASK_TOPIC = "/rt/model/mask_compressed/"
 DETECT_TOPIC = "/rt/model/boxes2d/"
-PCD_TOPIC = "/rt/radar/targets/"
+PCD_TOPIC = "/rt/fusion/occupancy/"
 H264_TOPIC = "/rt/camera/h264/"
