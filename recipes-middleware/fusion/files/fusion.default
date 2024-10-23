@@ -4,11 +4,37 @@
 # refer to RUST_LOG documentation for details.
 RUST_LOG = "info"
 
-# Required targets (raw or clustered) to acknowledge the target as real as
-# opposed to noise that is filtered out.
-THRESHOLD="3"
 
 # The radar topic to use for a source of targets.  This is typically
 # /radar/clusters which provides better target stability compared to the raw
 # /radar/targets topic.
 RADAR_INPUT_TOPIC= "rt/radar/clusters"
+
+
+# The below settings are only used if the input PCD is not clustered
+
+# Required targets (raw or clustered) to acknowledge the target as real as
+# opposed to noise that is filtered out.
+THRESHOLD="3"
+
+# Points that are more than OCC_RANGE_LIMIT meters behind and less than OCC_ANGLE_LIMIT degrees
+# from a classified point will not be classified. This prevent false positives from points that
+# should be occluded.
+OCC_ANGLE_LIMIT = "20.0"
+OCC_RANGE_LIMIT = "1.0"
+
+# The minimum and maximum range to use for range bins.
+RANGE_BIN_LIMIT = "0.0 20.0"
+
+# The size of each range bin.
+RANGE_BIN_WIDTH = "0.5"
+
+# The minimum and maximum angles to use for angle bins. 0 degrees is forward.
+ANGLE_BIN_LIMIT = "-70.0 70.0"
+
+# The size of each angle bin, in degrees.
+ANGLE_BIN_WIDTH = "10.0"
+
+# Bin delay in radar message count (each cell needs to be valid for `BIN_DELAY` frames before it is 
+# drawn. The cell stops being drawn after being invalid for `BIN_DELAY` frames)
+BIN_DELAY = "3"
