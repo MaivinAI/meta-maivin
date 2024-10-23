@@ -37,7 +37,7 @@ DETECTION_SENSITIVITY = "medium"
 
 # Enable clustering the radar targets into the /radar/clusters topic.  Clustering
 # options are listed below.
-CLUSTERING = "false"
+CLUSTERING = "true"
 
 # Temporal clustering of the radar targets using the window size.  The window size
 # is the number of frames to cluster, each frame representing 55ms.  The window
