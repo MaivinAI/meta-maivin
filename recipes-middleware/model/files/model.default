@@ -57,7 +57,7 @@ TRACK = "false"
 
 # The number of seconds a tracked object can be missing for before being removed
 # from tracking.
-TRACK_EXTRA_LIFESPAN = "2.0"
+TRACK_EXTRA_LIFESPAN = "0.5"
 
 # The high confidence threshold for the ByteTrack algorithm
 TRACK_HIGH_CONF = "0.7"
