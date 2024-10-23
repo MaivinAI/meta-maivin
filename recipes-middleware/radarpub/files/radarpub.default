@@ -44,6 +44,18 @@ CLUSTERING = "false"
 # clustering is a rolling window so it does not incur any additional latency.
 WINDOW_SIZE = "5"
 
+# The eps value to be used for DBSCAN clustering. Higher values mean points
+# further from each other can be clustered together.
+CLUSTERING_EPS = "1.0"
+
+# Clustering DBSCAN parameter scaling. Parameter order is x, y, z, speed. Set The
+# appropriate axis to 0 to ignore that axis. Default setting of [1.0 1.0 0.0 0.0] means
+# that only xy distances are taken into account.
+CLUSTERING_PARAM_SCALE = "1.0 1.0 0.0 0.0"
+
+# The minimum number of points per cluster for DBSCAN clustering. Minimum 3.
+CLUSTERING_POINT_LIMIT = 5
+
 # Enable streaming the low-level radar cube.  This can be used by the low-level
 # radar fusion model or to record MCAP files for the purpose of training this
 # model.  The radar cube capture consumes approximately 240mbps bandwidth over
