@@ -1,0 +1,10 @@
+[Unit]
+Description=Maivin Middleware Services
+After=multi-user.target
+AllowIsolate=yes
+Requires=multi-user.target
+Requires=imu.service
+Requires=navsat.service
+Requires=camera.service
+Requires=model.service
+Requires=webui.service

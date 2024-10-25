@@ -1,0 +1,7 @@
+[Unit]
+Description=Raivin Middleware Services
+After=maivin.target
+AllowIsolate=yes
+Requires=maivin.target
+Requires=radarpub.service
+Requires=fusion.service

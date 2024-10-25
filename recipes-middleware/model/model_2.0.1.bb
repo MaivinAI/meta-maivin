@@ -39,6 +39,7 @@ do_install:append () {
     install -d ${D}${datadir}/model
     install -m 0644 ${WORKDIR}/peopledetect.rtm ${D}${datadir}/model
     install -m 0644 ${WORKDIR}/peoplesegment.rtm ${D}${datadir}/model
+    install -m 0644 ${WORKDIR}/peoplesegdet.rtm ${D}${datadir}/model
     install -m 0644 ${WORKDIR}/facedetect.rtm ${D}${datadir}/model
 }
 
