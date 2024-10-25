@@ -42,11 +42,11 @@ CLUSTERING = "true"
 # Temporal clustering of the radar targets using the window size.  The window size
 # is the number of frames to cluster, each frame representing 55ms.  The window
 # clustering is a rolling window so it does not incur any additional latency.
-WINDOW_SIZE = "5"
+WINDOW_SIZE = "6"
 
 # The eps value to be used for DBSCAN clustering. Higher values mean points
 # further from each other can be clustered together.
-CLUSTERING_EPS = "1.0"
+CLUSTERING_EPS = "0.3"
 
 # Clustering DBSCAN parameter scaling. Parameter order is x, y, z, speed. Set The
 # appropriate axis to 0 to ignore that axis. Default setting of [1.0 1.0 0.0 0.0] means
@@ -54,7 +54,7 @@ CLUSTERING_EPS = "1.0"
 CLUSTERING_PARAM_SCALE = "1.0 1.0 0.0 0.0"
 
 # The minimum number of points per cluster for DBSCAN clustering. Minimum 3.
-CLUSTERING_POINT_LIMIT = 5
+CLUSTERING_POINT_LIMIT = 3
 
 # Enable streaming the low-level radar cube.  This can be used by the low-level
 # radar fusion model or to record MCAP files for the purpose of training this
