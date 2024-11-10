@@ -1,7 +1,7 @@
 [Unit]
 Description=Maivin Local Time Service
-Wants=zenohd.service NetworkManager-wait-online.service
-After=zenohd.service NetworkManager-wait-online.service
+Wants=zenohd.service
+After=zenohd.service
 Before=recorder.service
 
 [Service]

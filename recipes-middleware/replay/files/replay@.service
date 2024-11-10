@@ -1,7 +1,7 @@
 [Unit]
 Description=Maivin MCAP Replayer Service
-Wants=zenohd.service NetworkManager-wait-online.service
-After=zenohd.service NetworkManager-wait-online.service
+Wants=zenohd.service
+After=zenohd.service
 Conflicts=camera.service model.service imu.service navsat.service radarpub.service
 
 [Service]

@@ -1,8 +1,8 @@
 [Unit]
 Description=People Segmentation UI Demo
-Requires=NetworkManager-wait-online.service camera.service
-After=NetworkManager-wait-online.service camera.service
-Conflicts=detectionui.service headposeui.service facedetectui.service faceblurui.service bodyposeui.service peopledetectui.service 
+Requires=camera.service
+After=camera.service
+Conflicts=detectionui.service headposeui.service facedetectui.service faceblurui.service bodyposeui.service peopledetectui.service webui.service
 
 [Service]
 Type=simple

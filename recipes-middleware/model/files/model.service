@@ -1,7 +1,7 @@
 [Unit]
 Description=Maivin Model Service
-After=camera.service zenohd.service NetworkManager-wait-online.service
-Wants=camera.service zenohd.service NetworkManager-wait-online.service
+After=camera.service zenohd.service
+Wants=camera.service zenohd.service
 Before=recorder.service
 
 [Service]

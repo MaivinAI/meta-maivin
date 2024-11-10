@@ -1,7 +1,5 @@
 [Unit]
 Description=Zenoh Message Router
-After=NetworkManager-wait-online.service
-Wants=NetworkManager-wait-online.service
 
 [Service]
 EnvironmentFile=/etc/default/zenohd

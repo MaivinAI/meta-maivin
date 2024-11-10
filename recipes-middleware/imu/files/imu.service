@@ -1,7 +1,7 @@
 [Unit]
 Description=Maivin IMU Service
-After=zenohd.service NetworkManager-wait-online.service
-Wants=zenohd.service NetworkManager-wait-online.service
+After=zenohd.service
+Wants=zenohd.service
 Before=recorder.service
 
 [Service]
