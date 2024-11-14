@@ -9,7 +9,7 @@ SRC_URI = "\
     file://radarpub.default \
     file://LICENSE \
 "
-SRC_URI[sha256sum] = "840422fa32fcd3000ca07c4911f0bc6872a4422027bbae0d723afd591a33acc6"
+SRC_URI[sha256sum] = "e7b48e0cea2ddaec468c4d6d5b63168920651f0566fb9291d544b5d7457127a4"
 
 S = "${WORKDIR}"
 
