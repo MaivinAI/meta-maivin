@@ -4,7 +4,7 @@
 
 # A model is required for the model application. This can be a segmentation model
 # and/or a detection model.
-MODEL = "/usr/share/model/peoplesegment.rtm"
+MODEL = "/usr/share/model/peoplesegdet.rtm"
 
 # An optional decoder model can be used for two-stage models.  Leave commented
 # out unless required, cannot be empty if defined.
@@ -31,12 +31,12 @@ LABELS = "label"
 
 # Score threshold sets the minimum detection score before a bounding box is
 # generated for the inferred object for detection.
-THRESHOLD = "0.45"
+THRESHOLD = "0.2"
 
 # Detection IOU controls the minimum overlap for merging boxes during NMS.  A
 # larger number will produce more boxes with some overlap while a smaller number
 # will generate fewer boxes.
-IOU = "0.45"
+IOU = "0.2"
 
 # Maximum number of boxes which can be generated.
 MAX_BOXES = "50"
@@ -53,14 +53,14 @@ ENGINE = "NPU"
 # Turn on the ByteTrack tracker. This is useful for smoothing bounding boxes
 # across frames, and for associating multiple detections over time to a single
 # object
-TRACK = "false"
+TRACK = "true"
 
 # The number of seconds a tracked object can be missing for before being removed
 # from tracking.
 TRACK_EXTRA_LIFESPAN = "0.5"
 
 # The high confidence threshold for the ByteTrack algorithm
-TRACK_HIGH_CONF = "0.7"
+TRACK_HIGH_CONF = "0.4"
 
 # The tracking iou threshold for box association. Higher values will require
 # boxes to have higher IOU to the predicted track location to be associated
