@@ -27,11 +27,12 @@ OCCLUSION_FILTER_LIMIT_DEGREES = "20"
 
 # Possible options are `disabled`, `power`, `rcs`, speed`, or `class`
 GRID_DRAW_PCD = "rcs"
-COMBINED_GRID_DRAW_PCD = "disabled"
+COMBINED_GRID_DRAW_PCD = "class"
 COMBINED_CAMERA_DRAW_PCD = "disabled"
 COMBINED_CAMERA_PCD_LABEL = "false"
 
-DRAW_UNKNOWN_CELLS = "true"
+DRAW_CELLS = "false"
+DRAW_UNKNOWN_CELLS = "false"
 
 DRAW_BOX = "false"
 DRAW_BOX_TEXT = "true"
