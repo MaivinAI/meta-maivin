@@ -7,6 +7,7 @@ Before=recorder.service
 [Service]
 Type=simple
 User=root
+ExecStartPre=/bin/sleep 30
 ExecStart=/usr/bin/camera
 EnvironmentFile=/etc/default/camera
 Restart=always
