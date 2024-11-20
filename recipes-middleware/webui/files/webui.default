@@ -9,6 +9,8 @@ DOCROOT = "/usr/share/webui"
 # Let user pick between RAIVIN & MAIVIN
 DEVICE = "RAIVIN"
 
+MIRROR = "true"
+
 # The bin widths must cleanly divide the bin limits
 ANGLE_BIN_WIDTH = "5"
 ANGLE_BIN_LIMITS_MIN = "-60"
