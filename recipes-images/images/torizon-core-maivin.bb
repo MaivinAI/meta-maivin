@@ -74,7 +74,6 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     rsync \
     vim-tiny \
     kernel-module-mdio-netlink \
-    kernel-module-dp83tg720 \
     kernel-module-isp-vvcam \
     kernel-module-imx-gpu-viv \
     imx8-isp \
