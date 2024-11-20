@@ -51,7 +51,7 @@ CLUSTERING_EPS = "0.3"
 # Clustering DBSCAN parameter scaling. Parameter order is x, y, z, speed. Set The
 # appropriate axis to 0 to ignore that axis. Default setting of [1.0 1.0 0.0 0.0] means
 # that only xy distances are taken into account.
-CLUSTERING_PARAM_SCALE = "1.0 1.0 0.0 0.0"
+CLUSTERING_PARAM_SCALE = "0.5 1.0 0.0 0.0"
 
 # The minimum number of points per cluster for DBSCAN clustering. Minimum 3.
 CLUSTERING_POINT_LIMIT = 3
