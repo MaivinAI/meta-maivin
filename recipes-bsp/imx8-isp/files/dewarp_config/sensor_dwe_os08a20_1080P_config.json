@@ -6,7 +6,7 @@
                 "height": 1080
             },
             "?dewarpType": "LENS_CORRECTION, FISHEYE_EXPAND, SPLIT_SCREEN",
-            "dewarpType": "FISHEYE_DEWARP",
+            "dewarpType": "LENS_CORRECTION",
             "scale": {
                 "roix": 0,
                 "roiy": 0,
@@ -21,22 +21,22 @@
             "hflip": false,
             "vflip": false,
             "camera_matrix": [
-                1258.283,
+                1230.65,
                 0.0,
-                980.600,
+                960,
                 0.0,
-                1263.618,
-                528.483,
+                1230.55,
+                540,
                 0.0,
                 0.0,
                 1.0
             ],
             "distortion_coeff": [
-                -0.02585,
-                -0.01841,
-                -0.002730,
-                0.004726,
-                0.01456
+                -0.3302961585750612,
+                0.11748771502683239,
+                -0.01,
+                0,
+                -0.009122268173271915
             ],
             "perspective": [
                 1.0,
