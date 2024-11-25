@@ -39,6 +39,8 @@ DRAW_UNKNOWN_CELLS = "false"
 DRAW_BOX = "false"
 DRAW_BOX_TEXT = "true"
 
+SHOW_STATS = "false"
+
 MASK_TOPIC = "/rt/model/mask_compressed/"
 DETECT_TOPIC = "/rt/model/boxes2d/"
 PCD_TOPIC = "/rt/fusion/occupancy/"
