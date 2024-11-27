@@ -9,6 +9,8 @@ DOCROOT = "/usr/share/webui"
 # Let user pick between RAIVIN & MAIVIN
 DEVICE = "RAIVIN"
 
+MIRROR = "true"
+
 # The bin widths must cleanly divide the bin limits
 ANGLE_BIN_WIDTH = "5"
 ANGLE_BIN_LIMITS_MIN = "-60"
@@ -36,6 +38,9 @@ DRAW_UNKNOWN_CELLS = "false"
 
 DRAW_BOX = "false"
 DRAW_BOX_TEXT = "true"
+
+SHOW_STATS = "false"
+SHOW_PEOPLE_COUNT = "false"
 
 MASK_TOPIC = "/rt/model/mask_compressed/"
 DETECT_TOPIC = "/rt/model/boxes2d/"
