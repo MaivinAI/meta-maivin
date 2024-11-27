@@ -6,7 +6,7 @@
                 "height": 2160
             },
             "?dewarpType": "LENS_CORRECTION, FISHEYE_EXPAND, SPLIT_SCREEN",
-            "dewarpType": "FISHEYE_DEWARP",
+            "dewarpType": "LENS_CORRECTION",
             "scale": {
                 "roix": 0,
                 "roiy": 0,
