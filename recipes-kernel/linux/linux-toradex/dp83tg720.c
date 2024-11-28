@@ -332,8 +332,6 @@ static int DP83TG720_read_straps(struct phy_device *phydev)
 	struct DP83TG720_private *DP83TG720 = phydev->priv;
 	int strap;
 
-	pr_err("%s\n", __FUNCTION__);
-
 	strap = phy_read_mmd(phydev, MMD1F, DP83TG720_STRAP);
 	if (strap < 0)
 		return strap;
@@ -352,6 +350,10 @@ static int DP83TG720_read_straps(struct phy_device *phydev)
 
 	if (strap & DP83TG720_TX_SHIFT_EN)
 		DP83TG720->tx_shift = true;
+
+	pr_err("%s: Master %d, RGMII %d, SGMII %d, RX Shift %d, TX Shift %d\n",
+		__FUNCTION__, DP83TG720->is_master, DP83TG720->is_rgmii,
+		DP83TG720->is_sgmii, DP83TG720->rx_shift, DP83TG720->tx_shift);
 
 	return 0;
 };
@@ -392,7 +394,7 @@ static int DP83TG720_phy_reset(struct phy_device *phydev)
 }
 
 static int DP83TG720_write_seq(struct phy_device *phydev,
-			     const struct DP83TG720_init_reg *init_data, int size)
+				 const struct DP83TG720_init_reg *init_data, int size)
 {
 	int ret;
 	int i;
@@ -593,16 +595,16 @@ static int DP83TG720_chip_init(struct phy_device *phydev)
 		return ret;
 
 	phydev->autoneg = AUTONEG_DISABLE;
-    	phydev->speed = SPEED_1000;
+		phydev->speed = SPEED_1000;
 	phydev->duplex = DUPLEX_FULL;
-    	linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT,
-                              phydev->supported);
+		linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT,
+							  phydev->supported);
 
 	if (DP83TG720->is_master)
-	        ret = phy_write_mmd(phydev, MMD1, 0x0834,
+			ret = phy_write_mmd(phydev, MMD1, 0x0834,
 				0xc001);
 	else
-	        ret = phy_write_mmd(phydev, MMD1, 0x0834,
+			ret = phy_write_mmd(phydev, MMD1, 0x0834,
 				0x8001);
 	if (ret)
 		return ret;
@@ -623,8 +625,8 @@ static int DP83TG720_chip_init(struct phy_device *phydev)
 		ret = DP83TG720_reset(phydev, false);
 
 		ret = phy_write_mmd(phydev, MMD1F, 0x573, 0x001);
-	        if (ret)
-	                return ret;
+			if (ret)
+					return ret;
 
 		return phy_write_mmd(phydev, MMD1F, 0x56a, 0x5f41);
 	case DP83TG721_CS1:
@@ -642,8 +644,8 @@ static int DP83TG720_chip_init(struct phy_device *phydev)
 		ret = DP83TG720_reset(phydev, false);
 
 		ret = phy_write_mmd(phydev, MMD1F, 0x573, 0x001);
-	        if (ret)
-	                return ret;
+			if (ret)
+					return ret;
 
 		return phy_write_mmd(phydev, MMD1F, 0x56a, 0x5f41);
 	default:
@@ -808,6 +810,13 @@ static int DP83TG720_config_aneg(struct phy_device *phydev)
 	else if (err)
 		changed = true;
 
+	err = DP83TG720_read_straps(phydev);
+	if (err < 0)
+		return err;
+
+	pr_err("%s: %s\n", __FUNCTION__, 
+		DP83TG720_read_master_slave(phydev) ? "MASTER" : "SLAVE");
+
 	if (AUTONEG_ENABLE != phydev->autoneg)
 		return genphy_setup_forced(phydev);
 
@@ -822,7 +831,7 @@ static int DP83TG720_probe(struct phy_device *phydev)
 	pr_err("%s\n", __FUNCTION__);
 
 	DP83TG720 = devm_kzalloc(&phydev->mdio.dev, sizeof(*DP83TG720),
-			       GFP_KERNEL);
+				   GFP_KERNEL);
 	if (!DP83TG720)
 		return -ENOMEM;
 
