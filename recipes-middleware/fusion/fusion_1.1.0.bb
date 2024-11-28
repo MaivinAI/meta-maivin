@@ -9,7 +9,7 @@ SRC_URI = "\
     file://fusion.default \
     file://LICENSE \
 "
-SRC_URI[sha256sum] = "5a47271b5fa9c3254e3855e71e9f32aeeb60383dfcf356a1273a093c62fb9917"
+SRC_URI[sha256sum] = "9347db175ae01c308386ce80d22719e778ce155b7f83625ba0710814bfba3162"
 
 DEPENDS = "vaal deepview-rt"
 RDEPENDS_${PN} = "libvaal libdeepview-rt"
