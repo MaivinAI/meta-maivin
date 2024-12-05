@@ -672,9 +672,7 @@ static int DP83TG720_config_init(struct phy_device *phydev)
 	s32 rx_int_delay;
 	s32 tx_int_delay;
 	int rgmii_delay;
-	int value, ret;
-
-	pr_err("%s\n", __FUNCTION__);
+	int value, ret;	
 
 	ret = DP83TG720_chip_init(phydev);
 	if (ret)
@@ -698,6 +696,9 @@ static int DP83TG720_config_init(struct phy_device *phydev)
 			if (ret)
 				return ret;
 		}
+
+		pr_err("%s: rx_int_delay: %d tx_int_delay: %d\n", 
+			__FUNCTION__, rx_int_delay, tx_int_delay);
 	}
 
 	value = phy_read_mmd(phydev, MMD1F, DP83TG720_SGMII_CTRL);
