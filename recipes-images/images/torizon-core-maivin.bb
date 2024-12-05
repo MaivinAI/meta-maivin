@@ -86,7 +86,6 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     libturbojpeg \
     visionpack-base \
     visionpack-python \
-    visionpack-apps \
     deepview-rt-modelrunner \
     python3-cffi \
     python3-numpy \
