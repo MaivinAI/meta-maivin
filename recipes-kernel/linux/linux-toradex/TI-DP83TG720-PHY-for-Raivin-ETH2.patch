@@ -18,9 +18,9 @@ index 0573a6cde1b5..f1573c3d7241 100644
  	fsl,magic-packet;
  	phy-handle = <&ethphy1>;
 -	phy-mode = "rgmii-id";
-+	phy-mode = "rgmii";
-+	rx-internal-delay-ps = <2000>;
-+	tx-internal-delay-ps = <2000>;
++	phy-mode = "rgmii-id";
++	rx-internal-delay-ps = <0>;
++	tx-internal-delay-ps = <0>;
  	pinctrl-names = "default", "sleep";
  	pinctrl-0 = <&pinctrl_fec>;
  	pinctrl-1 = <&pinctrl_fec_sleep>;
