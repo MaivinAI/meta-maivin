@@ -1,0 +1,19 @@
+#!/bin/sh
+
+FILE=/run/systemd/timesync/synchronized
+
+if [[ -f "$FILE" ]]
+then
+    :
+else
+    SYNCED=0
+    
+    while [ $SYNCED == 0 ]
+    do
+        SYNCED=$(/usr/bin/timedatectl status | grep -c "System clock synchronized: yes")
+        sleep 1
+    done
+    
+    mkdir -p /run/systemd/timesync/
+    touch /run/systemd/timesync/synchronized
+fi
