@@ -1,0 +1,15 @@
+[connection]
+id=network1
+type=ethernet
+interface-name=ethernet1
+
+[ethernet]
+
+[ipv4]
+address1=192.168.11.17/24
+method=manual
+
+[ipv6]
+method=disabled
+
+[proxy]
