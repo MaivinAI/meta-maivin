@@ -7,7 +7,6 @@ Wants=chronyd.service
 Type=oneshot
 User=root
 ExecStart=/usr/lib/systemd/systemd-time-wait-sync-chrony
-Restart=always
 
 [Install]
 WantedBy=multi-user.target
