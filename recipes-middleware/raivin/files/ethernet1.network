@@ -1,0 +1,5 @@
+[Match]
+Name=ethernet1
+
+[Network]
+Address=192.168.11.17/24

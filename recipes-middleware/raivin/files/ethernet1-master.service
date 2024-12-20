@@ -1,0 +1,14 @@
+[Unit]
+Description=Configures ethernet1 as the automotive ethernet master
+BindsTo=sys-subsystem-net-device-ethernet1.device
+After=sys-subsystem-net-devices-ethernet1.device
+After=network.target
+Before=radarpub.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/sbin/ethtool -s ethernet1 master-slave forced-master
+
+[Install]
+WantedBy=network.target

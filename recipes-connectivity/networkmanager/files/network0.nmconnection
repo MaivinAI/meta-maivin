@@ -4,6 +4,7 @@ type=ethernet
 autoconnect-priority=1
 autoconnect-retries=4
 interface-name=ethernet0
+uuid=99d6d28f-9428-4c54-8853-c899cc8d696e
 
 [ethernet]
 
