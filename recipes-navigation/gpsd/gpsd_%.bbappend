@@ -11,7 +11,7 @@ REQUIRED_DISTRO_FEATURES = "systemd"
 SYSTEMD_SERVICE:${PN} = "gpsd.service"
 SYSTEMD_AUTO_ENABLE = "enable"
 
-RDEPENDS:${PN} = "gpscfg"
+#RDEPENDS:${PN} = "gpscfg"
 
 do_install:append() {
     install -m 0644 ${WORKDIR}/gpxlogger.service ${D}${systemd_system_unitdir}

@@ -17,6 +17,14 @@ IMAGE_LINK_NAME = "${IMAGE_BASENAME}${IMAGE_BASENAME_SUFFIX}"
 # Enough free space for a full image update
 IMAGE_OVERHEAD_FACTOR = "4"
 
+HAILO_INSTALL = " \
+    hailo-pci \
+    hailo-firmware \
+    libhailort \
+    hailortcli \
+    pyhailort \
+"
+
 # Base packages
 CORE_IMAGE_BASE_INSTALL:append = " \
     ca-certificates \
@@ -60,7 +68,6 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     ethtool \
     rclone \
     fluent-bit \
-    neofetch \
     mmc-utils \
     cpufrequtils \
     curl \
@@ -111,7 +118,6 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     recorder \
     replay \
     publisher \
-    gpscfg \
     gpsd \
     gpsd-conf \
     gps-utils \
@@ -120,21 +126,8 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     chronyc \
     parted \
     libgpiod-tools \
-    zenohd \
-    libzenohc \
     tmux \
-    hailo-pci \
-    hailo-firmware \
-    libhailort \
-    hailortcli \
-    pyhailort \
     usermount \
-    docker-ce \
-    docker-compose \
-    docker-compose-up \
-    docker-integrity-checker \
-    docker-watchdog \
-    docker-auto-prune \
     perf \
     valgrind \
     oprofile \
