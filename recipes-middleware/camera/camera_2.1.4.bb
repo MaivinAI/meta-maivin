@@ -12,7 +12,7 @@ SRC_URI = "\
 SRC_URI[sha256sum] = "57570258ad0b1475685c8c33c26a5d6820e3a15f4e98ecfb1b9bf77a61f806d5"
 
 DEPENDS = "videostream"
-RDEPENDS-${PN} = "imx8-isp"
+RDEPENDS-${PN} = "isp-imx"
 
 S = "${WORKDIR}"
 

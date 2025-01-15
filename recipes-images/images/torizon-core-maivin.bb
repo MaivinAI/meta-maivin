@@ -84,7 +84,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     kernel-module-mdio-netlink \
     kernel-module-isp-vvcam \
     kernel-module-imx-gpu-viv \
-    imx8-isp \
+    isp-imx \
     imx-vpu-hantro \
     imx-vpu-hantro-vc \
     imx-vpu-hantro-daemon \
