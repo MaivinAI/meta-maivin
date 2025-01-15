@@ -98,7 +98,6 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     visionpack-python \
     deepview-rt-modelrunner \
     python3-cffi \
-    python3-numpy \
     python3-typeguard \
     python3-pip \
     python3-wheel \
@@ -169,4 +168,4 @@ PSEUDO_PASSWD:prepend = "${@bb.utils.contains('DISTRO_FEATURES', 'stateless-syst
 # from the list of supported IDs in the Tezi image
 TORADEX_PRODUCT_IDS:remove:colibri-imx6 = "0014 0016"
 
-EXTRA_USERS_PARAMS += "usermod -a -G docker torizon;"
+# EXTRA_USERS_PARAMS += "usermod -a -G docker torizon;"
