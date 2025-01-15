@@ -90,7 +90,9 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     imx-vpu-hantro-daemon \
     imx-vpuwrap \
     imx-gpu-viv \
-    libglslc-imx-dev \
+    libvulkan-imx \
+    libopencl-imx \
+    libclc-imx \
     libturbojpeg \
     visionpack-base \
     visionpack-python \
