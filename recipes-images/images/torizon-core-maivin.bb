@@ -81,7 +81,6 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     mdio-tools \
     rsync \
     vim-tiny \
-    kernel-module-mdio-netlink \
     kernel-module-isp-vvcam \
     kernel-module-imx-gpu-viv \
     isp-imx \
