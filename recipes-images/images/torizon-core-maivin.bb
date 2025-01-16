@@ -7,6 +7,7 @@ inherit extrausers
 IMAGE_VARIANT = "Maivin"
 IMAGE_FEATURES += "ssh-server-openssh bash-completion-pkgs"
 IMAGE_FEATURES += "tools-debug"
+PACKAGE_EXCLUDE += "packagegroup-tdx-qt5 wayland-qtdemo-launch-cinematicexperience"
 
 do_rootfs[cleandirs] += "${IMAGE_ROOTFS}"
 
@@ -88,6 +89,8 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     visionpack-base \
     visionpack-python \
     deepview-rt-modelrunner \
+    tensorflow-lite \
+    tensorflow-lite-vx-delegate \
     python3-cffi \
     python3-numpy \
     python3-typeguard \

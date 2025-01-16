@@ -3,7 +3,7 @@ LICENSE = "AGPL-3.0"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=0e8e3a5b1effdf50d66fe427bcc8978f"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
-SRC_URI = "gitsm://github.com/MaivinAI/gpscfg.git;protocol=ssh;branch=main"
+SRC_URI = "gitsm://github.com/MaivinAI/gpscfg.git;protocol=https;branch=main"
 
 include gpscfg.inc
 
