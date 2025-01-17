@@ -10,10 +10,6 @@ DEPENDS = "flatbuffers python3-numpy-native python3-pip-native python3-pybind11-
 require tensorflow-lite-${PV}.inc
 SRC_URI = "${TENSORFLOW_LITE_SRC};branch=${SRCBRANCH_tf};name=tf"
 
-SRC_URI += "https://storage.googleapis.com/download.tensorflow.org/models/mobilenet_v1_2018_08_02/mobilenet_v1_1.0_224_quant.tgz;name=model-mobv1"
-SRC_URI[model-mobv1.md5sum] = "36af340c00e60291931cb30ce32d4e86"
-SRC_URI[model-mobv1.sha256sum] = "d32432d28673a936b2d6281ab0600c71cf7226dfe4cdcef3012555f691744166"
-
 S = "${WORKDIR}/git"
 
 inherit python3native cmake
@@ -53,7 +49,6 @@ do_configure:prepend() {
     # with unavailable binary.
     export FC=""
 }
-
 
 do_compile:append () {
     # build pip package
@@ -95,9 +90,6 @@ do_install() {
 
     # Install python example
     cp ${S}/tensorflow/lite/examples/python/label_image.py ${D}${bindir}/${PN}-${PV}/examples
-
-    # Install mobilenet tflite file
-    cp ${WORKDIR}/mobilenet_*.tflite ${D}${bindir}/${PN}-${PV}/examples
 
     # Install pip package
     install -d ${D}/${PYTHON_SITEPACKAGES_DIR}

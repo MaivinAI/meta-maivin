@@ -89,6 +89,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     visionpack-base \
     visionpack-python \
     deepview-rt-modelrunner \
+    tensorflow-lite-c \
     tensorflow-lite \
     tensorflow-lite-vx-delegate \
     python3-cffi \
