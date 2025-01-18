@@ -12,8 +12,8 @@ DEPENDS = " \
 "
 RDEPENDS:${PN} = "tensorflow-lite"
 
-SRC_URI = "git://github.com/tensorflow/tensorflow.git;protocol=https;branch=r2.18"
-SRCREV = "6550e4bd80223cdb8be6c3afd1f81e86a4d433c3"
+SRC_URI = "git://github.com/tensorflow/tensorflow.git;protocol=https;branch=r2.16"
+SRCREV = "810f233968cec850915324948bbbc338c97cf57f"
 
 S = "${WORKDIR}/git"
 
@@ -25,7 +25,8 @@ EXTRA_OECMAKE = "\
     -DCMAKE_SYSROOT=${PKG_CONFIG_SYSROOT_DIR} \
     -DTFLITE_HOST_TOOLS_DIR=${STAGING_BINDIR_NATIVE} \
     -DFETCHCONTENT_FULLY_DISCONNECTED=OFF \
-    -DTFLITE_ENABLE_XNNPACK=OFF \
+    -DTFLITE_ENABLE_EXTERNAL_DELEGATE=ON \
+    -DTFLITE_ENABLE_XNNPACK=ON \
 "
 
 do_configure[network] = "1"
