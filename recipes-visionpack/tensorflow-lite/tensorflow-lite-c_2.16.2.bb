@@ -47,13 +47,7 @@ do_configure:prepend() {
 do_install() {
     install -d ${D}/${libdir}
     install -m 0755 ${B}/libtensorflowlite_c.so ${D}/${libdir}/
-
-    install -d ${D}${includedir}/tensorflow/lite/c
-    install -m 644 ${S}/tensorflow/lite/c/c_api.h ${D}${includedir}/tensorflow/lite/c/
-    install -m 644 ${S}/tensorflow/lite/c/common.h ${D}${includedir}/tensorflow/lite/c/
-    install -m 644 ${S}/tensorflow/lite/c/c_api_experimental.h ${D}${includedir}/tensorflow/lite/c/
 }
 
 FILES_SOLIBSDEV = ""
-FILES:${PN}-dev = "${includedir}"
 FILES:${PN} += "${libdir}/libtensorflowlite_c.so"
