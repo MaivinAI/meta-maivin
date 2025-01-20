@@ -24,7 +24,7 @@ do_install:append () {
 
 REQUIRED_DISTRO_FEATURES = "systemd"
 SYSTEMD_SERVICE:${PN} = "imu.service"
-SYSTEMD_AUTO_ENABLE = "enable"
+SYSTEMD_AUTO_ENABLE = "disable"
 
 INSANE_SKIP:${PN} += "already-stripped"
 
