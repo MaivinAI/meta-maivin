@@ -1,0 +1,13 @@
+[Unit]
+Description=Maivin LiDAR Publisher Service
+Wants=zenohd.service
+After=zenohd.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/lidarpub
+EnvironmentFile=/etc/default/lidarpub
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

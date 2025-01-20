@@ -107,6 +107,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     imu \
     navsat \
     radarpub \
+    lidarpub \
     model \
     fusion \
     websrv \

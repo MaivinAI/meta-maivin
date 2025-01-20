@@ -1,0 +1,16 @@
+# Maivin LiDAR Publisher service
+
+# Log level for the application, relevant sub-filters are radarpub and drvegrd
+# refer to RUST_LOG documentation for details.
+RUST_LOG = "info"
+
+# Hostname or IP address of the LiDAR target device.
+TARGET = ""
+
+# Azimuth field of view start and stop angles in degrees.  The 0 degree point 
+# is the rear connector of the LiDAR.
+AZIMUTH = "0 360"
+
+# LiDAR column and refresh rate mode.  The format is "COLxHZ".
+# Supported values: 512x10 1024x10 2048x10 512x20 1024x20
+MODE = "1024x10"
