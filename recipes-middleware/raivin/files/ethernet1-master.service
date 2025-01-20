@@ -9,6 +9,7 @@ Before=radarpub.target
 Type=oneshot
 RemainAfterExit=yes
 ExecStart=/usr/sbin/ethtool -s ethernet1 master-slave forced-master
+Restart=on-failure
 
 [Install]
 WantedBy=network.target

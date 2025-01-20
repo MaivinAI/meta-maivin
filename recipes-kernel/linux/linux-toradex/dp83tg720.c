@@ -467,7 +467,7 @@ static int DP83TG720_read_status(struct phy_device *phydev)
 static int DP83TG720_sqi(struct phy_device *phydev){
 	int sqi;
 
-	pr_err("%s\n", __FUNCTION__);
+	pr_debug("%s\n", __FUNCTION__);
 
 	sqi = phy_read_mmd(phydev,MMD1F,DP83TG720_sqi_reg_1);
 
@@ -485,7 +485,7 @@ static int DP83TG720_sqi_max(struct phy_device *phydev){
 }
 
 static int DP83TG720_cable_test_start(struct phy_device *phydev){
-	pr_err("%s\n", __FUNCTION__);
+	pr_debug("%s\n", __FUNCTION__);
 
 	if(DP83TG720_read_master_slave(phydev))
 	{
@@ -509,7 +509,7 @@ static int DP83TG720_cable_test_start(struct phy_device *phydev){
 static int DP83TG720_cable_test_report_trans(u32 result) {
 	int length_of_fault = 0, TDR_STATE = 0;
 
-	pr_err("%s\n", __FUNCTION__);
+	pr_debug("%s\n", __FUNCTION__);
 
 	length_of_fault = (result & 0x3F00) >> 8;
 	TDR_STATE = (result & 0xF0) >> 4;
@@ -537,6 +537,7 @@ static int DP83TG720_cable_test_report_trans(u32 result) {
 			pr_err("Invalid value read.\n");
 			break;
 	}
+
 	pr_err("Length of Fault: %d Meters\n", length_of_fault);
 	return ETHTOOL_A_CABLE_RESULT_CODE_OK;
 }
@@ -545,7 +546,7 @@ static int DP83TG720_cable_test_report(struct phy_device *phydev)
 {
 	int ret;
 
-	pr_err("%s\n", __FUNCTION__);
+	pr_debug("%s\n", __FUNCTION__);
 
 	ret = phy_read_mmd(phydev, MMD1F, 0x030F);
 
@@ -562,7 +563,7 @@ static int DP83TG720_cable_test_get_status(struct phy_device *phydev, bool *fini
 	int TDR_Fail;
 	*finished = false;
 
-	pr_err("%s\n", __FUNCTION__);
+	pr_debug("%s\n", __FUNCTION__);
 
 	statusReg = phy_read_mmd(phydev, MMD1F, DP83TG720_CDCR);
 
@@ -588,7 +589,7 @@ static int DP83TG720_chip_init(struct phy_device *phydev)
 	struct DP83TG720_private *DP83TG720 = phydev->priv;
 	int ret;
 
-	pr_err("%s\n", __FUNCTION__);
+	pr_debug("%s\n", __FUNCTION__);
 
 	ret = DP83TG720_reset(phydev, true);
 	if (ret)
@@ -815,7 +816,7 @@ static int DP83TG720_config_aneg(struct phy_device *phydev)
 	if (err < 0)
 		return err;
 
-	pr_err("%s: %s\n", __FUNCTION__, 
+	pr_debug("%s: %s\n", __FUNCTION__, 
 		DP83TG720_read_master_slave(phydev) ? "MASTER" : "SLAVE");
 
 	if (AUTONEG_ENABLE != phydev->autoneg)
@@ -829,7 +830,7 @@ static int DP83TG720_probe(struct phy_device *phydev)
 	struct DP83TG720_private *DP83TG720;
 	int ret;
 
-	pr_err("%s\n", __FUNCTION__);
+	pr_debug("%s\n", __FUNCTION__);
 
 	DP83TG720 = devm_kzalloc(&phydev->mdio.dev, sizeof(*DP83TG720),
 				   GFP_KERNEL);
