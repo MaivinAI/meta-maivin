@@ -5,11 +5,11 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=e153ccee5db0d7cbd514bc6ba454f981"
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI = "\
     https://maivin.deepviewml.com/services/replay/maivin-replay-${PV} \
-    file://replay@.service \
+    file://replay.service \
     file://replay.default \
     file://LICENSE \
 "
-SRC_URI[sha256sum] = "ffe44ef9e7e545630db5f85c8b0cf392724010c7ee8f51750cbd1d4dd73da7db"
+SRC_URI[sha256sum] = "088a8be7a821fec4899838a85de878900f89aa46508e0433e71107ab30db26f2"
 
 DEPENDS = "videostream"
 
@@ -19,7 +19,7 @@ inherit features_check systemd
 
 do_install:append () {
     install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${WORKDIR}/replay@.service ${D}${systemd_system_unitdir}
+    install -m 0644 ${WORKDIR}/replay.service ${D}${systemd_system_unitdir}
 
     install -d ${D}${sysconfdir}/default
     install -m 0644 ${WORKDIR}/replay.default ${D}${sysconfdir}/default/replay
@@ -29,7 +29,7 @@ do_install:append () {
 }
 
 REQUIRED_DISTRO_FEATURES = "systemd"
-SYSTEMD_SERVICE:${PN} = "replay@.service"
+SYSTEMD_SERVICE:${PN} = "replay.service"
 SYSTEMD_AUTO_ENABLE = "disable"
 
 INSANE_SKIP:${PN} += "already-stripped"
