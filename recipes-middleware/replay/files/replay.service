@@ -6,8 +6,7 @@ Conflicts=
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/replay %i.mcap
-WorkingDirectory=/media/DATA
+ExecStart=/usr/bin/replay
 EnvironmentFile=/etc/default/replay
 Restart=always
 
