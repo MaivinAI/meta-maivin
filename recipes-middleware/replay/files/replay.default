@@ -2,6 +2,9 @@
 
 RUST_LOG = "info"
 
+# Add the name of the MCAP file that should be replayed
+MCAP = ""
+
 # Select topics to replay, leave empty to replay all topics.
 TOPICS = ""
 
