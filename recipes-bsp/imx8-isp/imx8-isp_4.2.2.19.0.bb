@@ -11,8 +11,8 @@ SRC_URI = "\
     file://OS08A20_MODES.txt \
     file://Sensor0_Entry.cfg \
     file://Sensor1_Entry.cfg \
-    file://dewarp_config/sensor_dwe_os08a20_4K_config.json \
-    file://dewarp_config/sensor_dwe_os08a20_1080P_config.json \
+    file://sensor_dwe_os08a20_4K_config.json \
+    file://sensor_dwe_os08a20_1080P_config.json \
 "
 SRC_URI[md5sum] = "01f83394df91091f414f122c339c02bc"
 SRC_URI[sha256sum] = "ab65a413f397230010266579df570beac5fde4af430e31fc251d7cf7c8fa2232"
@@ -52,25 +52,19 @@ EXTRA_OECMAKE += " \
 
 do_install() {
     install -d ${D}/${sysconfdir}/modprobe.d/
+    install -d ${D}/${sysconfdir}/isp
     install -d ${D}/${bindir}
     install -d ${D}/${libdir}
-    install -d ${D}/${includedir}
-    install -d ${D}/${datadir}/imx8-isp
-    install -d ${D}/${datadir}/imx8-isp/dewarp_config
 
-    cp ${WORKDIR}/OS08A20_MODES.txt ${D}/${datadir}/imx8-isp
-    cp ${WORKDIR}/Sensor0_Entry.cfg ${D}/${datadir}/imx8-isp
-    cp ${WORKDIR}/Sensor1_Entry.cfg ${D}/${datadir}/imx8-isp
+    install -m 0644 ${WORKDIR}/OS08A20_MODES.txt ${D}/${sysconfdir}/isp
+    install -m 0644 ${WORKDIR}/Sensor0_Entry.cfg ${D}/${sysconfdir}/isp
+    install -m 0644 ${WORKDIR}/Sensor1_Entry.cfg ${D}/${sysconfdir}/isp    
+    install -m 0644 ${WORKDIR}/sensor_dwe_os08a20_1080P_config.json ${D}/${sysconfdir}/isp
+    install -m 0644 ${WORKDIR}/sensor_dwe_os08a20_4K_config.json ${D}/${sysconfdir}/isp
 
-    cp ${B}/generated/release/bin/*.xml ${D}/${datadir}/imx8-isp
-    cp ${B}/generated/release/bin/*.drv ${D}/${datadir}/imx8-isp
-    cp ${S}/dewarp/dewarp_config/*.json ${D}/${datadir}/imx8-isp/dewarp_config
-
-    # Copy local dewarp_config over vendor version.
-    cp ${WORKDIR}/dewarp_config/*.json ${D}/${datadir}/imx8-isp/dewarp_config
-
-    cp ${B}/generated/release/bin/isp_media_server ${D}/${bindir}
+    cp ${B}/generated/release/bin/isp_media_server ${D}/${bindir}    
     cp -d ${B}/generated/release/lib/*.so* ${D}/${libdir}
+    install -m 0644 ${B}/generated/release/bin/os08a20.drv ${D}/${libdir}
 
     # Provided as versioned libraries so remove the .so to keep Yocto happy.
     rm -f ${D}/${libdir}/libos08a20.so

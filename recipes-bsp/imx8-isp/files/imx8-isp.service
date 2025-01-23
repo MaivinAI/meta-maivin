@@ -8,7 +8,7 @@ StartLimitBurst=40
 Restart=on-failure
 RestartSec=5s
 Environment=ISP_LOG_LEVEL=8
-WorkingDirectory=/usr/share/imx8-isp
+WorkingDirectory=/etc/isp
 ExecStart=/usr/bin/isp_media_server DUAL_CAMERA
 
 [Install]
