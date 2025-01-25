@@ -14,3 +14,13 @@ AZIMUTH = "0 360"
 # LiDAR column and refresh rate mode.  The format is "COLxHZ".
 # Supported values: 512x10 1024x10 2048x10 512x20 1024x20
 MODE = "1024x10"
+
+# LiDAR frame transformation vector from the base_link.
+# The transformation vector is "X Y Z".
+TF_VEC = "0 0 -0.19"
+
+# LiDAR frame rotation quaternion from the base_link.  The Ouster LiDAR
+# has the 0 degree point at the rear connector rather than the front so
+# typically the Z rotation should be 1 and the rest 0.
+# The rotation quaternion is "X Y Z W".
+TF_QUAT = "0 0 -0.9998157 0.0191974"
