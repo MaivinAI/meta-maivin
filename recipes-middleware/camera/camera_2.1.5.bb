@@ -9,7 +9,7 @@ SRC_URI = "\
     file://camera.default \
     file://LICENSE \
 "
-SRC_URI[sha256sum] = "57570258ad0b1475685c8c33c26a5d6820e3a15f4e98ecfb1b9bf77a61f806d5"
+SRC_URI[sha256sum] = "c8d2de59828762fb430b969cbb7177badef05f633db081d7fed76ecdecb8e9ad"
 
 DEPENDS = "videostream"
 RDEPENDS-${PN} = "imx8-isp"

@@ -63,8 +63,13 @@ do_install() {
     install -m 0644 ${WORKDIR}/sensor_dwe_os08a20_4K_config.json ${D}/${sysconfdir}/isp
 
     cp ${B}/generated/release/bin/isp_media_server ${D}/${bindir}    
-    cp -d ${B}/generated/release/lib/*.so* ${D}/${libdir}
+    cp -d ${B}/generated/release/lib/*.so* ${D}/${libdir}    
+
     install -m 0644 ${B}/generated/release/bin/os08a20.drv ${D}/${libdir}
+    install -m 0644 ${B}/generated/release/bin/OS08a20_8M_10_1080p_linear.xml ${D}/${sysconfdir}/isp
+    install -m 0644 ${B}/generated/release/bin/OS08a20_8M_10_1080p_hdr.xml ${D}/${sysconfdir}/isp
+    install -m 0644 ${B}/generated/release/bin/OS08a20_8M_10_4k_linear.xml ${D}/${sysconfdir}/isp
+    install -m 0644 ${B}/generated/release/bin/OS08a20_8M_10_4k_hdr.xml ${D}/${sysconfdir}/isp
 
     # Provided as versioned libraries so remove the .so to keep Yocto happy.
     rm -f ${D}/${libdir}/libos08a20.so
