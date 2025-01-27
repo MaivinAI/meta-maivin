@@ -6,6 +6,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI = "\
     file://update-overlays.sh \
     file://update-overlays.service \
+    file://overlays.txt \
 "
 
 S = "${WORKDIR}"
@@ -18,6 +19,9 @@ do_install:append () {
 
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/update-overlays.service ${D}${systemd_system_unitdir}
+
+    install -d ${D}${sysconfdir}
+    install -m 0644 ${WORKDIR}/overlays.txt ${D}${sysconfdir}
 }
 
 REQUIRED_DISTRO_FEATURES = "systemd"
@@ -25,3 +29,4 @@ SYSTEMD_SERVICE:${PN} = "update-overlays.service"
 SYSTEMD_AUTO_ENABLE = "enable"
 
 FILES:${PN} += "${systemd_system_unitdir}"
+FILES:${PN} += "${sysconfdir}"
