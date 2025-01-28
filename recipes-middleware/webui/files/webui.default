@@ -7,14 +7,14 @@
 DOCROOT = "/usr/share/webui"
 
 # Let user pick between RAIVIN & MAIVIN
-DEVICE = "RAIVIN"
+DEVICE = "MAIVIN"
 
-MIRROR = "true"
+MIRROR = "false"
 
 # The bin widths must cleanly divide the bin limits
 ANGLE_BIN_WIDTH = "5"
-ANGLE_BIN_LIMITS_MIN = "-60"
-ANGLE_BIN_LIMITS_MAX = "60"
+ANGLE_BIN_LIMITS_MIN = "-70"
+ANGLE_BIN_LIMITS_MAX = "70"
 RANGE_BIN_WIDTH = "0.5"
 RANGE_BIN_LIMITS_MIN = "1"
 RANGE_BIN_LIMITS_MAX = "10"
@@ -25,11 +25,9 @@ BIN_THRESHOLD = "1"
 # If set to true, the application will use boxes instead, otherwise it uses masks.
 USE_BOX = "false"
 
-OCCLUSION_FILTER_LIMIT_DEGREES = "20"
-
 # Possible options are `disabled`, `power`, `rcs`, speed`, `vision_class`, `fusion_class`, or `combined_class`
-GRID_DRAW_PCD = "rcs"
-COMBINED_GRID_DRAW_PCD = "class"
+GRID_DRAW_PCD = "fusion_class"
+COMBINED_GRID_DRAW_PCD = "fusion_class"
 COMBINED_CAMERA_DRAW_PCD = "disabled"
 COMBINED_CAMERA_PCD_LABEL = "false"
 
@@ -45,5 +43,5 @@ SHOW_PEOPLE_COUNT = "false"
 
 MASK_TOPIC = "/rt/model/mask_compressed/"
 DETECT_TOPIC = "/rt/model/boxes2d/"
-PCD_TOPIC = "/rt/fusion/occupancy/"
+PCD_TOPIC = "/rt/fusion/targets/"
 H264_TOPIC = "/rt/camera/h264/"
