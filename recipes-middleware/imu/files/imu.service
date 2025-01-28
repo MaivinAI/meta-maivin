@@ -11,4 +11,4 @@ ExecStart=/usr/bin/imu
 Restart=always
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=maivin.target

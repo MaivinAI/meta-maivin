@@ -12,4 +12,4 @@ EnvironmentFile=/etc/default/model
 Restart=always
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=maivin.target

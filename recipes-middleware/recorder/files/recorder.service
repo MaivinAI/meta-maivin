@@ -12,4 +12,4 @@ EnvironmentFile=/etc/default/recorder
 Restart=always
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=maivin.target

@@ -33,7 +33,7 @@ do_install () {
 
 REQUIRED_DISTRO_FEATURES = "systemd"
 SYSTEMD_SERVICE:${PN} = "zenohd.service"
-SYSTEMD_AUTO_ENABLE = "disable"
+SYSTEMD_AUTO_ENABLE = "enable"
 
 FILES:${PN}-dev = ""
 FILES:${PN} += "${bindir}/zenohd"

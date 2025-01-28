@@ -10,4 +10,4 @@ ExecStart=/usr/bin/localtime
 Restart=always
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=maivin.target

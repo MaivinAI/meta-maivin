@@ -9,7 +9,7 @@ SRC_URI = "\
     file://webui.default \
     file://LICENSE \
 "
-SRC_URI[sha256sum] = "747df4e2de5889511f5991df306a0aa4dc173f06d4808ecdb30df5ddf6a0a144"
+SRC_URI[sha256sum] = "7026394ae3d2da2ca4de8192acbb30fc45a1eeb1f6a6cb04ca4b483e7b4e58a1"
 
 S = "${WORKDIR}"
 
@@ -28,7 +28,7 @@ do_install:append () {
 
 REQUIRED_DISTRO_FEATURES = "systemd"
 SYSTEMD_SERVICE:${PN} = "webui.service"
-SYSTEMD_AUTO_ENABLE = "disable"
+SYSTEMD_AUTO_ENABLE = "enable"
 
 INSANE_SKIP:${PN} += "already-stripped"
 

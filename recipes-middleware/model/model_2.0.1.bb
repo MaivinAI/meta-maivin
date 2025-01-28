@@ -45,7 +45,7 @@ do_install:append () {
 
 REQUIRED_DISTRO_FEATURES = "systemd"
 SYSTEMD_SERVICE:${PN} = "model.service"
-SYSTEMD_AUTO_ENABLE = "disable"
+SYSTEMD_AUTO_ENABLE = "enable"
 
 INSANE_SKIP:${PN} += "already-stripped"
 

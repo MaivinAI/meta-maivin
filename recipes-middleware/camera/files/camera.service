@@ -13,4 +13,4 @@ EnvironmentFile=/etc/default/camera
 Restart=always
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=maivin.target

@@ -8,7 +8,7 @@ RUST_LOG = "info"
 # ultra-short FREQUENCY_SWEEP option.
 #
 # Options: low, medium, high
-CENTER_FREQUENCY = "medium"
+CENTER_FREQUENCY = "low"
 
 # The frequency sweep controls the detection range of the radar.  The following
 # breakdown gives a general range at which a vehicle-type object should be detected.
@@ -18,7 +18,7 @@ CENTER_FREQUENCY = "medium"
 # medium:      56m
 # long:       130m
 #
-FREQUENCY_SWEEP = "short"
+FREQUENCY_SWEEP = "ultra-short"
 
 # The range-toggle mode allows the radar to alternate between various frequency
 # sweep configurations.  Applications must handle range toggling as targets will
@@ -33,7 +33,7 @@ RANGE_TOGGLE = "off"
 # The detection sensitivity only affects the radar target list (point-cloud) and
 # controls the sensitivity to recognize a target.  The default is medium, the
 # low and high sensitivity options will result in less and more targets, respectively.
-DETECTION_SENSITIVITY = "medium"
+DETECTION_SENSITIVITY = "high"
 
 # Enable clustering the radar targets into the /radar/clusters topic.  Clustering
 # options are listed below.
@@ -61,4 +61,4 @@ CLUSTERING_POINT_LIMIT = 3
 # model.  The radar cube capture consumes approximately 240mbps bandwidth over
 # the private Raivin ethernet connection and approximately 75% of one of the CPU
 # cores, enable it when required but otherwise should be left disabled.
-CUBE = "false"
+CUBE = "true"

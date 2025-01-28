@@ -11,4 +11,4 @@ EnvironmentFile=/etc/default/webui
 Restart=always
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=maivin.target

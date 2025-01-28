@@ -10,4 +10,4 @@ EnvironmentFile=/etc/default/lidarpub
 Restart=always
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=maivin.target

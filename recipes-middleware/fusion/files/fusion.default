@@ -11,7 +11,7 @@ RUST_LOG = "info"
 RADAR_INPUT_TOPIC= "rt/radar/clusters"
 
 # The radar model
-# MODEL = ""
+MODEL = "/usr/share/fusion/radarexp-ultra-short.tflite"
 
 # Set the radar model to be polar
 MODEL_POLAR = "false"

@@ -10,4 +10,4 @@ EnvironmentFile=/etc/default/fusion
 Restart=always
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=raivin.target
