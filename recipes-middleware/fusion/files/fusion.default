@@ -16,6 +16,9 @@ MODEL = "/usr/share/fusion/radarexp-ultra-short.tflite"
 # Set the radar model to be polar
 MODEL_POLAR = "false"
 
+# Apply logistical function to the model output
+LOGITS = "true"
+
 # engine for model context
 ENGINE = "npu"
 
