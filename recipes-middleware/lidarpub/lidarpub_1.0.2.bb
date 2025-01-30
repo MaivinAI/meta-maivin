@@ -9,7 +9,7 @@ SRC_URI = "\
     file://lidarpub.default \
     file://LICENSE \
 "
-SRC_URI[sha256sum] = "36374f23d49f988c97c979f37f03cc1e0b7d541bce725bcfa8383c08f4ac533e"
+SRC_URI[sha256sum] = "7124e228882c359744ab1ab95946e65889ced6a52894c43b9d7166b8c7863f59"
 
 S = "${WORKDIR}"
 
