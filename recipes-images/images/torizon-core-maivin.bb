@@ -121,6 +121,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     gpsd-conf \
     gps-utils \
     u-center \
+    linuxptp \
     chrony \
     chronyc \
     parted \
