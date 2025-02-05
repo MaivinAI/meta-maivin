@@ -15,6 +15,11 @@ AZIMUTH = "0 360"
 # Supported values: 512x10 1024x10 2048x10 512x20 1024x20
 MODE = "1024x10"
 
+# Timestamp mode controls how the LiDAR configures its clock.
+# internal (default) uses the internal oscilator and reports time from boot.
+# ptp1588 - synchronize to a PTP-1588 master such as the ptp4l service on Maivin.
+TIMESTAMP_MODE = "internal"
+
 # LiDAR frame transformation vector from the base_link.
 # The transformation vector is "X Y Z".
 TF_VEC = "0 0 -0.19"

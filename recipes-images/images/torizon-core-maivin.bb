@@ -142,6 +142,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     docker-watchdog \
     docker-auto-prune \
     perf \
+    uftrace \
     valgrind \
     oprofile \
     coz \
