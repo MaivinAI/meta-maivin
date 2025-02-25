@@ -1,7 +1,7 @@
 [Unit]
 Description=Maivin Camera Service
-After=imx8-isp.service
-Wants=imx8-isp.service
+After=imx8-isp.service network.target
+Wants=imx8-isp.service network.target
 Before=recorder.service
 
 [Service]

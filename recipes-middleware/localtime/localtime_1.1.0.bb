@@ -8,7 +8,7 @@ SRC_URI = "\
     file://localtime.service \
     file://LICENSE \
 "
-SRC_URI[sha256sum] = "d2db328f24c192f5e622df17b416a557590648c44ce52ddd5b6a66f8f20a062c"
+SRC_URI[sha256sum] = "5ca7de0908e45793fbdbd08e948dc3c4386f41c166b0df1edc927cc84b8cd570"
 
 S = "${WORKDIR}"
 

@@ -1,7 +1,7 @@
 [Unit]
 Description=Maivin Sensor Fusion Service
-Wants=zenohd.service radarpub.service model.service
-After=zenohd.service radarpub.service model.service
+Wants=radarpub.service model.service network.target
+After=radarpub.service model.service network.target
 
 [Service]
 Type=simple

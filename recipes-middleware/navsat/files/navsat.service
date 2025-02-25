@@ -1,7 +1,7 @@
 [Unit]
 Description=Maivin NavSat Service
-After=gpsd.service zenohd.service
-Wants=gpsd.service zenohd.service
+After=gpsd.service network.target
+Wants=gpsd.service network.target
 Before=recorder.service
 
 [Service]
