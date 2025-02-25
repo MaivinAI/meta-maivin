@@ -8,7 +8,7 @@ SRC_URI = "\
     git://github.com/eclipse-zenoh/zenoh-c.git;protocol=ssh;branch=release-0.10.0-rc \
     file://0001-Removed-panic-strategy-from-release-builds-to-suppor.patch \
 "
-SRCREV = "5993ddb87f761d9f832bee81f4ef61f07fdeaec6"
+SRCREV = "95af166fc0b8b1682437af908b0a1ef58839afb9"
 
 include libzenohc.inc
 

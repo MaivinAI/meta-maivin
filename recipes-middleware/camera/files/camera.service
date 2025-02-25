@@ -1,7 +1,7 @@
 [Unit]
 Description=Maivin Camera Service
-After=imx8-isp.service zenohd.service
-Wants=imx8-isp.service zenohd.service
+After=imx8-isp.service
+Wants=imx8-isp.service
 Before=recorder.service
 
 [Service]

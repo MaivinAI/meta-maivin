@@ -9,7 +9,7 @@ SRC_URI = "\
     file://replay.default \
     file://LICENSE \
 "
-SRC_URI[sha256sum] = "d3d626403651ed4ba656a7cc7d139dd5c2e7d93dd87c2b19d0cdbf6484a29865"
+SRC_URI[sha256sum] = "be32d02b5f17f65d8215fe3208e77aa9e7aa997302716db356c497083f1ea546"
 
 DEPENDS = "videostream"
 

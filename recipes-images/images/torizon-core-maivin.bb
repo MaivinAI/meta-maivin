@@ -112,7 +112,6 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     fusion \
     websrv \
     webui \
-    localtime \
     recorder \
     replay \
     publisher \
@@ -127,7 +126,6 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     parted \
     libgpiod-tools \
     zenohd \
-    libzenohc \
     tmux \
     hailo-pci \
     hailo-firmware \

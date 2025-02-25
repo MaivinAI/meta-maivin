@@ -4,13 +4,13 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/Apache-2.0;md5=89aea4e17d99a7ca
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI = "\
-    https://download.eclipse.org/zenoh/zenoh/${PV}/${TARGET_ARCH}-unknown-linux-gnu/zenoh-${PV}-${TARGET_ARCH}-unknown-linux-gnu.zip \
+    https://github.com/eclipse-zenoh/zenoh/releases/download/${PV}/zenoh-${PV}-${TARGET_ARCH}-unknown-linux-gnu-standalone.zip \
     file://zenohd.service \
     file://zenohd.default \
     file://zenohd.yaml \
 "
 
-SRC_URI[sha256sum] = "9abb0af0557576bf94345b39c296db290d920e85ead44c1fb27b5f0db1c13aba"
+SRC_URI[sha256sum] = "df9ed7fa34e16c6c602f95126b15542c33641e6363786de595d156fea7de9a93"
 
 inherit features_check systemd
 
@@ -26,14 +26,13 @@ do_install () {
     install -m 0644 ${WORKDIR}/zenohd.yaml ${D}${sysconfdir}
     install -m 0644 ${WORKDIR}/zenohd.service ${D}${systemd_system_unitdir}
 
-    ${bindir}/env unzip -q -o ${DL_DIR}/zenoh-${PV}-${TARGET_ARCH}-unknown-linux-gnu.zip -d ${D}${libdir}
-    rm ${D}${libdir}/libzenoh_plugin_example.so
+    ${bindir}/env unzip -q -o ${DL_DIR}/zenoh-${PV}-${TARGET_ARCH}-unknown-linux-gnu-standalone.zip -d ${D}${libdir}
     mv ${D}${libdir}/zenohd ${D}${bindir}
 }
 
 REQUIRED_DISTRO_FEATURES = "systemd"
 SYSTEMD_SERVICE:${PN} = "zenohd.service"
-SYSTEMD_AUTO_ENABLE = "enable"
+SYSTEMD_AUTO_ENABLE = "disable"
 
 FILES:${PN}-dev = ""
 FILES:${PN} += "${bindir}/zenohd"
