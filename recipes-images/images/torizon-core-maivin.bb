@@ -74,10 +74,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     openssh-sftp-server \
     mdio-tools \
     rsync \
-    vim-tiny \
-    kernel-module-mdio-netlink \
-    kernel-module-isp-vvcam \
-    kernel-module-imx-gpu-viv \
+    vim-tiny \    
     imx8-isp \
     imx-vpu-hantro \
     imx-vpu-hantro-vc \
