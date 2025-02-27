@@ -125,6 +125,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     libgpiod-tools \
     zenohd \
     tmux \
+    ara-2 \
     hailo-pci \
     hailo-firmware \
     libhailort \
