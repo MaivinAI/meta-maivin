@@ -126,6 +126,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     zenohd \
     tmux \
     ara-2 \
+    ara-2-python \
     hailo-pci \
     hailo-firmware \
     libhailort \
