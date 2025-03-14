@@ -16,12 +16,11 @@
 mode: "router"
 listen:
   endpoints:
-    - "tcp/127.0.0.1:7447"
-connect:
-  endpoints:
+    - "udp/127.0.0.1:7446"
+    - "tcp/[::]:7447"
 scouting:
   multicast:
-   enabled: false
+   enabled: true
   gossip:
    enabled: true
    multihop: false
