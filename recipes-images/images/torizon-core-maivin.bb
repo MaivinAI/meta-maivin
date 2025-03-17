@@ -113,6 +113,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     recorder \
     replay \
     publisher \
+    edgefirst-client \
     gpscfg \
     gpsd \
     gpsd-conf \
