@@ -114,6 +114,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     replay \
     publisher \
     edgefirst-client \
+    mcap \
     gpscfg \
     gpsd \
     gpsd-conf \
