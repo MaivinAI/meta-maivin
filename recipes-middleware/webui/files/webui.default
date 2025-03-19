@@ -31,6 +31,9 @@ COMBINED_GRID_DRAW_PCD = "fusion_class"
 COMBINED_CAMERA_DRAW_PCD = "disabled"
 COMBINED_CAMERA_PCD_LABEL = "false"
 
+GRID_FLATTEN_PCD = "true"
+COMBINED_GRID_FLATTEN_PCD = "true"
+
 # Possible options are `disabled`, `vision_class`, `fusion_class`, or `combined_class`
 DRAW_CELLS = "disabled"
 DRAW_UNKNOWN_CELLS = "false"
