@@ -14,7 +14,7 @@ S = "${WORKDIR}"
 do_install:append () {
     install -d ${D}${bindir}
     install -m 0755 ${WORKDIR}/edgefirst-client-${PV}-linux-arm64 ${D}${bindir}/edgefirst-client
-    ln -sf edgefirst-client ${D}${bindir}/efc
+    ln -sf edgefirst-client ${D}${bindir}/dve
 }
 
 INSANE_SKIP:${PN} += "already-stripped"
