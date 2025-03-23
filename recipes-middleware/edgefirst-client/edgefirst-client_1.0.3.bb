@@ -7,13 +7,14 @@ SRC_URI = "\
     https://maivin.deepviewml.com/services/edgefirst-client/edgefirst-client-${PV}-linux-arm64 \
     file://LICENSE \
 "
-SRC_URI[sha256sum] = "b7f617e26bec699f6a0aa52a611b4ec02203caa64cbb2dc957b31acdefe5f6fb"
+SRC_URI[sha256sum] = "01ffda07a3c5263978e952acb802a7737e7e230e93a352dc4f897b85f651c6ce"
 
 S = "${WORKDIR}"
 
 do_install:append () {
     install -d ${D}${bindir}
     install -m 0755 ${WORKDIR}/edgefirst-client-${PV}-linux-arm64 ${D}${bindir}/edgefirst-client
+    ln -sf edgefirst-client ${D}${bindir}/efc
     ln -sf edgefirst-client ${D}${bindir}/dve
 }
 
