@@ -98,6 +98,12 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     python3-lzf \
     python3-pypcd4 \
     python3-opencv \
+    python3-requests \
+    python3-tqdm \
+    python3-pyyaml \
+    python3-pillow \
+    python3-lmdb \
+    lmdb \
     maivin \
     raivin \
     camera \
@@ -114,6 +120,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     replay \
     publisher \
     edgefirst-client \
+    edgefirst-client-python \
     mcap \
     gpscfg \
     gpsd \

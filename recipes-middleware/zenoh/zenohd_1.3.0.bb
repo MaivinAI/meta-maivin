@@ -10,7 +10,7 @@ SRC_URI = "\
     file://zenohd.yaml \
 "
 
-SRC_URI[sha256sum] = "df9ed7fa34e16c6c602f95126b15542c33641e6363786de595d156fea7de9a93"
+SRC_URI[sha256sum] = "316963a2b00c50c75671e0bf3383f20d05978c2e40dfd63b093979ed030f8374"
 
 inherit features_check systemd
 
