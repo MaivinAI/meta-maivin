@@ -103,6 +103,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     python3-pyyaml \
     python3-pillow \
     python3-lmdb \
+    python3-certifi \
     lmdb \
     maivin \
     raivin \
