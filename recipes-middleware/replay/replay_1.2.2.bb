@@ -1,15 +1,15 @@
-DESCRIPTION = "Maivin MCAP Replayer"
+DESCRIPTION = "EdgeFirst MCAP Replay"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=e153ccee5db0d7cbd514bc6ba454f981"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI = "\
-    https://maivin.deepviewml.com/services/replay/maivin-replay-${PV} \
+    https://maivin.deepviewml.com/services/replay/edgefirst-replay-${PV}-linux-${TARGET_ARCH} \
     file://replay.service \
     file://replay.default \
     file://LICENSE \
 "
-SRC_URI[sha256sum] = "be32d02b5f17f65d8215fe3208e77aa9e7aa997302716db356c497083f1ea546"
+SRC_URI[sha256sum] = "ec6531189ce6b651039d2374b97ca4e108e83a6397cc972dfad8dfe56035828a"
 
 DEPENDS = "videostream"
 
@@ -25,7 +25,7 @@ do_install:append () {
     install -m 0644 ${WORKDIR}/replay.default ${D}${sysconfdir}/default/replay
 
     install -d ${D}${bindir}
-    install -m 0755 ${WORKDIR}/maivin-replay-${PV} ${D}${bindir}/replay
+    install -m 0755 ${WORKDIR}/edgefirst-replay-${PV}-linux-${TARGET_ARCH} ${D}${bindir}/replay
 }
 
 REQUIRED_DISTRO_FEATURES = "systemd"

@@ -1,15 +1,15 @@
-DESCRIPTION = "Maivin Camera Service"
+DESCRIPTION = "EdgeFirst Camera Service"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=e153ccee5db0d7cbd514bc6ba454f981"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI = "\
-    https://maivin.deepviewml.com/services/camera/maivin-camera-${PV} \
+    https://maivin.deepviewml.com/services/camera/edgefirst-camera-${PV}-linux-${TARGET_ARCH} \
     file://camera.service \
     file://camera.default \
     file://LICENSE \
 "
-SRC_URI[sha256sum] = "a4f5a7ebe10a3210bb1feca96789fb86b1ecf18634dad61aeaddc051e9a273a0"
+SRC_URI[sha256sum] = "be83ac0d5eb9252a023dba6d54a77282420d4521ad22a4fbacdb217e9e4cb021"
 
 DEPENDS = "videostream"
 RDEPENDS-${PN} = "imx8-isp"
@@ -26,7 +26,7 @@ do_install:append () {
     install -m 0644 ${WORKDIR}/camera.default ${D}${sysconfdir}/default/camera
 
     install -d ${D}${bindir}
-    install -m 0755 ${WORKDIR}/maivin-camera-${PV} ${D}${bindir}/camera
+    install -m 0755 ${WORKDIR}/edgefirst-camera-${PV}-linux-${TARGET_ARCH} ${D}${bindir}/camera
 }
 
 REQUIRED_DISTRO_FEATURES = "systemd"
