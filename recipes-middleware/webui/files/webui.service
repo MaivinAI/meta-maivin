@@ -6,7 +6,7 @@ After=network.target
 [Service]
 Type=simple
 User=root
-ExecStart=/usr/bin/websrv
+ExecStart=/usr/bin/websrv --system
 EnvironmentFile=/etc/default/webui
 Restart=always
 

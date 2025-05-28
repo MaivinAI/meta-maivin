@@ -5,7 +5,7 @@ After=network.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/replay
+ExecStart=/usr/bin/replay --system
 EnvironmentFile=/etc/default/replay
 Restart=always
 
