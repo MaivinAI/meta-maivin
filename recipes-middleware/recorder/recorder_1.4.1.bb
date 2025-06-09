@@ -4,12 +4,12 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=e153ccee5db0d7cbd514bc6ba454f981"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI = "\
-    https://maivin.deepviewml.com/services/recorder/maivin-recorder-${PV} \
+    https://maivin.deepviewml.com/services/recorder/edgefirst-recorder-${PV}-linux-${TARGET_ARCH} \
     file://recorder.service \
     file://recorder.default \
     file://LICENSE \
 "
-SRC_URI[sha256sum] = "192a100608164d003f610146f2c8c9bfa6efe2d6b6c7bc261c103a46cf463f0a"
+SRC_URI[sha256sum] = "f19096868041239cc4b4fcccc48743e412b64c1c6dda06b016b10a64ab7c70cf"
 
 S = "${WORKDIR}"
 
@@ -23,7 +23,7 @@ do_install:append () {
     install -m 0644 ${WORKDIR}/recorder.default ${D}${sysconfdir}/default/recorder
 
     install -d ${D}${bindir}
-    install -m 0755 ${WORKDIR}/maivin-recorder-${PV} ${D}${bindir}/recorder
+    install -m 0755 ${WORKDIR}/edgefirst-recorder-${PV}-linux-${TARGET_ARCH} ${D}${bindir}/recorder
 }
 
 REQUIRED_DISTRO_FEATURES = "systemd"
