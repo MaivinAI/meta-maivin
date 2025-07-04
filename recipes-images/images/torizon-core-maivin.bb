@@ -122,6 +122,14 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     publisher \
     edgefirst-client \
     edgefirst-client-python \
+    nnstreamer \
+    nnstreamer-protobuf \
+    nnstreamer-python3 \
+    nnstreamer-query \
+    nnstreamer-tensorflow-lite \
+    gstreamer1.0 \
+    gstreamer1.0-plugins-base \
+    gstreamer1.0-plugins-good \
     mcap \
     gpscfg \
     gpsd \
