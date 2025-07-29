@@ -2,25 +2,24 @@ DESCRIPTION = "EdgeFirst Model Service"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=e153ccee5db0d7cbd514bc6ba454f981"
 
+MODEL_VERSION = "t-e2f"
+
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI = "\
     https://maivin.deepviewml.com/services/model/edgefirst-model-${PV}-linux-${TARGET_ARCH};name=model \
-    https://github.com/DeepViewML/peopledetect/releases/download/1.0/peopledetect.rtm;name=peopledetect \
-    https://github.com/DeepViewML/peoplesegment/releases/download/1.0/peoplesegment.rtm;name=peoplesegment \
-    https://github.com/DeepViewML/coco/releases/download/v0.1/peoplesegdet.rtm;name=peoplesegdet \
-    https://github.com/DeepViewML/facedetect/releases/download/1.0/facedetect.rtm;name=facedetect \
+    https://maivin.deepviewml.com/models/people/modelpack-people-${MODEL_VERSION}.tflite;name=people \
+    https://maivin.deepviewml.com/models/people/modelpack-people-mask-${MODEL_VERSION}.tflite;name=people-mask \
+    https://maivin.deepviewml.com/models/people/modelpack-people-detect-${MODEL_VERSION}.tflite;name=people-detect \
     file://model.service \
     file://model.default \
     file://LICENSE \
 "
 SRC_URI[model.sha256sum] = "0381a012b64a7db8f576338c3b93042f91a8921100ce0a0512ce75514173be08"
-SRC_URI[peopledetect.sha256sum] = "d80c410d54eb33a83df8ac7bfd5d3bca5ba321bb5ac02c318d3817b6d5726b3d"
-SRC_URI[peoplesegment.sha256sum] = "2f37bfd00e9b14fd6a5379db87c6f4a0c413b30fa0b3c8da78657a2b2089fc1e"
-SRC_URI[peoplesegdet.sha256sum] = "d733037c22a81c35d0e7f7febbbc10c115a0aaf13d0e355e0e24aef3cc5f71b8"
-SRC_URI[facedetect.sha256sum] = "374b081671c42f2d4b73ed6fe71e46bfaa73ec122a6b0c532310afd367a53a82"
+SRC_URI[people.sha256sum] = "00b66c08e8171a03caf0baa3594013834edf38b468af0878da93a7a4d692551b"
+SRC_URI[people-mask.sha256sum] = "b34bd9a079b32b56a8da3893662438830eb75e26a903758522753cf946367f1c"
+SRC_URI[people-detect.sha256sum] = "23c4ff7cc9417148a19e2991f95990ff1f23879dfc2c024e03f82737ae83dc57"
 
-DEPENDS = "vaal deepview-rt"
-RDEPENDS_${PN} = "libvaal libdeepview-rt"
+RDEPENDS_${PN} = "tflite"
 
 S = "${WORKDIR}"
 
@@ -37,10 +36,9 @@ do_install:append () {
     install -m 0755 ${WORKDIR}/edgefirst-model-${PV}-linux-${TARGET_ARCH} ${D}${bindir}/model
 
     install -d ${D}${datadir}/model
-    install -m 0644 ${WORKDIR}/peopledetect.rtm ${D}${datadir}/model
-    install -m 0644 ${WORKDIR}/peoplesegment.rtm ${D}${datadir}/model
-    install -m 0644 ${WORKDIR}/peoplesegdet.rtm ${D}${datadir}/model
-    install -m 0644 ${WORKDIR}/facedetect.rtm ${D}${datadir}/model
+    install -m 0644 ${WORKDIR}/modelpack-people-${MODEL_VERSION}.tflite ${D}${datadir}/model/modelpack-people.tflite
+    install -m 0644 ${WORKDIR}/modelpack-people-mask-${MODEL_VERSION}.tflite ${D}${datadir}/model/modelpack-people-mask.tflite
+    install -m 0644 ${WORKDIR}/modelpack-people-detect-${MODEL_VERSION}.tflite ${D}${datadir}/model/modelpack-people-detect.tflite
 }
 
 REQUIRED_DISTRO_FEATURES = "systemd"
