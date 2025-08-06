@@ -1,36 +1,74 @@
 # Maivin Sensor Fusion Service
 
-# Log level for the application, relevant sub-filters are radarpub and drvegrd
+# Log level for the application, relevant sub-filters are zenoh and maivin_fusion
 # refer to RUST_LOG documentation for details.
 RUST_LOG = "info"
 
-
 # The radar topic to use for a source of targets.  This is typically
 # /radar/clusters which provides better target stability compared to the raw
-# /radar/targets topic.
-RADAR_INPUT_TOPIC = "rt/radar/clusters"
+# /radar/targets topic. Set to "" to disabled fusion using radar
+RADAR_PCD_TOPIC = "rt/radar/clusters"
 
-# The radar model
+# The lidar topic to use for a source of targets.  This is typically
+# /lidar/clusters which provides better target stability compared to the raw
+# /lidar/points topic. Set to "" to disabled fusion using lidar
+LIDAR_PCD_TOPIC = "rt/lidar/clusters"
+
+# Outputs the radar points with vision and radar classes. Set to "" to disable.
+RADAR_OUTPUT_TOPIC = "rt/fusion/radar"
+
+# Outputs the lidar points with vision and radar classes. Set to "" to disable.
+# Due to the large number of lidar points, enabling this has a performance penalty
+# and will approximately halve the output frequency of anything based on the lidar
+LIDAR_OUTPUT_TOPIC = ""
+
+# The mask topic to use for a source of masks. This is typically /model/mask
+# which saves decompression overhead compared to /model/mask_compressed
+MASK_TOPIC = "rt/model/mask"
+
+# The info topic to use for the camera. The camera matrix is used in late fusion
+# to project the radar or lidar points onto the mask
+INFO_TOPIC = "rt/camera/info"
+
+# The topic for the 3D bounding box output
+BBOX3D_TOPIC = "rt/fusion/boxes3d"
+
+# The PCD data to base the 3D bounding box output on. 
+# Must be one of "radar", "lidar", or "disabled"
+BBOX3D_SRC = "lidar"
+
+# The camera DMA buffers topic to use for radar fusion models
+CAMERA_TOPIC = "rt/camera/dma"
+
+# The radar cube input topic to use for radar fusion models
+RADARCUBE_TOPIC = "rt/radar/cube"
+
+# The topic for the output of the radar fusion model
+MODEL_OUTPUT_TOPIC = "rt/fusion/model_output"
+
+# The radar fusion model
 MODEL = "/usr/share/fusion/radarexp-ultra-short.tflite"
 
-# Set the radar model to be polar
+# Set the radar fusion model to be polar
 MODEL_POLAR = "false"
 
 # Apply logistical function to the model output
 LOGITS = "true"
 
+# This is the real world size (length, width) in meters of a 1x1 model 
+# output grid cell. If the model is polar, the width is in degrees.
+MODEL_GRID_SIZE = "1 1"
+
 # engine for model context
 ENGINE = "npu"
 
-# Turn on the ByteTrack tracker. This is useful for reducing flickering in model output
+# Turn on the ByteTrack tracker. This is useful for reducing flickering 
+# in radar fusion model output
 TRACK = "true"
 
 # The number of seconds a tracked object can be missing for before being removed
 # from tracking.
 TRACK_EXTRA_LIFESPAN = "0.5"
-
-# Currently unused. Do not set above 0.99
-TRACK_HIGH_CONF = "0.4"
 
 # The tracking iou threshold for box association. Higher values will require
 # boxes to have higher IOU to the predicted track location to be associated
@@ -41,14 +79,15 @@ TRACK_IOU = "0.1"
 # range will cause unexpected behaviour
 TRACK_UPDATE = "0.4"
 
-# Points that are more than OCC_RANGE_LIMIT meters behind and less than OCC_ANGLE_LIMIT degrees
-# from a classified point will not be classified. This prevent false positives from points that
-# should be occluded.
-OCC_ANGLE_LIMIT = "20.0"
-OCC_RANGE_LIMIT = "1.0"
+# The topic for the occupancy grid output
+GRID_TOPIC = "rt/fusion/occupancy"
+
+# The PCD data to base the occupancy grid output on. 
+# Must be one of "radar", "lidar", or "disabled"
+GRID_SRC = "radar"
 
 # The range and angle bins are used to intepret the radar model
-# They are also used for occupancy if the input PCD is not clustered
+# They are also used for occupancy grid if the input PCD is not clustered
 
 # The minimum and maximum range to use for range bins.
 RANGE_BIN_LIMIT = "0.0 16.0"

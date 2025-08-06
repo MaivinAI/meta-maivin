@@ -46,5 +46,5 @@ SHOW_PEOPLE_COUNT = "false"
 
 MASK_TOPIC = "/rt/model/mask_compressed/"
 DETECT_TOPIC = "/rt/model/boxes2d/"
-PCD_TOPIC = "/rt/fusion/targets/"
+PCD_TOPIC = "/rt/fusion/radar/"
 H264_TOPIC = "/rt/camera/h264/"
