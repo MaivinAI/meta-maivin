@@ -4,7 +4,7 @@ LIC_FILES_CHKSUM = "file://LICENSE;md5=0f5cddf357882b5f52de019ee365c75a"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI = "https://github.com/MaivinAI/webui/archive/refs/tags/${PV}.zip"
-SRC_URI[sha256sum] = "8d093ecce018e88311cf0c9981566109950f195f991b8696d42880e93fb9087e"
+SRC_URI[sha256sum] = "2b1c23ccceef32f32275c51f420e986b868864a2cc266e230534e3898b133335"
 
 S = "${WORKDIR}/webui-${PV}"
 
