@@ -104,6 +104,8 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     python3-pillow \
     python3-lmdb \
     python3-certifi \
+    python3-zenoh \
+    python3-pycdr2 \
     lmdb \
     maivin \
     raivin \
@@ -122,6 +124,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     publisher \
     edgefirst-client \
     edgefirst-client-python \
+    edgefirst-schemas \
     nnstreamer \
     nnstreamer-protobuf \
     nnstreamer-python3 \
@@ -143,7 +146,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     chronyc \
     parted \
     libgpiod-tools \
-    zenohd \
+    zenohd \    
     tmux \
     ara-2 \
     ara-2-python \
