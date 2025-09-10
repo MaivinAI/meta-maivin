@@ -14,7 +14,7 @@ SRC_URI = "\
     file://model.default \
     file://LICENSE \
 "
-SRC_URI[model.sha256sum] = "7e09269e134c9b2b95597682281fd5d50a596c9902eee26e6612cf0c0ecb6463"
+SRC_URI[model.sha256sum] = "b59c3bac8e5f176a214417ae5978c461bffd269a9b8a7bc196caa943f4ac1807"
 SRC_URI[people.sha256sum] = "202f23f6c2e141994ab270769f1d7cfe2eeb679fb81708665cf2c997839ddf08"
 SRC_URI[people-mask.sha256sum] = "b34bd9a079b32b56a8da3893662438830eb75e26a903758522753cf946367f1c"
 SRC_URI[people-detect.sha256sum] = "23c4ff7cc9417148a19e2991f95990ff1f23879dfc2c024e03f82737ae83dc57"
