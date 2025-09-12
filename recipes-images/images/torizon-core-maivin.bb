@@ -150,11 +150,6 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     tmux \
     ara-2 \
     ara-2-python \
-    hailo-pci \
-    hailo-firmware \
-    libhailort \
-    hailortcli \
-    pyhailort \
     usermount \
     docker-ce \
     docker-compose \
