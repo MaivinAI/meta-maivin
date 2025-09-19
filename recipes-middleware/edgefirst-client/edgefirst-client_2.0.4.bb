@@ -8,7 +8,7 @@ SRC_URI = "\
     file://LICENSE \
 "
 
-SRC_URI[sha256sum] = "41651deb9bfb7cfb69b781ca852527d89a0e23d8aec684dd4dcd17c8432529c0"
+SRC_URI[sha256sum] = "b8872322aaa37149c14811000adf18e773c669cb33bd0e732d31db7be3a64ba5"
 
 S = "${WORKDIR}"
 
