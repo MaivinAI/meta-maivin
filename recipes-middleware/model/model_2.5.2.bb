@@ -2,7 +2,7 @@ DESCRIPTION = "EdgeFirst Model Service"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=e153ccee5db0d7cbd514bc6ba454f981"
 
-MODEL_VERSION = "t-e2f"
+MODEL_VERSION = "t-e2f-2"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI = "\
@@ -14,10 +14,10 @@ SRC_URI = "\
     file://model.default \
     file://LICENSE \
 "
-SRC_URI[model.sha256sum] = "f56adee644f7459389a9a9c60bf954fe28ef59ac81eef12e8ad6d02be5683110"
-SRC_URI[people.sha256sum] = "202f23f6c2e141994ab270769f1d7cfe2eeb679fb81708665cf2c997839ddf08"
-SRC_URI[people-mask.sha256sum] = "b34bd9a079b32b56a8da3893662438830eb75e26a903758522753cf946367f1c"
-SRC_URI[people-detect.sha256sum] = "23c4ff7cc9417148a19e2991f95990ff1f23879dfc2c024e03f82737ae83dc57"
+SRC_URI[model.sha256sum] = "9770cee2674cad681b49857523902dc9f5d9ad2c23956c3d183d087da5f43c11"
+SRC_URI[people.sha256sum] = "db168a433407a3c94cb10048ed82dbd45fee607f3eb5d05a449e58e91d17e285"
+SRC_URI[people-mask.sha256sum] = "253e3a7608b0e844a800de1ed7ace6b5bec47a2fe51eb330763a40af9dc89180"
+SRC_URI[people-detect.sha256sum] = "d3300690781a436470eea52c5753402718ef25e5c8ce095d0a3f876dbeffab4f"
 
 RDEPENDS_${PN} = "tflite"
 
