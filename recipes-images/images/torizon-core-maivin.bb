@@ -148,8 +148,8 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     libgpiod-tools \
     zenohd \    
     tmux \
-    ara-2 \
-    ara-2-python \
+    ara2 \
+    ara2-python \
     usermount \
     docker-ce \
     docker-compose \
