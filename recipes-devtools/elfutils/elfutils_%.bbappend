@@ -1,0 +1,1 @@
+BUILD_CFLAGS += "-Wno-error=deprecated-declarations"
