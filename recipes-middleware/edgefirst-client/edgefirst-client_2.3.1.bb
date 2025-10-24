@@ -1,14 +1,10 @@
 DESCRIPTION = "EdgeFirst Client CLI"
-LICENSE = "Proprietary"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=e153ccee5db0d7cbd514bc6ba454f981"
+LICENSE = "Apache-2.0"
+LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/Apache-2.0;md5=89aea4e17d99a7cacdbeed46a0096b10"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
-SRC_URI = "\
-    https://maivin.deepviewml.com/services/edgefirst-client/edgefirst_client-${PV}-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl \
-    file://LICENSE \
-"
-
-SRC_URI[sha256sum] = "b8872322aaa37149c14811000adf18e773c669cb33bd0e732d31db7be3a64ba5"
+SRC_URI = "https://github.com/EdgeFirstAI/client/releases/download/${PV}/edgefirst_client-${PV}-cp38-abi3-manylinux_2_17_${TARGET_ARCH}.manylinux2014_${TARGET_ARCH}.whl"
+SRC_URI[sha256sum] = "116e2c6653757ea73cb736e8bbe3bd2f06684bde96a25bafc60507c8f54c76b7"
 
 S = "${WORKDIR}"
 
@@ -23,7 +19,7 @@ do_install () {
     install -d ${D}${bindir}
     install -d ${D}${PYTHON_SITEPACKAGES_DIR}
     
-    unzip ${WORKDIR}/edgefirst_client-${PV}-cp38-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl -d ${D}${PYTHON_SITEPACKAGES_DIR}
+    unzip ${WORKDIR}/edgefirst_client-${PV}-cp38-abi3-manylinux_2_17_${TARGET_ARCH}.manylinux2014_${TARGET_ARCH}.whl -d ${D}${PYTHON_SITEPACKAGES_DIR}
     mv ${D}${PYTHON_SITEPACKAGES_DIR}/edgefirst_client-${PV}.data/scripts/edgefirst-client ${D}${bindir}
     rm -rf ${D}${PYTHON_SITEPACKAGES_DIR}/edgefirst_client-${PV}.data
 }
