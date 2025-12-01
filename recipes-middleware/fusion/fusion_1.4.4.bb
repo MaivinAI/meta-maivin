@@ -12,7 +12,7 @@ SRC_URI = "\
     file://fusion.default \
     file://LICENSE \
 "
-SRC_URI[fusion.sha256sum] = "79c27009bc718cca6db42710012e3f04a2d9ea70923d37b5eac338332122e449"
+SRC_URI[fusion.sha256sum] = "d2d2b9fe7eedfd66a8c75d185431e1c3f589146702c39bf61651d2e3be78d163"
 SRC_URI[radarexp.sha256sum] = "3b640a81b1ed1b67855c3e818aa566f8f917489993331bdfcfce2430916e0eb7"
 SRC_URI[radarexp-radar.sha256sum] = "4504d4405af4ce09ce998423b0ea01640b024277ab9c6e16f4282079a47bd61b"
 SRC_URI[radarexp-camera.sha256sum] = "d6c017ca22ae89b7a9cb016d97775b033934d47df30677849945d3ee1c79a4a5"

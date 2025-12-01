@@ -4,7 +4,7 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/Apache-2.0;md5=89aea4e17d99a7ca
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI = "https://github.com/EdgeFirstAI/client/releases/download/${PV}/edgefirst_client-${PV}-cp38-abi3-manylinux_2_17_${TARGET_ARCH}.manylinux2014_${TARGET_ARCH}.whl"
-SRC_URI[sha256sum] = "116e2c6653757ea73cb736e8bbe3bd2f06684bde96a25bafc60507c8f54c76b7"
+SRC_URI[sha256sum] = "0d73b6b0ab228db9bc43d25a10401444a7ab7f1c8245fd3018cd515e39ff3bfd"
 
 S = "${WORKDIR}"
 

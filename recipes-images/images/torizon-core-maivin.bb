@@ -163,6 +163,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     oprofile \
     coz \
     git \
+    ldd \
 "
 
 nss_altfiles_set_users_groups () {
