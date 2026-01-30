@@ -125,6 +125,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     edgefirst-client \
     edgefirst-client-python \
     edgefirst-schemas \
+    edgefirst-schemas-python \
     nnstreamer \
     nnstreamer-protobuf \
     nnstreamer-python3 \
