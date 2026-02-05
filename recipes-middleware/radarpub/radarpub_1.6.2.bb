@@ -1,12 +1,12 @@
 DESCRIPTION = "EdgeFirst Radar Publisher"
 LICENSE = "Apache-2.0"
-LIC_FILES_CHKSUM = "file://LICENSE;md5=3929fde384c07d35ed0d6f0c925f2a12"
+LIC_FILES_CHKSUM = "file://${PN}-LICENSE;md5=3929fde384c07d35ed0d6f0c925f2a12"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI = "\
     https://github.com/EdgeFirstAI/radarpub/releases/download/v${PV}/edgefirst-radarpub-linux-${TARGET_ARCH};downloadfilename=radarpub;name=radarpub \
     https://github.com/EdgeFirstAI/radarpub/releases/download/v${PV}/drvegrdctl-linux-${TARGET_ARCH};downloadfilename=drvegrdctl;name=drvegrdctl \
-    https://raw.githubusercontent.com/EdgeFirstAI/radarpub/v${PV}/LICENSE;name=license \
+    https://raw.githubusercontent.com/EdgeFirstAI/radarpub/v${PV}/LICENSE;downloadfilename=${PN}-LICENSE;name=license \
     file://radarpub.service \
     file://radarpub.default \
 "
