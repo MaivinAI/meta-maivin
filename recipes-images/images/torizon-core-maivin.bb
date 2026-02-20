@@ -18,12 +18,13 @@ IMAGE_LINK_NAME = "${IMAGE_BASENAME}${IMAGE_BASENAME_SUFFIX}"
 # Enough free space for a full image update
 IMAGE_OVERHEAD_FACTOR = "4"
 
-# Base packages
+VIRTUAL-RUNTIME_container_engine = "docker"
+
+# Base system
 CORE_IMAGE_BASE_INSTALL:append = " \
     ca-certificates \
     tdx-info \
     auto-provisioning \
-    provision-device \
     evtest \
     i2c-tools \
     e2fsprogs \
@@ -36,8 +37,6 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     torizon-users \
     tzdata \
     udev-toradex-rules \
-    udev-maivin-rules \
-    update-overlays \
     avahi-autoipd \
     iproute2 \
     iputils \
@@ -45,50 +44,83 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     module-init-tools \
     ostree-customize-plymouth \
     ostree-devicetree-overlays \
-    ostree-maivin \
     networkmanager \
     networkmanager-nmcli \
     networkmanager-wifi \
     modemmanager \
     mobile-broadband-provider-info \
+    openssh-sftp-server \
+    curl \
+    htop \
+    jq \
+    ldd \
+    less \
+    parted \
+    rsync \
+    sudo \
+    vim-tiny \
+"
+
+# Maivin BSP
+CORE_IMAGE_BASE_INSTALL:append = " \
+    udev-maivin-rules \
+    update-overlays \
+    ostree-maivin \
     mwifiexap \
     dnsmasq \
-    mwifiexap \
-    dnsmasq \
+    provision-device \
+    mdio-tools \
+"
+
+# Networking and diagnostics
+CORE_IMAGE_BASE_INSTALL:append = " \
     wireguard-tools \
     iperf3 \
     tcpdump \
     ethtool \
     rclone \
     fluent-bit \
-    neofetch \
     mmc-utils \
     cpufrequtils \
-    curl \
-    htop \
-    jq \
     rac \
     hdparm \
-    sysbench \
     v4l-utils \
-    openssh-sftp-server \
-    mdio-tools \
-    rsync \
-    vim-tiny \    
-    imx8-isp \
-    imx-vpu-hantro \
-    imx-vpu-hantro-vc \
-    imx-vpu-hantro-daemon \
-    imx-vpuwrap \
-    imx-gpu-viv \
-    libglslc-imx-dev \
-    libturbojpeg \
+    libgpiod-tools \
+    tmux \
+    git \
+"
+
+# Maivin middleware services
+CORE_IMAGE_BASE_INSTALL:append = " \
+    packagegroup-maivin-middleware \
+"
+
+# Vision and ML stack (from meta-deepview)
+CORE_IMAGE_BASE_INSTALL:append = " \
     visionpack-base \
     visionpack-python \
     deepview-rt-modelrunner \
-    tensorflow-lite-c \
-    tensorflow-lite \
     tensorflow-lite-vx-delegate \
+"
+
+# NNStreamer pipeline
+CORE_IMAGE_BASE_INSTALL:append = " \
+    nnstreamer \
+    nnstreamer-python3 \
+    nnstreamer-query \
+    nnstreamer-tensorflow-lite \
+"
+
+# GStreamer
+CORE_IMAGE_BASE_INSTALL:append = " \
+    gstreamer1.0 \
+    gstreamer1.0-plugins-base \
+    gstreamer1.0-plugins-good \
+    gstreamer1.0-plugins-bad \
+"
+
+# Python packages
+CORE_IMAGE_BASE_INSTALL:append = " \
     python3-cffi \
     python3-numpy \
     python3-typeguard \
@@ -104,39 +136,12 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     python3-pillow \
     python3-lmdb \
     python3-certifi \
-    python3-zenoh \
     python3-pycdr2 \
     lmdb \
-    maivin \
-    raivin \
-    camera \
-    imu \
-    navsat \
-    radarpub \
-    lidarpub \
-    model \
-    fusion \
-    websrv \
-    webui \
-    localtime \
-    recorder \
-    replay \
-    publisher \
-    edgefirst-client \
-    edgefirst-client-python \
-    edgefirst-schemas \
-    edgefirst-schemas-python \
-    nnstreamer \
-    nnstreamer-protobuf \
-    nnstreamer-python3 \
-    nnstreamer-query \
-    nnstreamer-tensorflow-lite \
-    gstreamer1.0 \
-    gstreamer1.0-plugins-base \
-    gstreamer1.0-plugins-good \
-    gstreamer1.0-plugins-bad \
-    gstreamer1.0-plugins-imx \
-    mcap \
+"
+
+# GPS and time synchronization
+CORE_IMAGE_BASE_INSTALL:append = " \
     gpscfg \
     gpsd \
     gpsd-conf \
@@ -145,26 +150,33 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     linuxptp \
     chrony \
     chronyc \
-    parted \
-    libgpiod-tools \
-    zenohd \    
-    tmux \
+"
+
+# Kinara Ara-2 NPU accelerator
+CORE_IMAGE_BASE_INSTALL:append = " \
     ara2 \
     ara2-python \
-    usermount \
-    docker-ce \
+"
+
+# Docker container runtime
+CORE_IMAGE_BASE_INSTALL:append = " \
+    ${VIRTUAL-RUNTIME_container_engine} \
     docker-compose \
     docker-compose-up \
     docker-integrity-checker \
     docker-watchdog \
     docker-auto-prune \
+    usermount \
+"
+
+# Profiling and debug tools
+CORE_IMAGE_BASE_INSTALL:append = " \
     perf \
     uftrace \
     valgrind \
     oprofile \
     coz \
-    git \
-    ldd \
+    sysbench \
 "
 
 nss_altfiles_set_users_groups () {

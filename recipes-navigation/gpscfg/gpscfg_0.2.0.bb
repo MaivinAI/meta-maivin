@@ -1,5 +1,5 @@
 DESCRIPTION = "GPS Configuration Tool"
-LICENSE = "AGPL-3.0"
+LICENSE = "AGPL-3.0-only"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=0e8e3a5b1effdf50d66fe427bcc8978f"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"

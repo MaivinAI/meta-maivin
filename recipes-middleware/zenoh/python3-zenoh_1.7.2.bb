@@ -3,8 +3,8 @@ HOMEPAGE = "https://github.com/eclipse-zenoh/zenoh-python"
 
 LICENSE = "Apache-2.0"
 LIC_FILES_CHKSUM = "file://${COREBASE}/meta/files/common-licenses/Apache-2.0;md5=89aea4e17d99a7cacdbeed46a0096b10"
-SRC_URI = "https://files.pythonhosted.org/packages/29/fe/c5b2e65e0c2800b4e1a02b388e0ddf7c3b71f478757bb6a294c021d49e84/eclipse_zenoh-${PV}-cp39-abi3-manylinux_2_28_aarch64.whl"
-SRC_URI[sha256sum] = "e7f9bf3849567631caa3bdeecf2edce66461b1ae511f28dfafea6089022d02e1"
+SRC_URI = "https://files.pythonhosted.org/packages/8d/4a/ad58417a73271e1a667b8bec1f6d42b500c0966c5e48a10c321e8c3f4634/eclipse_zenoh-${PV}-cp39-abi3-manylinux_2_28_aarch64.whl"
+SRC_URI[sha256sum] = "07cf23f7de43a9008f9dd81bf5028a0459e43227087bc7838a0ba36c1eb232e7"
 
 inherit python3-dir
 

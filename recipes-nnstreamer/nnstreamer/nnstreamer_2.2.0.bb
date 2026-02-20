@@ -21,6 +21,7 @@ DEPENDS = "\
 SRCREV = "f82789170b8f2696e50cbc5027b74b767f5e9415"
 SRC_URI = "\
     git://github.com/nnstreamer/nnstreamer.git;branch=main;protocol=https \
+    file://0001-PATCH-increase-to-cpp17-version.patch \
 "
 
 # Use git instead of quilt as patch tool to support patches with binary content
@@ -32,16 +33,9 @@ inherit meson pkgconfig
 
 PACKAGECONFIG ??= "protobuf python3 query ${PACKAGECONFIG_SOC}"
 PACKAGECONFIG_SOC                    ??= ""
-PACKAGECONFIG_SOC:mx8-nxp-bsp:imxgpu ??= "deepview-rt tensorflow-lite tvm"
-PACKAGECONFIG_SOC:mx8mm-nxp-bsp      ??= "deepview-rt tensorflow-lite"
-PACKAGECONFIG_SOC:mx9-nxp-bsp        ??= "deepview-rt tensorflow-lite"
-
-PACKAGECONFIG[deepview-rt] = "\
-       -Ddeepview-rt-support=enabled, \
-       -Ddeepview-rt-support=disabled, \
-       deepview-rt, \
-       ,,\
-"
+PACKAGECONFIG_SOC:mx8-nxp-bsp:imxgpu ??= "tensorflow-lite"
+PACKAGECONFIG_SOC:mx8mm-nxp-bsp      ??= ""
+PACKAGECONFIG_SOC:mx9-nxp-bsp        ??= "tensorflow-lite"
 
 PACKAGECONFIG[flatbuf] = "\
 	-Dflatbuf-support=enabled, \
@@ -85,13 +79,6 @@ PACKAGECONFIG[tensorflow-lite] = "\
 	,,\
 "
 
-PACKAGECONFIG[tvm] = "\
-	-Dtvm-support=enabled, \
-	-Dtvm-support=disabled, \
-	tvm, \
-	,,\
-"
-
 EXTRA_OEMESON += "\
 	-Denable-float16=true \
 	-Denable-test=true \
@@ -104,14 +91,9 @@ EXTRA_OEMESON += "\
 	-Dtflite2-custom-support=disabled \
 "
 
-do_install:append() {
-    rm -f ${D}/${bindir}/unittest-nnstreamer/tests/test_models/models/tvm_add_one.so_
-}
-
 PACKAGES =+ "\
 	${PN}-unittest \
 	${@bb.utils.contains('PACKAGECONFIG', 'armnn','${PN}-armnn', '', d)} \
-	${@bb.utils.contains('PACKAGECONFIG', 'deepview-rt','${PN}-deepview-rt', '', d)} \
 	${@bb.utils.contains('PACKAGECONFIG', 'flatbuf','${PN}-flatbuf', '', d)} \
 	${@bb.utils.contains('PACKAGECONFIG', 'flatbuf grpc','${PN}-grpc-flatbuf', '', d)} \
 	${@bb.utils.contains('PACKAGECONFIG', 'grpc','${PN}-grpc', '', d)} \
@@ -120,7 +102,6 @@ PACKAGES =+ "\
 	${@bb.utils.contains('PACKAGECONFIG', 'python3','${PN}-python3', '', d)} \
 	${@bb.utils.contains('PACKAGECONFIG', 'query','${PN}-query', '', d)} \
 	${@bb.utils.contains('PACKAGECONFIG', 'tensorflow-lite','${PN}-tensorflow-lite', '', d)} \
-	${@bb.utils.contains('PACKAGECONFIG', 'tvm','${PN}-tvm', '', d)} \
 "
 
 RDEPENDS:${PN} = "\
@@ -129,7 +110,6 @@ RDEPENDS:${PN} = "\
 
 RDEPENDS:${PN}-unittest = "gstreamer1.0-plugins-good nnstreamer ssat \
 	${@bb.utils.contains('PACKAGECONFIG', 'armnn','${PN}-armnn', '', d)} \
-	${@bb.utils.contains('PACKAGECONFIG', 'deepview-rt','${PN}-deepview-rt', '', d)} \
 	${@bb.utils.contains('PACKAGECONFIG', 'flatbuf','${PN}-flatbuf', '', d)} \
 	${@bb.utils.contains('PACKAGECONFIG', 'flatbuf grpc','${PN}-grpc-flatbuf', '', d)} \
 	${@bb.utils.contains('PACKAGECONFIG', 'grpc','${PN}-grpc', '', d)} \
@@ -138,7 +118,6 @@ RDEPENDS:${PN}-unittest = "gstreamer1.0-plugins-good nnstreamer ssat \
 	${@bb.utils.contains('PACKAGECONFIG', 'python3','${PN}-python3', '', d)} \
 	${@bb.utils.contains('PACKAGECONFIG', 'query','${PN}-query', '', d)} \
 	${@bb.utils.contains('PACKAGECONFIG', 'tensorflow-lite','${PN}-tensorflow-lite', '', d)} \
-	${@bb.utils.contains('PACKAGECONFIG', 'tvm','${PN}-tvm', '', d)} \
 "
 
 FILES:${PN} += "\
@@ -150,10 +129,6 @@ FILES:${PN} += "\
 
 FILES:${PN}-armnn = "\
 	${libdir}/nnstreamer/filters/libnnstreamer_filter_armnn.so \
-"
-
-FILES:${PN}-deepview-rt = "\
-	${libdir}/nnstreamer/filters/libnnstreamer_filter_deepview-rt.so \
 "
 
 FILES:${PN}-dev = "\
@@ -203,10 +178,6 @@ FILES:${PN}-tensorflow-lite = "\
 	${libdir}/nnstreamer/filters/libnnstreamer_filter_tensorflow2-lite.so \
 "
 
-FILES:${PN}-tvm = "\
-	${libdir}/nnstreamer/filters/libnnstreamer_filter_tvm.so \
-"
-
 FILES:${PN}-unittest = "\
 	${bindir}/unittest-nnstreamer/* \
 	${libdir}/libnnstreamer_unittest_util.so \
@@ -219,10 +190,9 @@ INSANE_SKIP:${PN} += "dev-so"
 INSANE_SKIP:${PN}-python3 += "dev-so"
 
 do_install:append() {
-    # Fixes: 076a78ea [TVM/test] Add models for more architectures
-    bash -c "shopt -s extglob;
-    rm -f ${D}/${bindir}/unittest-nnstreamer/tests/test_models/models/tvm_add_one_!(${HOST_ARCH}).so_;
-    shopt -u extglob;"
+    # Remove TVM test model binaries — they are x86_64 ELF objects that
+    # cause aarch64 objcopy to fail during do_package stripping.
+    rm -f ${D}/${bindir}/unittest-nnstreamer/tests/test_models/models/tvm_add_one*.so_
 
     # Check if python3 is enabled then install python module
     if ${@bb.utils.contains('PACKAGECONFIG', 'python3', 'true', 'false', d)}; then

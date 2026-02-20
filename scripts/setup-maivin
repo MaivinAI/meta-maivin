@@ -1,0 +1,18 @@
+#!/bin/sh
+# Setup script for Maivin builds.
+#
+# Sources the Toradex setup-environment script, then replaces the stock
+# bblayers.conf with the Maivin version that includes meta-maivin,
+# meta-deepview, and meta-kinara layers.
+#
+# Usage: MACHINE=verdin-imx8mp source setup-maivin [BUILDDIR]
+#
+# Copyright (C) 2024 Au-Zone Technologies. All Rights Reserved.
+
+BUILDDIR_ARG="${1:-build}"
+
+# Source the upstream Toradex setup-environment
+. ./setup-environment "${BUILDDIR_ARG}"
+
+# Replace the stock bblayers.conf with the Maivin version
+cp --remove-destination ../layers/meta-maivin/conf/bblayers.conf conf/bblayers.conf

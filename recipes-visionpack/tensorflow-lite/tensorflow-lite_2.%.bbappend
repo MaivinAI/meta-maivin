@@ -1,5 +1,8 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
 
+# Middleware binaries (model, fusion) link against libtflite at runtime
+RPROVIDES:${PN} = "tflite"
+
 SRC_URI:append = " file://tensorflow-lite.pc.in"
 
 do_install:append() {

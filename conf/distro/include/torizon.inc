@@ -1,6 +1,6 @@
 require conf/distro/include/tdx-base.inc
 
-MAINTAINER = "Toradex TorizonCore Team <torizoncore@toradex.com>"
+MAINTAINER = "Toradex Torizon OS Team <torizon.os@toradex.com>"
 
 TCLIBCAPPEND = ""
 
@@ -21,14 +21,11 @@ SDK_VERSION = "${DISTRO_VERSION}"
 # Override shared by all torizon distros
 DISTROOVERRIDES .= ":torizon-distro"
 
-# TorizonCore machine specific overrides
+# Torizon machine specific overrides
 INHERIT += "torizon"
 
 # Toradex specific classes
 INHERIT += "toradex-sanity toradex-mirrors"
-
-# build Docker from the Docker-CE project
-PREFERRED_PROVIDER_virtual/docker = "docker-ce"
 
 # This also disables the static packageconfig. runc needs to be dynamically
 # linked for seccomp support. https://github.com/opencontainers/runc/issues/2008
@@ -38,6 +35,7 @@ PACKAGECONFIG:append:pn-${PREFERRED_PROVIDER_virtual/docker} = " seccomp"
 PACKAGECONFIG:append:pn-systemd = " seccomp"
 
 # SOTA
+GARAGE_SIGN_TOOL = "uptane-sign"
 OSTREE_OSNAME = "torizon"
 OSTREE_MULTI_DEVICETREE_SUPPORT = "1"
 SOTA_CLIENT_FEATURES:append = " ubootenv"
@@ -54,7 +52,7 @@ IMAGE_BOOT_FILES_REMOVE:sota = "boot.scr-${MACHINE};boot.scr overlays.txt overla
 IMAGE_BOOT_FILES_REMOVE:append:apalis-imx8 = " hdmitxfw.bin dpfw.bin"
 
 DISTRO_FEATURES:append = " virtualization stateless-system"
-DISTRO_FEATURES:remove = "3g alsa irda pcmcia nfc ldconfig pulseaudio x11 ptest multiarch"
+DISTRO_FEATURES:remove = "3g alsa irda pcmcia nfc ldconfig pulseaudio wayland x11 ptest multiarch vulkan"
 DISTRO_FEATURES:imx-generic-bsp:remove = "opengl"
 
 # No need for x11 even for native
@@ -73,15 +71,10 @@ USERADD_ERROR_DYNAMIC = "skip"
 BBMASK += " \
     /meta-toradex-bsp-common/recipes-core/systemd/systemd_%.bbappend \
     /meta-freescale/recipes-graphics/cairo \
-    /openembedded-core/meta/recipes-devtools/cargo \
-    /openembedded-core/meta/recipes-devtools/rust \
-    /openembedded-core/meta/recipes-devtools/go \
 "
 
-# machines where TorizonCore is experimental
+# machines where Torizon is experimental
 EXPERIMENTALOVERRIDES = ""
-# Currently TorizonCore does not support any experimental machines, in future such machines can be added like below:
-#EXPERIMENTALOVERRIDES:colibri-imx6ull = ":experimental"
 DISTROOVERRIDES .= "${EXPERIMENTALOVERRIDES}"
 
 # Use our variant of the aktualizr client instead of the
@@ -94,16 +87,6 @@ PREFERRED_RPROVIDER_aktualizr-shared-prov = "aktualizr-torizon"
 
 # disable warning message from meta-security
 SKIP_META_SECURITY_SANITY_CHECK = "1"
-
-GOVERSION ?= "1.22%"
-
-# Rust toolchain preferred versions:
-RUSTVERSION ?= "1.79%"
-
-CURLVERSION ?= "8.10.1"
-
-PREFERRED_VERSION_curl ?= "${CURLVERSION}"
-PREFERRED_VERSION_libcurl ?= "${CURLVERSION}"
 
 # Configure the "kernel command-line protection" for Torizon OS (relevant when
 # the tdx-signed class is in use).

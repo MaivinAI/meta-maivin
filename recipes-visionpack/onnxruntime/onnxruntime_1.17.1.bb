@@ -1,4 +1,4 @@
-# Copyright 2020-2023 NXP
+# Copyright 2020-2025 NXP
 DESCRIPTION = "cross-platform, high performance scoring engine for ML models"
 SECTION = "devel"
 LICENSE = "MIT & Apache-2.0"
@@ -6,16 +6,14 @@ LIC_FILES_CHKSUM_runtime = "file://LICENSE;md5=0f7e3b1308cb5c00b372a6e78835732d"
 LIC_FILES_CHKSUM_model = "file://${S}/example-models/squeezenet/LICENSE;md5=3b83ef96387f14655fc854ddc3c6bd57"
 LIC_FILES_CHKSUM = "${LIC_FILES_CHKSUM_runtime} ${LIC_FILES_CHKSUM_model}"
 
-DEPENDS = "libpng zlib ${BPN}-native"
+DEPENDS = "libpng zlib"
 
 inherit setuptools3
 
+SRC_URI = "${ONNXRUNTIME_SRC};branch=${SRCBRANCH}"
 ONNXRUNTIME_SRC ?= "gitsm://github.com/nxp-imx/onnxruntime-imx.git;protocol=https"
-SRCBRANCH_runtime = "lf-6.1.22_2.0.0"
-SRC_URI = "${ONNXRUNTIME_SRC};branch=${SRCBRANCH_runtime};name=runtime"
-
-SRCREV_runtime = "6cde05cc61834eff462570f6e96bee37e67ee85e"
-SRCREV_FORMAT = "runtime_model"
+SRCBRANCH = "lf-6.6.36_2.1.0"
+SRCREV = "d7ba81fabf6c2ee985714bb9994b79bba5cfbb9e"
 
 S = "${WORKDIR}/git"
 
@@ -25,19 +23,11 @@ OECMAKE_SOURCEPATH = "${S}/cmake"
 OECMAKE_GENERATOR = "Unix Makefiles"
 
 # Notes:
-# Protobuff/Protoc: 
-#   - protobuf is essetially built twice for native and target system
-#   - DONNX_CUSTOM_PROTOC_EXECUTABLE  - use native protoc
-#   - onnxruntime_USE_PREBUILT_PB=OFF - we still need protobuf compiled from target system; although we already have native version
-# Eigen: 
-#   - the git operation within CMake fails, so we treat it as 'pre-installed' although it's fetched during fetch phase
-#   - the eigen_SOURCE_PATH needs to match 'destsuffix' in SRC_URI for eigen
 # Abseil:
 #   - FETCHCONTENT_FULLY_DISCONNECTED=OFF and do_configure:prepend() added to allow
 #     abseil build process (the issue was related to CMake not fetching sources)
 
 EXTRA_OECMAKE += "\
-    -DONNX_CUSTOM_PROTOC_EXECUTABLE=${STAGING_BINDIR_NATIVE}/${PN}-native/protoc \
     -DFETCHCONTENT_FULLY_DISCONNECTED=OFF \
     -DCMAKE_BUILD_TYPE=RelWithDebInfo \
     -Donnxruntime_BUILD_UNIT_TESTS=ON \
@@ -46,6 +36,7 @@ EXTRA_OECMAKE += "\
 PYTHON_DEPENDS = "\
     ${PYTHON_PN} \
     ${PYTHON_PN}-pip-native \
+    ${PYTHON_PN}-numpy \
     ${PYTHON_PN}-numpy-native \
     ${PYTHON_PN}-packaging-native\
     ${PYTHON_PN}-pybind11\
@@ -61,7 +52,7 @@ PYTHON_RDEPENDS = "\
     ${PYTHON_PN}-sympy \
 "
 
-PACKAGECONFIG ?= "crosscompiling sharedlib nnapi python"
+PACKAGECONFIG ?= "crosscompiling sharedlib python"
 
 PACKAGECONFIG[nsync] = "-Donnxruntime_USE_NSYNC=ON, -Donnxruntime_USE_NSYNC=OFF"
 PACKAGECONFIG[prebuilt] = "-Donnxruntime_USE_PREBUILT_PB=ON, -Donnxruntime_USE_PREBUILT_PB=OFF"
@@ -134,16 +125,16 @@ do_compile:append() {
 
         # Copy path file with path 'docs/python/README.rst' to build dir
         mkdir -p ${B}/docs/python && cp ${S}/docs/python/README.rst ${B}/docs/python
-        
+
         setuptools3_do_compile
-        
+
         git config --global --add safe.directory ${WORKDIR}/build/pybind11/src/pybind11
     fi
 }
 
 do_install:append() {
     CP_ARGS="-Prf --preserve=mode,timestamps --no-preserve=ownership"
-    
+
     # Ensure target dir exists
     install -d ${D}${bindir}/${BP}
 
@@ -163,7 +154,6 @@ do_install:append() {
     # Install test binaries and data in test package
     install -d ${D}${bindir}/${BP}/tests
     install -m 0744 ${B}/libcustom_op_library.so ${D}${bindir}/${BP}/tests
-    install -m 0744 ${B}/onnxruntime_api_tests_without_env ${D}${bindir}/${BP}/tests
     install -m 0744 ${B}/onnxruntime_global_thread_pools_test ${D}${bindir}/${BP}/tests
     install -m 0744 ${B}/onnxruntime_mlas_test ${D}${bindir}/${BP}/tests
     install -m 0744 ${B}/onnxruntime_shared_lib_test ${D}${bindir}/${BP}/tests
@@ -193,5 +183,3 @@ FILES:${PN}-tests = "${bindir}/${BP}/tests/*"
 # onnxruntime_shared_lib_test requires the shlib to be in the same directory as testdata to run properly
 INSANE_SKIP:${PN}-tests += "libdir"
 INSANE_SKIP:${PN}-dbg += "libdir"
-
-RDEPENDS:${PN}-tests += "arm-compute-library"
