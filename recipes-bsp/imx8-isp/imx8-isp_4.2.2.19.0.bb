@@ -1,7 +1,7 @@
 DESCRIPTION = "i.MX Verisilicon Software ISP"
 LICENSE = "Proprietary"
 LIC_FILES_CHKSUM = "file://COPYING;md5=5a0bf11f745e68024f37b4724a5364fe"
-DEPENDS = "libdrm virtual/libg2d libtinyxml2"
+DEPENDS = "libdrm virtual/libg2d libtinyxml2 patchelf-native"
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI = "\
@@ -20,6 +20,12 @@ SRC_URI[sha256sum] = "ab65a413f397230010266579df570beac5fde4af430e31fc251d7cf7c8
 inherit fsl-eula-unpack cmake features_check systemd use-imx-headers
 
 S = "${WORKDIR}/isp-imx-${PV}"
+
+# Fix prebuilt library linked against libtinyxml2.so.9 (Scarthgap has .so.10)
+do_configure:prepend () {
+    patchelf --replace-needed libtinyxml2.so.9 libtinyxml2.so.10 ${S}/units/cam_device/proprietories/lib/libcam_device.so
+    patchelf --replace-needed libtinyxml2.so.9 libtinyxml2.so.10 ${S}/mediacontrol/lib/arm-64/fpga/libcam_device.so
+}
 
 # Build the sub-folder appshell
 OECMAKE_SOURCEPATH = "${S}/appshell"

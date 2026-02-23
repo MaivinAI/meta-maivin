@@ -22,7 +22,7 @@ python () {
 }
 
 DEPENDS = "videostream"
-RDEPENDS-${PN} = "imx8-isp"
+RDEPENDS:${PN} = "imx8-isp"
 
 S = "${WORKDIR}"
 
