@@ -1,0 +1,15 @@
+[Unit]
+Description=Maivin Model Service
+After=camera.service network.target
+Wants=camera.service network.target
+Before=recorder.service
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/edgefirst-model
+EnvironmentFile=/etc/default/edgefirst-model
+Restart=always
+
+[Install]
+WantedBy=maivin.target

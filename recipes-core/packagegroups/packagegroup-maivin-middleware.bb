@@ -8,17 +8,17 @@ inherit packagegroup
 RDEPENDS:${PN} = " \
     maivin \
     raivin \
-    camera \
-    imu \
-    navsat \
-    radarpub \
-    lidarpub \
-    model \
-    fusion \
-    websrv \
-    webui \
-    recorder \
-    replay \
+    edgefirst-camera \
+    edgefirst-imu \
+    edgefirst-navsat \
+    edgefirst-radarpub \
+    edgefirst-lidarpub \
+    edgefirst-model \
+    edgefirst-fusion \
+    edgefirst-websrv \
+    edgefirst-webui \
+    edgefirst-recorder \
+    edgefirst-replay \
     publisher \
     localtime \
     edgefirst-client \

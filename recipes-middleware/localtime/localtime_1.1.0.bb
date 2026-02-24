@@ -10,16 +10,16 @@ SRC_URI = "\
 "
 SRC_URI[sha256sum] = "5ca7de0908e45793fbdbd08e948dc3c4386f41c166b0df1edc927cc84b8cd570"
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 
 inherit features_check systemd
 
 do_install:append () {
     install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${WORKDIR}/localtime.service ${D}${systemd_system_unitdir}
+    install -m 0644 ${UNPACKDIR}/localtime.service ${D}${systemd_system_unitdir}
 
     install -d ${D}${bindir}
-    install -m 0755 ${WORKDIR}/maivin-localtime-${PV} ${D}${bindir}/localtime
+    install -m 0755 ${UNPACKDIR}/maivin-localtime-${PV} ${D}${bindir}/localtime
 }
 
 REQUIRED_DISTRO_FEATURES = "systemd"

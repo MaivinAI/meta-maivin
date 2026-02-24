@@ -9,7 +9,7 @@ SRC_URI += "file://ethernet1-master.service"
 SRC_URI += "file://ethernet1.network"
 SRC_URI += "file://can0.network"
 
-S = "${WORKDIR}"
+S = "${UNPACKDIR}"
 
 inherit features_check systemd
 
@@ -18,17 +18,17 @@ do_install() {
     install -d ${D}${sysconfdir}/systemd/network
     install -d ${D}${sysconfdir}/systemd/system/network.target.wants
 
-    install -m 0644 ${WORKDIR}/raivin.target ${D}${systemd_system_unitdir}
-    install -m 0644 ${WORKDIR}/ethernet1-master.service ${D}${systemd_system_unitdir}
-    install -m 0644 ${WORKDIR}/ethernet1.network ${D}${sysconfdir}/systemd/network
-    install -m 0644 ${WORKDIR}/can0.network ${D}${sysconfdir}/systemd/network
+    install -m 0644 ${UNPACKDIR}/raivin.target ${D}${systemd_system_unitdir}
+    install -m 0644 ${UNPACKDIR}/ethernet1-master.service ${D}${systemd_system_unitdir}
+    install -m 0644 ${UNPACKDIR}/ethernet1.network ${D}${sysconfdir}/systemd/network
+    install -m 0644 ${UNPACKDIR}/can0.network ${D}${sysconfdir}/systemd/network
 
     ln -sf ${systemd_system_unitdir}/ethernet1-master.service ${D}${sysconfdir}/systemd/system/network.target.wants
 }
 
 REQUIRED_DISTRO_FEATURES = "systemd"
 
-RDEPENDS:${PN} = "maivin radarpub fusion"
+RDEPENDS:${PN} = "maivin edgefirst-radarpub edgefirst-fusion"
 
 FILES:${PN} += "${systemd_system_unitdir}"
 FILES:${PN} += "${sysconfdir}"

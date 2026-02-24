@@ -1,0 +1,14 @@
+[Unit]
+Description=Maivin IMU Service
+Wants=network.target
+After=network.target
+Before=recorder.service
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/edgefirst-imu
+Restart=always
+
+[Install]
+WantedBy=maivin.target

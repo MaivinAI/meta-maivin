@@ -1,0 +1,16 @@
+[Unit]
+Description=Maivin Camera Service
+After=imx8-isp.service network.target
+Wants=imx8-isp.service network.target
+Before=recorder.service
+
+[Service]
+Type=simple
+User=root
+ExecStartPre=/bin/sleep 30
+ExecStart=/usr/bin/edgefirst-camera
+EnvironmentFile=/etc/default/edgefirst-camera
+Restart=always
+
+[Install]
+WantedBy=maivin.target
