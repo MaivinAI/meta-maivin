@@ -17,15 +17,22 @@ SYSTEMD_AUTO_ENABLE = "enable"
 
 do_install:append() {
     rm -f ${D}${systemd_system_unitdir}/edgefirst-model.service
-    install -m 0644 ${UNPACKDIR}/model.service ${D}${systemd_system_unitdir}/model.service
+
+    if [ "${UNPACKDIR}" != "" ]; then
+        install -m 0644 ${UNPACKDIR}/model.service ${D}${systemd_system_unitdir}/model.service
+        install -d ${D}${datadir}/model
+        install -m 0644 ${UNPACKDIR}/modelpack-people-${MODEL_VERSION}.tflite ${D}${datadir}/model/modelpack-people.tflite
+        install -m 0644 ${UNPACKDIR}/modelpack-people-mask-${MODEL_VERSION}.tflite ${D}${datadir}/model/modelpack-people-mask.tflite
+        install -m 0644 ${UNPACKDIR}/modelpack-people-detect-${MODEL_VERSION}.tflite ${D}${datadir}/model/modelpack-people-detect.tflite
+    else
+        install -m 0644 ${WORKDIR}/model.service ${D}${systemd_system_unitdir}/model.service
+        install -d ${D}${datadir}/model
+        install -m 0644 ${WORKDIR}/modelpack-people-${MODEL_VERSION}.tflite ${D}${datadir}/model/modelpack-people.tflite
+        install -m 0644 ${WORKDIR}/modelpack-people-mask-${MODEL_VERSION}.tflite ${D}${datadir}/model/modelpack-people-mask.tflite
+        install -m 0644 ${WORKDIR}/modelpack-people-detect-${MODEL_VERSION}.tflite ${D}${datadir}/model/modelpack-people-detect.tflite
+    fi
 
     ln -sf edgefirst-model ${D}${bindir}/model
-
-    # Install Maivin-specific TFLite models
-    install -d ${D}${datadir}/model
-    install -m 0644 ${UNPACKDIR}/modelpack-people-${MODEL_VERSION}.tflite ${D}${datadir}/model/modelpack-people.tflite
-    install -m 0644 ${UNPACKDIR}/modelpack-people-mask-${MODEL_VERSION}.tflite ${D}${datadir}/model/modelpack-people-mask.tflite
-    install -m 0644 ${UNPACKDIR}/modelpack-people-detect-${MODEL_VERSION}.tflite ${D}${datadir}/model/modelpack-people-detect.tflite
 }
 
 FILES:${PN} += "${datadir}"

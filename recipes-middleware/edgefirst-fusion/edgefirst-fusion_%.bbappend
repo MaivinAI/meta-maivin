@@ -15,15 +15,22 @@ SYSTEMD_AUTO_ENABLE = "enable"
 
 do_install:append() {
     rm -f ${D}${systemd_system_unitdir}/edgefirst-fusion.service
-    install -m 0644 ${UNPACKDIR}/fusion.service ${D}${systemd_system_unitdir}/fusion.service
+
+    if [ "${UNPACKDIR}" != "" ]; then
+        install -m 0644 ${UNPACKDIR}/fusion.service ${D}${systemd_system_unitdir}/fusion.service
+        install -d ${D}${datadir}/fusion
+        install -m 0644 ${UNPACKDIR}/radarexp-ultra-short-2025.01.tflite ${D}${datadir}/fusion/radarexp-ultra-short.tflite
+        install -m 0644 ${UNPACKDIR}/radarexp-radar-ultra-short-2025.01.tflite ${D}${datadir}/fusion/radarexp-radar-ultra-short.tflite
+        install -m 0644 ${UNPACKDIR}/radarexp-camera-ultra-short-2025.01.tflite ${D}${datadir}/fusion/radarexp-camera-ultra-short.tflite
+    else
+        install -m 0644 ${WORKDIR}/fusion.service ${D}${systemd_system_unitdir}/fusion.service
+        install -d ${D}${datadir}/fusion
+        install -m 0644 ${WORKDIR}/radarexp-ultra-short-2025.01.tflite ${D}${datadir}/fusion/radarexp-ultra-short.tflite
+        install -m 0644 ${WORKDIR}/radarexp-radar-ultra-short-2025.01.tflite ${D}${datadir}/fusion/radarexp-radar-ultra-short.tflite
+        install -m 0644 ${WORKDIR}/radarexp-camera-ultra-short-2025.01.tflite ${D}${datadir}/fusion/radarexp-camera-ultra-short.tflite
+    fi
 
     ln -sf edgefirst-fusion ${D}${bindir}/fusion
-
-    # Install Maivin-specific fusion TFLite models
-    install -d ${D}${datadir}/fusion
-    install -m 0644 ${UNPACKDIR}/radarexp-ultra-short-2025.01.tflite ${D}${datadir}/fusion/radarexp-ultra-short.tflite
-    install -m 0644 ${UNPACKDIR}/radarexp-radar-ultra-short-2025.01.tflite ${D}${datadir}/fusion/radarexp-radar-ultra-short.tflite
-    install -m 0644 ${UNPACKDIR}/radarexp-camera-ultra-short-2025.01.tflite ${D}${datadir}/fusion/radarexp-camera-ultra-short.tflite
 }
 
 FILES:${PN} += "${datadir}"

@@ -20,8 +20,8 @@ S = "${WORKDIR}/${PN}-${PV}"
 PACKAGES = "${PN}-apps ${PN}"
 
 DEPENDS = "deepview-rt vaal videostream libsoup-2.4"
-RDEPENDS_${PN}-apps = "vpkui"
-RDEPENDS_${PN} = "deepview-rt vaal videostream libsoup-2.4"
+RDEPENDS:${PN}-apps = "vpkui videostream"
+RDEPENDS:${PN} = "deepview-rt vaal videostream libsoup-2.4"
 
 do_configure[noexec] = "1"
 do_compile[noexec] = "1"
@@ -57,6 +57,7 @@ INHIBIT_PACKAGE_DEBUG_SPLIT = "1"
 INHIBIT_SYSROOT_STRIP = "1"
 
 INSANE_SKIP:${PN} += "dev-so"
+INSANE_SKIP:${PN}-apps += "file-rdeps"
 
 BBCLASSEXTEND = "nativesdk"
 COMPATIBLE_MACHINE = "(mx8-nxp-bsp)"

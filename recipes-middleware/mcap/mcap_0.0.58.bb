@@ -8,7 +8,11 @@ SRC_URI[sha256sum] = "6270421b1db5db5e012c1c0e8fcd8ed13667715722640b1ded63a3d177
 
 do_install () {
     install -d ${D}${bindir}
-    install -m 0755 ${UNPACKDIR}/mcap ${D}${bindir}
+    if [ "${UNPACKDIR}" != "" ]; then
+        install -m 0755 ${UNPACKDIR}/mcap ${D}${bindir}
+    else
+        install -m 0755 ${WORKDIR}/mcap ${D}${bindir}
+    fi
 }
 
 INSANE_SKIP:${PN} += "already-stripped"

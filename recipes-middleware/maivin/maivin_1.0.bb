@@ -6,13 +6,17 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += "file://LICENSE"
 SRC_URI += "file://maivin.target"
 
-S = "${UNPACKDIR}"
+S = "${WORKDIR}"
 
 inherit features_check systemd
 
 do_install() {
     install -d ${D}${systemd_system_unitdir}
-    install -m 0644 ${UNPACKDIR}/maivin.target ${D}${systemd_system_unitdir}
+    if [ "${UNPACKDIR}" != "" ]; then
+        install -m 0644 ${UNPACKDIR}/maivin.target ${D}${systemd_system_unitdir}
+    else
+        install -m 0644 ${WORKDIR}/maivin.target ${D}${systemd_system_unitdir}
+    fi
 }
 
 REQUIRED_DISTRO_FEATURES = "systemd"

@@ -34,6 +34,7 @@ inherit meson pkgconfig
 PACKAGECONFIG ??= "protobuf python3 query ${PACKAGECONFIG_SOC}"
 PACKAGECONFIG_SOC                    ??= ""
 PACKAGECONFIG_SOC:mx8-nxp-bsp:imxgpu ??= "tensorflow-lite"
+PACKAGECONFIG_SOC:mx8mp-nxp-bsp      ??= "tensorflow-lite"
 PACKAGECONFIG_SOC:mx8mm-nxp-bsp      ??= ""
 PACKAGECONFIG_SOC:mx9-nxp-bsp        ??= "tensorflow-lite"
 

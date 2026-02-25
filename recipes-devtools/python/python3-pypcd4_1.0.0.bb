@@ -11,7 +11,7 @@ SRC_URI[sha256sum] = "b21cf1e1a790c47615d261959c95c8a1c85665eaa75da9690a7066b4db
 
 S = "${WORKDIR}/pypcd4-1.0.0"
 
-RDEPENDS_${PN} = "python3-numpy python3-lzf"
+RDEPENDS:${PN} = "python3-numpy python3-lzf"
 
 inherit setuptools3
 

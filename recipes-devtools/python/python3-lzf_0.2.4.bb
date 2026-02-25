@@ -10,6 +10,6 @@ SRC_URI[sha256sum] = "d1420f1544e612ef1bb41ce0f1d14c2964b3444612f1468f85a886caff
 
 S = "${WORKDIR}/python-lzf-0.2.4"
 
-RDEPENDS_${PN} = ""
+RDEPENDS:${PN} = ""
 
 inherit setuptools3

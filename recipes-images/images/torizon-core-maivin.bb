@@ -106,8 +106,6 @@ CORE_IMAGE_BASE_INSTALL:append = " \
 # NNStreamer pipeline
 CORE_IMAGE_BASE_INSTALL:append = " \
     nnstreamer \
-    nnstreamer-python3 \
-    nnstreamer-query \
     nnstreamer-tensorflow-lite \
 "
 
