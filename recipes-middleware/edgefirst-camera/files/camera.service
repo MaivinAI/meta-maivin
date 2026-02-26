@@ -9,7 +9,7 @@ Type=simple
 User=root
 ExecStartPre=/bin/sleep 30
 ExecStart=/usr/bin/edgefirst-camera
-EnvironmentFile=/etc/default/edgefirst-camera
+EnvironmentFile=/etc/default/camera
 Restart=always
 
 [Install]

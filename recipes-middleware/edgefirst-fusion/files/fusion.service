@@ -6,7 +6,7 @@ After=radarpub.service model.service network.target
 [Service]
 Type=simple
 ExecStart=/usr/bin/edgefirst-fusion
-EnvironmentFile=/etc/default/edgefirst-fusion
+EnvironmentFile=/etc/default/fusion
 Restart=always
 
 [Install]

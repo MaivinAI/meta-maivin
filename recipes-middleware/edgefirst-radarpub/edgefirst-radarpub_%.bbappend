@@ -9,11 +9,10 @@ SYSTEMD_AUTO_ENABLE = "enable"
 
 do_install:append() {
     rm -f ${D}${systemd_system_unitdir}/edgefirst-radarpub.service
-    if [ "${UNPACKDIR}" != "" ]; then
-        install -m 0644 ${UNPACKDIR}/radarpub.service ${D}${systemd_system_unitdir}/radarpub.service
-    else
-        install -m 0644 ${WORKDIR}/radarpub.service ${D}${systemd_system_unitdir}/radarpub.service
-    fi
+    install -m 0644 ${S}/radarpub.service ${D}${systemd_system_unitdir}/radarpub.service
+
+    # Rename config file to short name
+    mv ${D}${sysconfdir}/default/edgefirst-radarpub ${D}${sysconfdir}/default/radarpub
 
     ln -sf edgefirst-radarpub ${D}${bindir}/radarpub
 }

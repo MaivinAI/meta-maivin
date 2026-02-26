@@ -9,11 +9,7 @@ SYSTEMD_AUTO_ENABLE = "enable"
 
 do_install:append() {
     rm -f ${D}${systemd_system_unitdir}/edgefirst-imu.service
-    if [ "${UNPACKDIR}" != "" ]; then
-        install -m 0644 ${UNPACKDIR}/imu.service ${D}${systemd_system_unitdir}/imu.service
-    else
-        install -m 0644 ${WORKDIR}/imu.service ${D}${systemd_system_unitdir}/imu.service
-    fi
+    install -m 0644 ${S}/imu.service ${D}${systemd_system_unitdir}/imu.service
 
     ln -sf edgefirst-imu ${D}${bindir}/imu
 }

@@ -8,7 +8,7 @@ Type=simple
 User=torizon
 ExecStart=/usr/bin/edgefirst-recorder
 WorkingDirectory=/home/torizon
-EnvironmentFile=/etc/default/edgefirst-recorder
+EnvironmentFile=/etc/default/recorder
 Restart=on-failure
 
 [Install]

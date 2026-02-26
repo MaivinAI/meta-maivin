@@ -6,7 +6,7 @@ After=network.target
 [Service]
 Type=simple
 ExecStart=/usr/bin/edgefirst-replay --system
-EnvironmentFile=/etc/default/edgefirst-replay
+EnvironmentFile=/etc/default/replay
 Restart=always
 
 [Install]

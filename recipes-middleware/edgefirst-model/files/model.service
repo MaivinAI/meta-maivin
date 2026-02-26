@@ -8,7 +8,7 @@ Before=recorder.service
 Type=simple
 User=root
 ExecStart=/usr/bin/edgefirst-model
-EnvironmentFile=/etc/default/edgefirst-model
+EnvironmentFile=/etc/default/model
 Restart=always
 
 [Install]

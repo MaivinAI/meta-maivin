@@ -7,7 +7,7 @@ Before=recorder.service
 [Service]
 Type=simple
 ExecStart=/usr/bin/edgefirst-lidarpub
-EnvironmentFile=/etc/default/edgefirst-lidarpub
+EnvironmentFile=/etc/default/lidarpub
 Restart=always
 
 [Install]

@@ -9,11 +9,10 @@ SYSTEMD_AUTO_ENABLE = "disable"
 
 do_install:append() {
     rm -f ${D}${systemd_system_unitdir}/edgefirst-lidarpub.service
-    if [ "${UNPACKDIR}" != "" ]; then
-        install -m 0644 ${UNPACKDIR}/lidarpub.service ${D}${systemd_system_unitdir}/lidarpub.service
-    else
-        install -m 0644 ${WORKDIR}/lidarpub.service ${D}${systemd_system_unitdir}/lidarpub.service
-    fi
+    install -m 0644 ${S}/lidarpub.service ${D}${systemd_system_unitdir}/lidarpub.service
+
+    # Rename config file to short name
+    mv ${D}${sysconfdir}/default/edgefirst-lidarpub ${D}${sysconfdir}/default/lidarpub
 
     ln -sf edgefirst-lidarpub ${D}${bindir}/lidarpub
 }

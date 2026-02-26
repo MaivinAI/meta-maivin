@@ -7,7 +7,7 @@ Before=recorder.service
 [Service]
 Type=simple
 ExecStart=/usr/bin/edgefirst-radarpub
-EnvironmentFile=/etc/default/edgefirst-radarpub
+EnvironmentFile=/etc/default/radarpub
 Restart=always
 
 [Install]
