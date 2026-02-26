@@ -17,10 +17,10 @@ do_install:append() {
     rm -f ${D}${systemd_system_unitdir}/edgefirst-fusion.service
     install -m 0644 ${S}/fusion.service ${D}${systemd_system_unitdir}/fusion.service
 
-    install -d ${D}${datadir}/fusion
-    install -m 0644 ${S}/radarexp-ultra-short-2025.01.tflite ${D}${datadir}/fusion/radarexp-ultra-short.tflite
-    install -m 0644 ${S}/radarexp-radar-ultra-short-2025.01.tflite ${D}${datadir}/fusion/radarexp-radar-ultra-short.tflite
-    install -m 0644 ${S}/radarexp-camera-ultra-short-2025.01.tflite ${D}${datadir}/fusion/radarexp-camera-ultra-short.tflite
+    install -d ${D}${datadir}/edgefirst/fusion
+    install -m 0644 ${S}/radarexp-ultra-short-2025.01.tflite ${D}${datadir}/edgefirst/fusion/radarexp-ultra-short.tflite
+    install -m 0644 ${S}/radarexp-radar-ultra-short-2025.01.tflite ${D}${datadir}/edgefirst/fusion/radarexp-radar-ultra-short.tflite
+    install -m 0644 ${S}/radarexp-camera-ultra-short-2025.01.tflite ${D}${datadir}/edgefirst/fusion/radarexp-camera-ultra-short.tflite
 
     # Rename config file to short name
     mv ${D}${sysconfdir}/default/edgefirst-fusion ${D}${sysconfdir}/default/fusion
