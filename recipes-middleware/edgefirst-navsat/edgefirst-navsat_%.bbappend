@@ -11,5 +11,8 @@ do_install:append() {
     rm -f ${D}${systemd_system_unitdir}/edgefirst-navsat.service
     install -m 0644 ${S}/navsat.service ${D}${systemd_system_unitdir}/navsat.service
 
+    # Rename config file to short name
+    mv ${D}${sysconfdir}/default/edgefirst-navsat ${D}${sysconfdir}/default/navsat
+
     ln -sf edgefirst-navsat ${D}${bindir}/navsat
 }
