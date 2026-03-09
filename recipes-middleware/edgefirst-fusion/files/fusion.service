@@ -1,7 +1,7 @@
 [Unit]
 Description=Maivin Sensor Fusion Service
-Wants=radarpub.service model.service network.target
-After=radarpub.service model.service network.target
+Wants=model.service network.target
+After=radarpub.service lidarpub.service model.service network.target
 
 [Service]
 Type=simple
@@ -10,4 +10,4 @@ EnvironmentFile=/etc/default/fusion
 Restart=always
 
 [Install]
-WantedBy=raivin.target
+WantedBy=maivin.target

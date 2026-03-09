@@ -5,7 +5,7 @@ SRC_URI:append = " \
 "
 
 SYSTEMD_SERVICE:${PN} = "radarpub.service"
-SYSTEMD_AUTO_ENABLE = "enable"
+SYSTEMD_AUTO_ENABLE = "disable"
 
 do_install:append() {
     rm -f ${D}${systemd_system_unitdir}/edgefirst-radarpub.service

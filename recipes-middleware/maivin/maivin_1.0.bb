@@ -6,21 +6,17 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI += "file://LICENSE"
 SRC_URI += "file://maivin.target"
 
-S = "${WORKDIR}"
+S = "${@d.getVar('UNPACKDIR') or d.getVar('WORKDIR')}"
 
 inherit features_check systemd
 
 do_install() {
     install -d ${D}${systemd_system_unitdir}
-    if [ "${UNPACKDIR}" != "" ]; then
-        install -m 0644 ${UNPACKDIR}/maivin.target ${D}${systemd_system_unitdir}
-    else
-        install -m 0644 ${WORKDIR}/maivin.target ${D}${systemd_system_unitdir}
-    fi
+    install -m 0644 ${S}/maivin.target ${D}${systemd_system_unitdir}
 }
 
 REQUIRED_DISTRO_FEATURES = "systemd"
 
-RDEPENDS:${PN} = "edgefirst-imu edgefirst-navsat edgefirst-camera edgefirst-model edgefirst-webui"
+RDEPENDS:${PN} = "edgefirst-imu edgefirst-navsat edgefirst-camera edgefirst-model edgefirst-webui edgefirst-radarpub edgefirst-fusion"
 
 FILES:${PN} += "${systemd_system_unitdir}"

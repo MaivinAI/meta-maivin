@@ -11,7 +11,7 @@ SRC_URI[radarexp-radar.sha256sum] = "4504d4405af4ce09ce998423b0ea01640b024277ab9
 SRC_URI[radarexp-camera.sha256sum] = "d6c017ca22ae89b7a9cb016d97775b033934d47df30677849945d3ee1c79a4a5"
 
 SYSTEMD_SERVICE:${PN} = "fusion.service"
-SYSTEMD_AUTO_ENABLE = "enable"
+SYSTEMD_AUTO_ENABLE = "disable"
 
 do_install:append() {
     rm -f ${D}${systemd_system_unitdir}/edgefirst-fusion.service

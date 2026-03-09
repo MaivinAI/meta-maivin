@@ -11,4 +11,4 @@ EnvironmentFile=/etc/default/radarpub
 Restart=always
 
 [Install]
-WantedBy=raivin.target
+WantedBy=maivin.target
