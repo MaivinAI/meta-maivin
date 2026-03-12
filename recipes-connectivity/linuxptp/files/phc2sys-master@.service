@@ -1,0 +1,20 @@
+[Unit]
+Description=Synchronize system clock to PTP hardware clock (grandmaster)
+Documentation=man:phc2sys
+Requires=ptp4l.service
+After=ptp4l.service
+After=chronyd.service
+BindsTo=sys-subsystem-net-devices-%i.device
+After=sys-subsystem-net-devices-%i.device
+
+[Service]
+Type=simple
+# Sync FROM system clock (NTP-disciplined) TO interface PHC
+# -O 0: no UTC-TAI offset (system clock and PHC both use UTC)
+# -R 16: update rate 16 Hz for responsive tracking
+# -S 1.0: step PHC if offset exceeds 1 second (handles boot-time epoch mismatch)
+# -F 0.00002: step on first update if offset > 20us
+ExecStart=/usr/sbin/phc2sys -s CLOCK_REALTIME -c %I -O 0 -R 16 -S 1.0 -F 0.00002
+
+[Install]
+WantedBy=multi-user.target

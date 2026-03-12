@@ -2,6 +2,9 @@
 Description=Precision Time Protocol (PTP) Service
 Documentation=man:ptp4l
 After=network.target
+After=ethernet1-master.service
+BindsTo=sys-subsystem-net-devices-ethernet1.device
+After=sys-subsystem-net-devices-ethernet1.device
 
 [Service]
 Type=simple
