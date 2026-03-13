@@ -1,9 +1,9 @@
 [Unit]
 Description=Configures ethernet1 as the automotive ethernet master
-BindsTo=sys-subsystem-net-device-ethernet1.device
+BindsTo=sys-subsystem-net-devices-ethernet1.device
 After=sys-subsystem-net-devices-ethernet1.device
 After=network.target
-Before=radarpub.target
+Before=radarpub.service
 
 [Service]
 Type=oneshot
