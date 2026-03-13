@@ -1,0 +1,21 @@
+[connection]
+id=ethernet1-radar
+uuid=a1b2c3d4-e5f6-4a7b-8c9d-0e1f2a3b4c5d
+type=ethernet
+autoconnect=true
+autoconnect-priority=1
+interface-name=ethernet1
+
+[ethernet]
+
+[ipv4]
+method=manual
+address1=192.168.11.17/24
+route-table=100
+never-default=true
+routing-rule1=priority 100 to 192.168.11.0/24 table 100
+
+[ipv6]
+method=disabled
+
+[proxy]

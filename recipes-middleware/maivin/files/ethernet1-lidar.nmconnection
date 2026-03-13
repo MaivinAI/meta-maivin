@@ -1,0 +1,21 @@
+[connection]
+id=ethernet1-lidar
+uuid=b2c3d4e5-f6a7-4b8c-9d0e-1f2a3b4c5d6e
+type=ethernet
+autoconnect=true
+autoconnect-priority=0
+interface-name=ethernet1
+
+[ethernet]
+
+[ipv4]
+method=manual
+address1=192.168.1.102/24
+route-table=100
+never-default=true
+routing-rule1=priority 100 to 192.168.1.0/24 table 100
+
+[ipv6]
+method=disabled
+
+[proxy]

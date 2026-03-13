@@ -7,7 +7,6 @@ inherit packagegroup
 
 RDEPENDS:${PN} = " \
     maivin \
-    raivin \
     edgefirst-camera \
     edgefirst-imu \
     edgefirst-navsat \
