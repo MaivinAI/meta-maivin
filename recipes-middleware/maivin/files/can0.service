@@ -11,4 +11,4 @@ ExecStart=/sbin/ip link set can0 up
 ExecStop=/sbin/ip link set can0 down
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=network.target

@@ -19,7 +19,6 @@ RDEPENDS:${PN} = " \
     edgefirst-recorder \
     edgefirst-replay \
     publisher \
-    localtime \
     edgefirst-client \
     edgefirst-client-python \
     edgefirst-schemas \
