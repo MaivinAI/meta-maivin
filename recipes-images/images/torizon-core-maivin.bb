@@ -79,7 +79,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     tcpdump \
     ethtool \
     rclone \
-    fluent-bit \
+    fluentbit \
     mmc-utils \
     cpufrequtils \
     rac \
