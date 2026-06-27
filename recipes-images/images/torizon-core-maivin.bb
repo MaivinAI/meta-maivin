@@ -3,6 +3,12 @@ DESCRIPTION = "Torizon for Maivin Platform"
 
 inherit core-image
 inherit extrausers
+# Required by Torizon's OSTree image commit (7.x): computes
+# OSTREE_LAYER_REVISION_INFO (per-layer git revs embedded in the commit
+# metadata). torizon-base.inc inherits this; torizon-core-maivin uses
+# core-image directly, so inherit it explicitly or do_image_ostreecommit
+# fatals with "OSTREE_LAYER_REVISION_INFO is not set".
+inherit ostree_layer_revision_info
 
 IMAGE_VARIANT = "Maivin"
 IMAGE_FEATURES += "ssh-server-openssh bash-completion-pkgs"
