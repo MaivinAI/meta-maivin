@@ -8,7 +8,7 @@ The platform delivers a working perception system out of the box: camera capture
 
 ## Layer Architecture
 
-The Maivin platform is composed of four additional Yocto layers on top of the standard Torizon/Toradex BSP:
+The Maivin platform is composed of three additional Yocto layers on top of the standard Torizon/Toradex BSP:
 
 ### meta-maivin (priority 90)
 
@@ -27,25 +27,14 @@ The top-level integration layer. Provides:
 Generic EdgeFirst perception service recipes. Downloads pre-built Rust binaries from GitHub Releases for each service (camera, model, fusion, etc.). Also provides:
 
 - **EdgeFirst HAL** and **Schemas** libraries
-- **VideoStream** — zero-copy video frame sharing (Apache-2.0, replaces the older meta-deepview version)
+- **VideoStream** — zero-copy video frame sharing (Apache-2.0)
 - **Zenoh** messaging daemon and Python bindings
 - **MCAP** recording library
 - **EdgeFirst client** CLI and Python bindings
 
 All base recipes set `SYSTEMD_AUTO_ENABLE = "disable"` — meta-maivin's bbappends selectively enable services and customize their systemd units for the Maivin platform.
 
-### meta-deepview (priority 10)
-
-Au-Zone's vision AI inference libraries:
-
-| Recipe | Description |
-|--------|-------------|
-| `deepview-rt` | DeepView RT inference engine with OpenVX backend |
-| `visionpack-base` | VisionPack runtime (used by edgefirst-model for inference) |
-| `visionpack-python` | Python bindings for VisionPack |
-| `tensorflow-lite-vx-delegate` | TensorFlow Lite delegate for NXP VeriSilicon NPU |
-
-Note: meta-deepview also ships a `videostream` recipe, but it is **BBMASK'd** by the Maivin distro config in favor of meta-edgefirst's newer Apache-licensed version.
+`tensorflow-lite-vx-delegate` (TensorFlow Lite delegate for the NXP VeriSilicon NPU) is a meta-maivin recipe (`recipes-visionpack/tensorflow-lite/`), not meta-edgefirst's.
 
 ### meta-kinara (priority 10)
 
@@ -336,7 +325,6 @@ GPSD (NMEA + PPS)
 The primary inference accelerator. Used via:
 
 - **TensorFlow Lite** with the **VX delegate** (`tensorflow-lite-vx-delegate`) — maps TFLite ops to the NPU
-- **DeepView RT ModelRunner** (`deepview-rt-modelrunner`) — Au-Zone's inference runtime
 - **TIM-VX** / **nn-imx** — NXP's neural network libraries (underlying VX delegate)
 
 Pre-trained people detection models ship with the `edgefirst-model` service.
@@ -396,7 +384,7 @@ repo sync
 MACHINE=verdin-imx8mp source setup-maivin build
 ```
 
-The `setup-maivin` script sources the upstream Toradex build environment and copies the Maivin `bblayers.conf` (which adds meta-maivin, meta-edgefirst, meta-deepview, and meta-kinara to the layer list).
+The `setup-maivin` script sources the upstream Toradex build environment and copies the Maivin `bblayers.conf` (which adds meta-maivin, meta-edgefirst, and meta-kinara to the layer list).
 
 ### Build
 

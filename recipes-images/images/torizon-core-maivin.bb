@@ -101,11 +101,8 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     packagegroup-maivin-middleware \
 "
 
-# Vision and ML stack (from meta-deepview)
+# TFLite NPU delegate
 CORE_IMAGE_BASE_INSTALL:append = " \
-    visionpack-base \
-    visionpack-python \
-    deepview-rt-modelrunner \
     tensorflow-lite-vx-delegate \
 "
 
