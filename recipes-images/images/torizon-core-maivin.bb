@@ -97,8 +97,18 @@ CORE_IMAGE_BASE_INSTALL:append = " \
 "
 
 # Maivin middleware services
+# packagegroup-edgefirst-zenoh (meta-edgefirst) pulls in the Rust/Zenoh
+# sensor services (camera, model, fusion, imu, navsat, radarpub, lidarpub,
+# recorder, replay, websrv, webui) plus its own core deps (edgefirst-hal,
+# videostream, videostream-cli, zenoh-c, zenohd, edgefirst-schemas).
+# Everything below is Maivin-specific and not in meta-edgefirst at all.
 CORE_IMAGE_BASE_INSTALL:append = " \
-    packagegroup-maivin-middleware \
+    packagegroup-edgefirst-zenoh \
+    maivin \
+    edgefirst-client \
+    edgefirst-client-python \
+    mcap \
+    publisher \
 "
 
 # TFLite NPU delegate
