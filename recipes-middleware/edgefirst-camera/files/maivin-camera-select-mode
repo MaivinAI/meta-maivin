@@ -1,0 +1,12 @@
+#!/bin/sh
+# Resolve CAMERA_MODE to an upstream isp-imx run.sh configuration name,
+# write it to /etc/default/isp, and restart imx8-isp.service so
+# start_isp.sh picks it up (see meta-maivin's isp-imx bbappend patches for
+# the ISP_CONFIG override and the dual_os08a20_4k configuration).
+set -eu
+
+. /usr/lib/maivin/camera-mode.sh
+resolve_camera_mode
+
+echo "ISP_CONFIG=$ISP_CONFIG" > /etc/default/isp
+systemctl restart imx8-isp.service

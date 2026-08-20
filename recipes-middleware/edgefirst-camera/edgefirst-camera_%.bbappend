@@ -2,9 +2,12 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI:append = " \
     file://camera.service \
+    file://camera-mode.sh \
+    file://maivin-camera-select-mode \
+    file://maivin-camera-wait-ready \
 "
 
-RDEPENDS:${PN}:append = " imx8-isp imx-vpu-hantro-vc"
+RDEPENDS:${PN}:append = " isp-imx imx-vpu-hantro-vc v4l-utils"
 
 SYSTEMD_SERVICE:${PN} = "camera.service"
 SYSTEMD_AUTO_ENABLE = "enable"
@@ -19,4 +22,32 @@ do_install:append() {
 
     # Add short-name symlink for binary
     ln -sf edgefirst-camera ${D}${bindir}/camera
+
+    # CAMERA_MODE selects the OS08A20 sensor's native readout mode -- see
+    # camera-mode.sh for the mode table.
+    cat >> ${D}${sysconfdir}/default/camera <<'EOF'
+
+# ---------------------------------------------------------------------------
+# Camera Mode
+# ---------------------------------------------------------------------------
+# Selects the OS08A20 sensor's native readout mode, applied by restarting
+# imx8-isp.service (isp-imx) with the matching upstream run.sh
+# configuration before this service starts. Independent of CAMERA_SIZE
+# above: the ISP downscales from the native mode to whatever CAMERA_SIZE is
+# requested, so CAMERA_SIZE may be smaller than the native mode's
+# resolution (e.g. 4k sensor mode with a smaller CAMERA_SIZE for lower
+# bandwidth/CPU use) but must not exceed it -- the ISP does not upscale.
+# Accepted values: 4k, 1080p60
+#   4k       - 3840x2160, BGGR12, full-resolution linear, 30fps
+#   1080p60  - 1920x1080, BGGR10, horizontal-binned, 60fps
+CAMERA_MODE="4k"
+EOF
+
+    install -d ${D}${libdir}/maivin
+    install -m 0644 ${S}/camera-mode.sh ${D}${libdir}/maivin/camera-mode.sh
+
+    install -m 0755 ${S}/maivin-camera-select-mode ${D}${bindir}/maivin-camera-select-mode
+    install -m 0755 ${S}/maivin-camera-wait-ready ${D}${bindir}/maivin-camera-wait-ready
 }
+
+FILES:${PN} += "${libdir}/maivin"

@@ -7,7 +7,8 @@ Before=recorder.service
 [Service]
 Type=simple
 User=root
-ExecStartPre=/bin/sleep 30
+ExecStartPre=/usr/bin/maivin-camera-select-mode
+ExecStartPre=/usr/bin/maivin-camera-wait-ready
 ExecStart=/usr/bin/edgefirst-camera
 EnvironmentFile=/etc/default/camera
 Restart=always
