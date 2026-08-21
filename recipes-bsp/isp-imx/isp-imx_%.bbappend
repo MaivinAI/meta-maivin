@@ -23,19 +23,26 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/isp-imx:"
 # override path: imx8-isp.service failed within milliseconds regardless of
 # ISP_CONFIG being set.
 #
-# 0004 relocates the install destination from /opt/imx8-isp/bin to
-# ${libdir}/imx8-isp: this is a stateless OSTree system where /opt is a
-# symlink into the persistent /var partition (/var/rootdirs/opt), which is
-# NOT part of the versioned /usr tree OSTree actually commits -- anything
-# installed under /opt at build time is silently dropped from the deployed
-# image. run.sh/start_isp.sh already resolve their own paths relative to
-# $(dirname $0), so only the Makefile's install destination and the
-# service's ExecStart= needed updating.
+# do_install:append below relocates the install destination from
+# /opt/imx8-isp/bin to ${libdir}/imx8-isp: this is a stateless OSTree
+# system where /opt is a symlink into the persistent /var partition
+# (/var/rootdirs/opt), which is NOT part of the versioned /usr tree OSTree
+# actually commits -- anything installed under /opt at build time is
+# silently dropped from the deployed image. run.sh/start_isp.sh already
+# resolve their own paths relative to $(dirname $0), so nothing about
+# run.sh/start_isp.sh's own logic needs to know about the move.
+#
+# Done as a post-do_install move rather than patching the install
+# destination at the source (Makefile, or wherever a given isp-imx
+# version's do_install lives) because that varies by version -- e.g.
+# 4.2.2.24.4 installs via its Makefile's own install target, 4.2.2.24.0
+# via a completely different inline do_install() shell function -- but
+# both still land in /opt/imx8-isp/bin either way, which this only needs
+# to know about once.
 SRC_URI:append = " \
     file://0001-run.sh-add-dual_os08a20_4k-configuration.patch \
     file://0002-start_isp.sh-honour-ISP_CONFIG-override.patch \
     file://0003-imx8-isp.service-add-EnvironmentFile-for-ISP_CONFIG.patch \
-    file://0004-Makefile-install-under-libdir-not-opt.patch \
     file://imx8_media_dev.conf \
 "
 
@@ -46,11 +53,17 @@ do_install:append() {
     install -d ${D}${sysconfdir}/modprobe.d
     install -m 0644 ${WORKDIR}/imx8_media_dev.conf ${D}${sysconfdir}/modprobe.d/imx8_media_dev.conf
 
-    # Upstream's Makefile leaves ${libdir}/imx8-isp (and dewarp_config/)
-    # mode 0644 -- no execute bit, so the directory can't be traversed at
-    # all -- apparently inherited from one of its "install -m 644 -D ..."
-    # calls creating the parent directory. Fix it up rather than patching
-    # further into the Makefile's install logic.
+    if [ -d ${D}/opt/imx8-isp/bin ]; then
+        mkdir -p ${D}${libdir}
+        mv ${D}/opt/imx8-isp/bin ${D}${libdir}/imx8-isp
+        rm -rf ${D}/opt
+    fi
+
+    # Upstream leaves ${libdir}/imx8-isp (and dewarp_config/) mode 0644 --
+    # no execute bit, so the directory can't be traversed at all --
+    # apparently inherited from one of its "install -m 644 -D ..." calls
+    # creating the parent directory. Fix it up rather than patching
+    # further into version-specific install logic.
     chmod 0755 ${D}${libdir}/imx8-isp ${D}${libdir}/imx8-isp/dewarp_config
 }
 
