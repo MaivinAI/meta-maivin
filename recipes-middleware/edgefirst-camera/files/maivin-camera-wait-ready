@@ -6,15 +6,51 @@
 # "active" as soon as start_isp.sh/run.sh starts running, well before that
 # reload finishes, so camera.service needs to wait for the real signal
 # (the device responding) rather than guessing how long the reload takes.
+#
+# Device-node existence alone is NOT sufficient: isp_media_server's
+# userspace sensor/HAL/CITF layer can fail to open the sensor while the
+# kernel-driver-level device node still exists and answers basic ioctls.
+# Observed in practice -- isp_media_server logged
+#   AdaptOpen:open sensor failed in v4l2 mode! check sensor driver, cfg is os08a20
+#   HalOpen: open adapter-0 failed in HAL
+#   CitfApi create error!
+#   initHardware new CitfApi 0 fail!
+# while /dev/video3 kept responding to `v4l2-ctl --info` throughout, and
+# isp_media_server does not retry or restart itself after this failure --
+# it keeps running indefinitely in this degraded state (observed as a
+# camera pinned to ~2fps regardless of clock/resolution config). Detect
+# this and force a fresh imx8-isp.service restart ourselves rather than
+# declaring victory on a broken pipeline or passively waiting out the full
+# timeout.
+#
+# A live functional test (actually requesting a frame) was considered
+# instead of log-scraping, but isp_media_server holds its own persistent
+# file descriptor on $CAMERA -- an independent REQBUFS/STREAMON from this
+# script risks conflicting with that rather than reliably proving liveness,
+# so this checks the ISP's own reported state instead.
 set -eu
 
 : "${CAMERA:=/dev/video3}"
 MAX_TRIES=60
 
+isp_sensor_open_failed() {
+    since=$(systemctl show -p ActiveEnterTimestamp --value imx8-isp.service 2>/dev/null) || return 1
+    [ -n "$since" ] || return 1
+    journalctl -u imx8-isp.service --no-pager -S "$since" 2>/dev/null \
+        | grep -qE 'AdaptOpen:open sensor failed|CitfApi create error|initHardware new CitfApi.*fail'
+}
+
 i=0
 while [ "$i" -lt "$MAX_TRIES" ]; do
     if v4l2-ctl --device="$CAMERA" --info >/dev/null 2>&1; then
-        exit 0
+        if ! isp_sensor_open_failed; then
+            exit 0
+        fi
+        echo "maivin-camera-wait-ready: isp_media_server failed to open the sensor, restarting imx8-isp.service" >&2
+        systemctl restart imx8-isp.service
+        sleep 2
+        i=$((i + 2))
+        continue
     fi
     i=$((i + 1))
     sleep 1

@@ -40,7 +40,12 @@ do_install:append() {
 # Accepted values: 4k, 1080p60
 #   4k       - 3840x2160, BGGR12, full-resolution linear, 30fps
 #   1080p60  - 1920x1080, BGGR10, horizontal-binned, 60fps
-CAMERA_MODE="4k"
+#
+# Maivin default: 1080p60. Binned readout gives better low-light/
+# fast-exposure handling than 4k's full-resolution linear readout, which
+# is what the shipped example model is tuned for; 4k is a known separate
+# issue (unreliable capture, tracked independently) not a hard requirement.
+CAMERA_MODE="1080p60"
 EOF
 
     install -d ${D}${libdir}/maivin
