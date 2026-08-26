@@ -15,6 +15,8 @@ SRC_URI[people-detect.sha256sum] = "d3300690781a436470eea52c5753402718ef25e5c8ce
 SYSTEMD_SERVICE:${PN} = "model.service"
 SYSTEMD_AUTO_ENABLE = "enable"
 
+RDEPENDS:${PN} += "edgefirst-modelzoo-yolov8n-det"
+
 do_install:append() {
     rm -f ${D}${systemd_system_unitdir}/edgefirst-model.service
     install -m 0644 ${S}/model.service ${D}${systemd_system_unitdir}/model.service
@@ -26,6 +28,10 @@ do_install:append() {
 
     # Rename config file to short name
     mv ${D}${sysconfdir}/default/edgefirst-model ${D}${sysconfdir}/default/model
+
+    # Default to EdgeFirst Model Zoo YOLOv8n det (smart INT8) pre-installed by edgefirst-modelzoo
+    sed -i 's|^MODEL=.*|MODEL="/usr/share/edgefirst/modelzoo/yolov8n-det-int8-smart.tflite"|' \
+        ${D}${sysconfdir}/default/model
 
     ln -sf edgefirst-model ${D}${bindir}/model
 }

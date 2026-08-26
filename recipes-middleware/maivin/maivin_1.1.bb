@@ -41,7 +41,7 @@ do_install() {
 
 REQUIRED_DISTRO_FEATURES = "systemd"
 
-RDEPENDS:${PN} = "edgefirst-imu edgefirst-navsat edgefirst-camera edgefirst-model edgefirst-webui edgefirst-radarpub edgefirst-fusion"
+RDEPENDS:${PN} = "edgefirst-imu edgefirst-navsat edgefirst-camera edgefirst-model edgefirst-modelzoo edgefirst-webui edgefirst-radarpub edgefirst-fusion"
 
 FILES:${PN} += "${systemd_system_unitdir}"
 FILES:${PN} += "${sysconfdir}"
