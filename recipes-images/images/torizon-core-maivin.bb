@@ -3,12 +3,7 @@ DESCRIPTION = "Torizon for Maivin Platform"
 
 inherit core-image
 inherit extrausers
-# ostree_layer_revision_info.bbclass doesn't exist at Torizon 7.0.0 --
-# OSTREE_LAYER_REVISION_INFO is computed directly inside
-# image_type_torizon.bbclass there instead, later refactored into its own
-# class in a subsequent Torizon release. Only needed on branches synced to
-# that later release; see git history on other branches for the
-# `inherit ostree_layer_revision_info` this replaces.
+inherit ostree_layer_revision_info
 
 IMAGE_VARIANT = "Maivin"
 IMAGE_FEATURES += "ssh-server-openssh bash-completion-pkgs"
