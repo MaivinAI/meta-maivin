@@ -3,7 +3,10 @@ DESCRIPTION = "Torizon for Maivin Platform"
 
 inherit core-image
 inherit extrausers
-inherit ostree_layer_revision_info
+# Local class, not the upstream meta-toradex-torizon one -- our pinned
+# meta-toradex-torizon revision predates that class. See
+# maivin-ostree-layer-revision-info.bbclass for why.
+inherit maivin-ostree-layer-revision-info
 
 IMAGE_VARIANT = "Maivin"
 IMAGE_FEATURES += "ssh-server-openssh bash-completion-pkgs"
