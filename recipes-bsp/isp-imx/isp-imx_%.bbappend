@@ -39,11 +39,24 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/isp-imx:"
 # via a completely different inline do_install() shell function -- but
 # both still land in /opt/imx8-isp/bin either way, which this only needs
 # to know about once.
+#
+# sensor_dwe_os08a20_{1080P,4K}_config.json override upstream's generic
+# reference dewarp/calibration data with Maivin's own measured OS08A20 +
+# lens calibration (camera_matrix/distortion_coeff), recovered from the
+# old imx8-isp fork (meta-maivin commit cdf380f, deleted in 0b450f5 when
+# that fork was replaced by this bbappend -- upstream's own values were
+# left in place at the time since the fork removal was only meant to be a
+# service/packaging change, not a calibration regression). Without this,
+# edgefirst-camera's CAM_INFO_PATH (see edgefirst-camera_%.bbappend) would
+# publish CameraInfo using someone else's sensor/lens, silently wrong for
+# any consumer doing 2D/3D projection (e.g. edgefirst-fusion).
 SRC_URI:append = " \
     file://0001-run.sh-add-dual_os08a20_4k-configuration.patch \
     file://0002-start_isp.sh-honour-ISP_CONFIG-override.patch \
     file://0003-imx8-isp.service-add-EnvironmentFile-for-ISP_CONFIG.patch \
     file://imx8_media_dev.conf \
+    file://sensor_dwe_os08a20_1080P_config.json \
+    file://sensor_dwe_os08a20_4K_config.json \
 "
 
 # Maivin: imx8_media_dev must wait for the sensor drivers to bind before
@@ -65,6 +78,11 @@ do_install:append() {
     # creating the parent directory. Fix it up rather than patching
     # further into version-specific install logic.
     chmod 0755 ${D}${libdir}/imx8-isp ${D}${libdir}/imx8-isp/dewarp_config
+
+    # Maivin's own OS08A20 + lens calibration, overriding upstream's
+    # generic reference values.
+    install -m 0644 ${WORKDIR}/sensor_dwe_os08a20_1080P_config.json ${D}${libdir}/imx8-isp/dewarp_config/sensor_dwe_os08a20_1080P_config.json
+    install -m 0644 ${WORKDIR}/sensor_dwe_os08a20_4K_config.json ${D}${libdir}/imx8-isp/dewarp_config/sensor_dwe_os08a20_4K_config.json
 }
 
 FILES:${PN} += "${sysconfdir}/modprobe.d/imx8_media_dev.conf ${libdir}/imx8-isp"

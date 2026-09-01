@@ -46,6 +46,18 @@ do_install:append() {
 # is what the shipped example model is tuned for; 4k is a known separate
 # issue (unreliable capture, tracked independently) not a hard requirement.
 CAMERA_MODE="1080p60"
+
+# ---------------------------------------------------------------------------
+# Camera Calibration (Maivin override)
+# ---------------------------------------------------------------------------
+# Overrides the empty upstream default. isp-imx's start_isp.sh copies its
+# dewarp_config/*.json (Maivin's own OS08A20 + lens calibration -- see
+# isp-imx_%.bbappend) out to /etc/isp/ at runtime; this must match
+# CAMERA_MODE above (dual_os08a20_4k currently isn't covered here, since
+# 4k capture is already a known separate issue -- see camera-mode.sh).
+# Without this, camera never publishes CameraInfo on camera/info, and
+# consumers that require it (e.g. edgefirst-fusion) can't start.
+CAM_INFO_PATH="/etc/isp/sensor_dwe_os08a20_1080P_config.json"
 EOF
 
     install -d ${D}${libdir}/maivin
