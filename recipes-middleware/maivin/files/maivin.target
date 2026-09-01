@@ -3,3 +3,6 @@ Description=Maivin Middleware Services
 After=multi-user.target
 AllowIsolate=yes
 Requires=multi-user.target
+
+[Install]
+WantedBy=multi-user.target

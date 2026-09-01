@@ -41,6 +41,16 @@ do_install() {
 
 REQUIRED_DISTRO_FEATURES = "systemd"
 
+# maivin.target has an [Install] section (WantedBy=multi-user.target) but
+# that alone doesn't get it started -- without SYSTEMD_SERVICE +
+# SYSTEMD_AUTO_ENABLE, systemd.bbclass never runs the preset/enable step
+# that actually creates the multi-user.target.wants/ symlink, so the
+# target (and everything WantedBy=maivin.target under it -- camera, imu,
+# model, etc.) never auto-starts on boot despite every individual service
+# showing "enabled".
+SYSTEMD_SERVICE:${PN} = "maivin.target"
+SYSTEMD_AUTO_ENABLE = "enable"
+
 RDEPENDS:${PN} = "edgefirst-imu edgefirst-navsat edgefirst-camera edgefirst-model edgefirst-modelzoo edgefirst-webui edgefirst-radarpub edgefirst-fusion"
 
 FILES:${PN} += "${systemd_system_unitdir}"
