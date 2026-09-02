@@ -297,7 +297,9 @@ Two templated phc2sys services are provided:
 
 ### GNSS 1 PPS
 
-The GNSS receiver's TIMEPULSE output reaches the SoM on **Verdin SODIMM 64** (QSPI_1_CS2#), which the i.MX8MP brings out as **GPIO3_IO16**. `maivin2.dts` declares a `pps-gpio` node on that line, and `pps.cfg` builds `CONFIG_PPS_CLIENT_GPIO` into the kernel.
+The GNSS receiver's TIMEPULSE output reaches the SoM on **Verdin SODIMM 64** (QSPI_1_CS2#), which the i.MX8MP brings out as **GPIO3_IO16**. `maivin2.dts` declares a `pps-gpio` node on that line.
+
+`pps.cfg` requests `CONFIG_PPS_CLIENT_GPIO=y`, but the Toradex BSP's `torizon-kernel-meta/features/spi/spi.cfg` sets `=m` and wins the config merge, so the driver ships as a module. `KERNEL_MODULE_AUTOLOAD` therefore loads `pps-gpio` from `systemd-modules-load.service`, which completes before `sysinit.target` and so before chronyd opens `/dev/pps-gps`. This matters because chronyd runs with `Restart=no` and will not retry a refclock whose device was missing at startup.
 
 The pulse idles low and asserts high for 100 ms once per second, so the rising edge marks the top of the second — `assert-falling-edge` must **not** be set.
 
@@ -317,7 +319,9 @@ refclock PPS /dev/pps-gps refid GPS lock NMEA maxlockage 10 precision 1e-7 poll 
 - **SHM 0 (NMEA)**: GPS time from gpsd via NMEA sentences (~200 ms accuracy), marked `noselect` — it exists only to tell the PPS refclock *which second* each pulse belongs to
 - **PPS (GPS)**: the kernel `pps-gpio` capture, read directly by chrony rather than routed through gpsd's SHM 1. A bare pulse cannot name its own second, hence `lock NMEA`; `maxlockage 10` keeps pulses usable when an NMEA sample is briefly late
 
-The stock `chrony.conf` ships **no `include` directive**, so the `chrony_%.bbappend` adds one and removes the inline `refclock SHM 0` that the drop-in supersedes. Without the include the drop-in is silently ignored and chrony falls back to pool NTP.
+The drop-in is picked up by the `confdir /etc/chrony/conf.d` line already in the stock `chrony.conf` — the bbappend only installs the file. Do **not** add an `include` for the same directory: `confdir` and `include` would each instantiate the refclocks, and two refclocks on one SHM segment consume each other's samples, degrading the NMEA source that `lock NMEA` depends on.
+
+If the drop-in appears to be ignored (chrony falls back to pool NTP at stratum 3+), suspect a **stale `/etc/chrony.conf`** rather than a recipe fault. A copy carried forward by OSTree's `/etc` merge can predate `confdir` and mask the shipped file; compare `/etc/chrony.conf` against `/usr/etc/chrony.conf`.
 
 A drop-in override on upstream's `systemd-time-wait-sync.service` (`10-chrony-waitsync.conf`) runs a bounded `chronyc waitsync` wait so dependent services (e.g. `auto-provisioning.service`) start once the clock is synchronized -- or, on a unit with neither a GPS fix nor network NTP reachable, once the wait times out, so boot is never blocked indefinitely.
 

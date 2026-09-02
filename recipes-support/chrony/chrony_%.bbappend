@@ -16,16 +16,11 @@ do_install:append() {
     install -d ${D}${systemd_system_unitdir}/systemd-time-wait-sync.service.d
     install -m 0644 ${WORKDIR}/10-chrony-waitsync.conf ${D}${systemd_system_unitdir}/systemd-time-wait-sync.service.d
 
-    # GPSD refclock drop-in for chrony
+    # GNSS refclock drop-in.  Read by the "confdir /etc/chrony/conf.d" already
+    # in the stock chrony.conf -- do not add an include for the same directory,
+    # which would instantiate every refclock twice.
     install -d ${D}${sysconfdir}/chrony/conf.d
     install -m 0644 ${WORKDIR}/gpsd.conf ${D}${sysconfdir}/chrony/conf.d
-
-    # The stock chrony.conf has no include directive, so the drop-in above was
-    # never read.  Add one, and drop the inline NMEA refclock it supersedes --
-    # keeping both would give chrony two refclocks on the same SHM segment.
-    sed -i -e '/^refclock SHM 0/d' ${D}${sysconfdir}/chrony.conf
-    printf '\n# Maivin drop-ins (GNSS refclocks).\ninclude %s/chrony/conf.d/*.conf\n' \
-        "${sysconfdir}" >> ${D}${sysconfdir}/chrony.conf
 }
 
 REQUIRED_DISTRO_FEATURES = "systemd"

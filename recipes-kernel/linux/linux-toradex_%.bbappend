@@ -17,3 +17,8 @@ SRC_URI:append = " file://imx8mp-verdin-wifi-maivin.dts;subdir=git/arch/arm64/bo
 
 KERNEL_DEVICETREE:append = " freescale/imx8mp-verdin-nonwifi-maivin.dtb"
 KERNEL_DEVICETREE:append = " freescale/imx8mp-verdin-wifi-maivin.dtb"
+
+# The BSP forces CONFIG_PPS_CLIENT_GPIO=m (see pps.cfg), so load it from
+# systemd-modules-load.service rather than leaving it to udev coldplug --
+# chronyd starts with Restart=no and would not retry a missing /dev/pps-gps.
+KERNEL_MODULE_AUTOLOAD += "pps-gpio"
