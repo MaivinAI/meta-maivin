@@ -1,0 +1,17 @@
+# gpsd configuration for the Maivin carrier.
+#
+# The GNSS receiver is wired to UART4, which Linux enumerates as /dev/ttymxc3.
+#
+# The rate is pinned to 38400 8N1 rather than left to gpsd's auto-baud probing,
+# which misidentifies this u-blox module.  The port itself is switched to that
+# rate by the gpscfg ExecStartPre in gpsd.service.d/10-maivin-gps.conf -- if you
+# change the device or rate here, change it there too.
+#
+# Installed as gpsd.default; /etc/default/gpsd is an update-alternatives symlink
+# pointing at this file.
+
+START_DAEMON="true"
+GPSD_OPTIONS="-n -s 38400 -f 8N1"
+DEVICES="/dev/ttymxc3"
+USBAUTO="true"
+GPSD_SOCKET="/run/gpsd.sock"
