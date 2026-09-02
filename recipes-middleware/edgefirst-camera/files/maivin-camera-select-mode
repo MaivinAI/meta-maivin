@@ -1,12 +1,22 @@
 #!/bin/sh
-# Resolve CAMERA_MODE to an upstream isp-imx run.sh configuration name,
-# write it to /etc/default/isp, and restart imx8-isp.service so
-# start_isp.sh picks it up (see meta-maivin's isp-imx bbappend patches for
-# the ISP_CONFIG override and the dual_os08a20_4k configuration).
+# Resolve CAMERA_MODE to an upstream isp-imx run.sh configuration name and
+# its matching camera-info calibration path, write both to
+# /etc/default/isp, and restart imx8-isp.service so start_isp.sh picks up
+# ISP_CONFIG (see meta-maivin's isp-imx bbappend patches for the
+# ISP_CONFIG override and the dual_os08a20_4k configuration).
+#
+# camera.service also sources /etc/default/isp (after the static
+# /etc/default/camera default, so this overrides it) -- systemd re-reads
+# EnvironmentFile= fresh for each Exec* in a unit's activation, so the
+# edgefirst-camera process started right after this ExecStartPre picks up
+# the CAM_INFO_PATH resolved here for the CAMERA_MODE actually in effect.
 set -eu
 
 . /usr/lib/maivin/camera-mode.sh
 resolve_camera_mode
 
-echo "ISP_CONFIG=$ISP_CONFIG" > /etc/default/isp
+{
+    echo "ISP_CONFIG=$ISP_CONFIG"
+    echo "CAM_INFO_PATH=$CAM_INFO_PATH"
+} > /etc/default/isp
 systemctl restart imx8-isp.service

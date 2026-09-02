@@ -1,8 +1,8 @@
 # Shared OS08A20 camera mode table, sourced by maivin-camera-select-mode
 # (ExecStartPre, writes the selected upstream isp-imx run.sh configuration
-# name to /etc/default/isp before imx8-isp.service (re)starts -- see the
-# ISP_CONFIG override added to start_isp.sh by meta-maivin's isp-imx
-# bbappend patches).
+# name and the matching camera-info calibration path to /etc/default/isp
+# before imx8-isp.service (re)starts -- see the ISP_CONFIG override added
+# to start_isp.sh by meta-maivin's isp-imx bbappend patches).
 #
 # CAMERA_MODE selects the sensor's native readout mode -- it is independent
 # of CAMERA_SIZE in /etc/default/camera: the ISP's own dewarp/scale stage
@@ -18,19 +18,24 @@
 # defines both slots, so a single-camera CAMERA0-only configuration would
 # miss a CSI1-populated board. DUAL_CAMERA initializes both slots and is
 # robust to either.
+DEWARP_CONFIG_DIR="/usr/lib/imx8-isp/dewarp_config"
+
 resolve_camera_mode() {
     : "${CAMERA_MODE:=4k}"
     case "$CAMERA_MODE" in
         4k)
             ISP_CONFIG="dual_os08a20_4k"
+            CAM_INFO_PATH="$DEWARP_CONFIG_DIR/sensor_dwe_os08a20_4K_config.json"
             ;;
         1080p60)
             ISP_CONFIG="dual_os08a20_1080p60"
+            CAM_INFO_PATH="$DEWARP_CONFIG_DIR/sensor_dwe_os08a20_1080P_config.json"
             ;;
         *)
             echo "camera-mode: unknown CAMERA_MODE '$CAMERA_MODE', defaulting to 4k" >&2
             CAMERA_MODE=4k
             ISP_CONFIG="dual_os08a20_4k"
+            CAM_INFO_PATH="$DEWARP_CONFIG_DIR/sensor_dwe_os08a20_4K_config.json"
             ;;
     esac
 }

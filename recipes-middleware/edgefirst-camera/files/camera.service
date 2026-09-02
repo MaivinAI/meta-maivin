@@ -11,6 +11,11 @@ ExecStartPre=/usr/bin/maivin-camera-select-mode
 ExecStartPre=/usr/bin/maivin-camera-wait-ready
 ExecStart=/usr/bin/edgefirst-camera
 EnvironmentFile=/etc/default/camera
+# Written by maivin-camera-select-mode (ExecStartPre above) for the
+# CAMERA_MODE actually resolved this start; overrides CAM_INFO_PATH from
+# /etc/default/camera above. Optional ("-" prefix) since it doesn't exist
+# until the first ExecStartPre has run.
+EnvironmentFile=-/etc/default/isp
 Restart=always
 
 [Install]

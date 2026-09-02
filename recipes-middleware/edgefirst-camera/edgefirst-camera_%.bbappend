@@ -50,14 +50,29 @@ CAMERA_MODE="1080p60"
 # ---------------------------------------------------------------------------
 # Camera Calibration (Maivin override)
 # ---------------------------------------------------------------------------
-# Overrides the empty upstream default. isp-imx's start_isp.sh copies its
-# dewarp_config/*.json (Maivin's own OS08A20 + lens calibration -- see
-# isp-imx_%.bbappend) out to /etc/isp/ at runtime; this must match
-# CAMERA_MODE above (dual_os08a20_4k currently isn't covered here, since
-# 4k capture is already a known separate issue -- see camera-mode.sh).
+# Overrides the empty upstream default. Points directly at the calibration
+# JSON isp-imx's bbappend installs under ${libdir}/imx8-isp/dewarp_config/
+# (Maivin's own OS08A20 + lens calibration, EDGEAI-196/EDGEAI-428) -- the
+# same file run.sh itself loads (via its /run/imx8-isp mirror) for the
+# live dewarp pipeline, so this is guaranteed to exist on every device.
+#
+# This static value is only the fallback for CAMERA_MODE's default
+# (1080p60): maivin-camera-select-mode (ExecStartPre, see camera-mode.sh)
+# resolves the actual CAM_INFO_PATH for the active CAMERA_MODE at every
+# service start and writes it to /etc/default/isp, which camera.service
+# also sources and which overrides this value.
+#
+# Previously pointed at /etc/isp/, which nothing in the image populates --
+# that path only ever worked by accident, on devices carrying a stale
+# manually-placed file left over from mid-2025, before isp-imx's fork was
+# replaced by this bbappend (0b450f5). A freshly provisioned device has
+# nothing there, and edgefirst-camera treats a missing CAM_INFO_PATH file
+# as fatal, crash-looping camera.service forever (see build #71 field
+# report on verdin-imx8mp-15141028).
+#
 # Without this, camera never publishes CameraInfo on camera/info, and
 # consumers that require it (e.g. edgefirst-fusion) can't start.
-CAM_INFO_PATH="/etc/isp/sensor_dwe_os08a20_1080P_config.json"
+CAM_INFO_PATH="${libdir}/imx8-isp/dewarp_config/sensor_dwe_os08a20_1080P_config.json"
 EOF
 
     install -d ${D}${libdir}/maivin
