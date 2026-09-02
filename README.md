@@ -295,27 +295,48 @@ Two templated phc2sys services are provided:
 - **phc2sys-master@ethernet1.service** (enabled by default) — syncs **from** the system clock (NTP/GPSD-disciplined) **to** the `ethernet1` PHC. This makes the Maivin the PTP time source for sensors. Uses 16 Hz update rate with step threshold for boot-time convergence.
 - **phc2sys@.service** — syncs from a PHC to the system clock (slave mode, for when an external PTP master is present).
 
-### Chrony with GPSD Refclock
+### GNSS 1 PPS
 
-Chrony is configured with a GPSD shared-memory refclock drop-in (`/etc/chrony/conf.d/gpsd.conf`):
+The GNSS receiver's TIMEPULSE output reaches the SoM on **Verdin SODIMM 64** (QSPI_1_CS2#), which the i.MX8MP brings out as **GPIO3_IO16**. `maivin2.dts` declares a `pps-gpio` node on that line, and `pps.cfg` builds `CONFIG_PPS_CLIENT_GPIO` into the kernel.
+
+The pulse idles low and asserts high for 100 ms once per second, so the rising edge marks the top of the second — `assert-falling-edge` must **not** be set.
+
+> **PPS cannot come from the UART on this board.** The GNSS receiver is on `uart4` (`/dev/ttymxc3`), whose pinmux carries RXD and TXD only. `pps-ldisc` captures pulses on the UART's DCD modem-status line, and this port has no DCD pin. If gpsd attaches the PPS line discipline anyway you will see a `IMX-uart3` entry in `/sys/class/pps/` that registers correctly and captures zero edges, forever.
+
+The `pps` class enumerates in probe order, so `pps-gpio`, the ethernet PHC and the line discipline swap numbers between boots. A udev rule in `maivin.rules` provides the stable name **`/dev/pps-gps`**; always refer to that, never `/dev/ppsN`.
+
+### Chrony with GNSS Refclocks
+
+Chrony is configured through a drop-in (`/etc/chrony/conf.d/gpsd.conf`):
 
 ```
-refclock SHM 0 refid NMEA offset 0.0 delay 0.2 poll 2 noselect
-refclock SHM 1 refid PPS precision 1e-7 prefer poll 0
+refclock SHM 0 refid NMEA delay 0.5 poll 0 noselect
+refclock PPS /dev/pps-gps refid GPS lock NMEA maxlockage 10 precision 1e-7 poll 0 prefer
 ```
 
-- **SHM 0 (NMEA)**: GPS time via NMEA sentences (~100ms accuracy), marked `noselect` so it's only used for combining, not as a sole source
-- **SHM 1 (PPS)**: Pulse-per-second signal (~1μs accuracy), marked `prefer` as the primary time source
+- **SHM 0 (NMEA)**: GPS time from gpsd via NMEA sentences (~200 ms accuracy), marked `noselect` — it exists only to tell the PPS refclock *which second* each pulse belongs to
+- **PPS (GPS)**: the kernel `pps-gpio` capture, read directly by chrony rather than routed through gpsd's SHM 1. A bare pulse cannot name its own second, hence `lock NMEA`; `maxlockage 10` keeps pulses usable when an NMEA sample is briefly late
+
+The stock `chrony.conf` ships **no `include` directive**, so the `chrony_%.bbappend` adds one and removes the inline `refclock SHM 0` that the drop-in supersedes. Without the include the drop-in is silently ignored and chrony falls back to pool NTP.
 
 A drop-in override on upstream's `systemd-time-wait-sync.service` (`10-chrony-waitsync.conf`) runs a bounded `chronyc waitsync` wait so dependent services (e.g. `auto-provisioning.service`) start once the clock is synchronized -- or, on a unit with neither a GPS fix nor network NTP reachable, once the wait times out, so boot is never blocked indefinitely.
+
+Verify on target with `chronyc sources` — a healthy system shows `#* GPS` selected at stratum 1:
+
+```
+MS Name/IP address         Stratum Poll Reach LastRx Last sample
+#* GPS                          0   0   377     0    -32us[ -37us] +/-  125ns
+```
 
 ### Time Flow
 
 ```
-GPSD (NMEA + PPS)
-  └─→ Chrony (disciplines system clock)
-       └─→ phc2sys-master (syncs system clock → ethernet1 PHC)
-            └─→ ptp4l (distributes PHC time to sensors via PTP)
+GNSS receiver
+  ├─→ NMEA over /dev/ttymxc3 → GPSD → SHM 0 ─┐
+  └─→ TIMEPULSE on SODIMM 64 → pps-gpio ─────┤
+                                             └─→ Chrony (disciplines system clock)
+                                                  └─→ phc2sys-master (system clock → ethernet1 PHC)
+                                                       └─→ ptp4l (PHC time to sensors via PTP)
 ```
 
 ## AI/ML Stack

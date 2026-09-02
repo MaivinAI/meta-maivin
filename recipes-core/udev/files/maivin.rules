@@ -9,3 +9,8 @@ SUBSYSTEM=="i2c", DEVPATH=="/devices/platform/soc@0/30800000.bus/30a50000.i2c/i2
 
 # Maivin-2 Humidity and Temperature Sensor
 SUBSYSTEM=="iio", KERNEL=="iio*", ATTR{name}=="htu21", RUN+="/etc/udev/scripts/carrier_humidity.sh"
+
+# Maivin-2 GNSS 1 PPS (TIMEPULSE on Verdin SODIMM 64).  The pps class enumerates
+# in probe order, so pps-gpio, the ethernet PHC and the uart line discipline
+# swap numbers between boots.  Chrony refers to this symlink instead.
+SUBSYSTEM=="pps", ATTR{name}=="pps-gps*", SYMLINK+="pps-gps"

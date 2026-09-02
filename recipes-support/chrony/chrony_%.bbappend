@@ -19,6 +19,13 @@ do_install:append() {
     # GPSD refclock drop-in for chrony
     install -d ${D}${sysconfdir}/chrony/conf.d
     install -m 0644 ${WORKDIR}/gpsd.conf ${D}${sysconfdir}/chrony/conf.d
+
+    # The stock chrony.conf has no include directive, so the drop-in above was
+    # never read.  Add one, and drop the inline NMEA refclock it supersedes --
+    # keeping both would give chrony two refclocks on the same SHM segment.
+    sed -i -e '/^refclock SHM 0/d' ${D}${sysconfdir}/chrony.conf
+    printf '\n# Maivin drop-ins (GNSS refclocks).\ninclude %s/chrony/conf.d/*.conf\n' \
+        "${sysconfdir}" >> ${D}${sysconfdir}/chrony.conf
 }
 
 REQUIRED_DISTRO_FEATURES = "systemd"

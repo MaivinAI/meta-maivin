@@ -6,6 +6,7 @@ SRC_URI:append = " file://overlay.cfg"
 SRC_URI:append = " file://htu21.cfg"
 SRC_URI:append = " file://xfs.cfg"
 SRC_URI:append = " file://dp83tg720.cfg"
+SRC_URI:append = " file://pps.cfg"
 
 SRC_URI:append = " file://dp83tg720.c;subdir=git/drivers/net/phy"
 SRC_URI:append = " file://TI-DP83TG720-PHY-for-Raivin-ETH2.patch"
