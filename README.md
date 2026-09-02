@@ -307,7 +307,7 @@ refclock SHM 1 refid PPS precision 1e-7 prefer poll 0
 - **SHM 0 (NMEA)**: GPS time via NMEA sentences (~100ms accuracy), marked `noselect` so it's only used for combining, not as a sole source
 - **SHM 1 (PPS)**: Pulse-per-second signal (~1μs accuracy), marked `prefer` as the primary time source
 
-A `systemd-time-wait-sync-chrony.service` ensures the system clock is synchronized before dependent services start.
+A drop-in override on upstream's `systemd-time-wait-sync.service` (`10-chrony-waitsync.conf`) runs a bounded `chronyc waitsync` wait so dependent services (e.g. `auto-provisioning.service`) start once the clock is synchronized -- or, on a unit with neither a GPS fix nor network NTP reachable, once the wait times out, so boot is never blocked indefinitely.
 
 ### Time Flow
 

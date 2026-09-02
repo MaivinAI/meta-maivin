@@ -1,0 +1,33 @@
+#!/bin/sh
+# Bounded wait for chrony to synchronize the system clock, used as the
+# ExecStart override for upstream's systemd-time-wait-sync.service (see the
+# 10-chrony-waitsync.conf drop-in).
+#
+# We poll chrony directly via `chronyc waitsync` instead of the upstream
+# script's default approach (which polls timedatectl/the kernel NTP-sync
+# flag). That matters here because timedatectl's RTC read can itself fail
+# early in boot -- the board's rtc-ds1307 loses its stored time on every
+# power cycle (no working RTC backup supply) and the kernel refuses to
+# trust/report it until a valid time is written back, which used to make
+# our old timedatectl-parsing loop hang forever regardless of whether
+# chrony had actually synced. chronyc talks to chronyd directly and has no
+# such dependency.
+#
+# This wait is bounded (MAX_TRIES * INTERVAL) so a unit with neither a GPS
+# fix nor network NTP reachable still finishes booting -- it just continues
+# with an unsynchronized clock rather than blocking indefinitely.
+MAX_TRIES=24
+MAX_CORRECTION=0.5
+MAX_SKEW=0
+INTERVAL=5
+
+if /usr/bin/chronyc waitsync "$MAX_TRIES" "$MAX_CORRECTION" "$MAX_SKEW" "$INTERVAL"; then
+    # Persist the now-disciplined clock to the RTC immediately, rather than
+    # waiting on the kernel's own periodic (~11 minute) resync -- shortens
+    # the window in which the RTC stays unreadable after a cold boot.
+    /usr/sbin/hwclock -w --utc || echo "chrony-wait-sync: hwclock -w failed, continuing" >&2
+else
+    echo "chrony-wait-sync: gave up after ${MAX_TRIES} tries (~$((MAX_TRIES * INTERVAL))s) with no clock sync (no GPS fix / no NTP reachable) -- continuing boot with unsynchronized clock" >&2
+fi
+
+exit 0

@@ -1,16 +1,20 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
-SRC_URI += "file://systemd-time-wait-sync-chrony"
-SRC_URI += "file://systemd-time-wait-sync-chrony.service"
+SRC_URI += "file://chrony-wait-sync"
+SRC_URI += "file://10-chrony-waitsync.conf"
 SRC_URI += "file://gpsd.conf"
 
 inherit features_check systemd
 
 do_install:append() {
-    install -d ${D}${systemd_system_unitdir}
+    # Override upstream's systemd-time-wait-sync.service (which polls
+    # timedatectl/the kernel NTP-sync flag) to instead run a bounded
+    # `chronyc waitsync` wait -- see chrony-wait-sync for why.
+    install -d ${D}${systemd_unitdir}
+    install -m 0755 ${WORKDIR}/chrony-wait-sync ${D}${systemd_unitdir}
 
-    install -m 0755 ${WORKDIR}/systemd-time-wait-sync-chrony ${D}${systemd_unitdir}
-    install -m 0644 ${WORKDIR}/systemd-time-wait-sync-chrony.service ${D}${systemd_system_unitdir}
+    install -d ${D}${systemd_system_unitdir}/systemd-time-wait-sync.service.d
+    install -m 0644 ${WORKDIR}/10-chrony-waitsync.conf ${D}${systemd_system_unitdir}/systemd-time-wait-sync.service.d
 
     # GPSD refclock drop-in for chrony
     install -d ${D}${sysconfdir}/chrony/conf.d
@@ -18,8 +22,6 @@ do_install:append() {
 }
 
 REQUIRED_DISTRO_FEATURES = "systemd"
-SYSTEMD_SERVICE:${PN} += "systemd-time-wait-sync-chrony.service"
-SYSTEMD_AUTO_ENABLE = "enable"
 
 FILES:${PN} += "${systemd_unitdir}"
 FILES:${PN} += "${sysconfdir}/chrony"
