@@ -3,17 +3,31 @@
 # its matching camera-info calibration path, write both to
 # /etc/default/isp, and restart imx8-isp.service so start_isp.sh picks up
 # ISP_CONFIG (see meta-maivin's isp-imx bbappend patches for the
-# ISP_CONFIG override and the dual_os08a20_4k configuration).
+# ISP_CONFIG override and the dual_os08a20_4k configuration). camera.service
+# also sources /etc/default/isp, after the static /etc/default/camera
+# default, so this overrides it.
 #
-# camera.service also sources /etc/default/isp (after the static
-# /etc/default/camera default, so this overrides it) -- systemd re-reads
-# EnvironmentFile= fresh for each Exec* in a unit's activation, so the
-# edgefirst-camera process started right after this ExecStartPre picks up
-# the CAM_INFO_PATH resolved here for the CAMERA_MODE actually in effect.
+# A non-empty CAM_INFO_PATH in /etc/default/camera overrides the
+# CAMERA_MODE-derived default. It's read directly from that one file, in a
+# subshell, rather than trusted from this script's own inherited
+# environment: systemd applies EnvironmentFile= to every Exec* in this
+# unit's activation including this ExecStartPre, so plain $CAM_INFO_PATH
+# here would be last boot's auto-resolved value from /etc/default/isp
+# (which wins the merge) rather than the administrator's setting -- masking
+# a real override, and never re-resolving on a later CAMERA_MODE switch.
 set -eu
+
+USER_CAM_INFO_PATH=""
+if [ -r /etc/default/camera ]; then
+    USER_CAM_INFO_PATH=$(. /etc/default/camera; echo "${CAM_INFO_PATH:-}")
+fi
 
 . /usr/lib/maivin/camera-mode.sh
 resolve_camera_mode
+
+if [ -n "$USER_CAM_INFO_PATH" ]; then
+    CAM_INFO_PATH="$USER_CAM_INFO_PATH"
+fi
 
 {
     echo "ISP_CONFIG=$ISP_CONFIG"
