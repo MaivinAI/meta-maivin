@@ -25,12 +25,36 @@ fi
 . /usr/lib/maivin/camera-mode.sh
 resolve_camera_mode
 
+# CAM_INFO_PATH resolution, in order of preference:
+#   1. a readable administrator override from /etc/default/camera
+#   2. the CAMERA_MODE-derived Maivin calibration
+#   3. empty, leaving edgefirst-camera to publish camera/info from its own
+#      built-in generic defaults
+#
+# Steps 2 and 3 exist because an override outlives the file it names.
+# /etc/default/camera is persistent configuration that survives an OSTree
+# upgrade, so a path that was valid when it was written -- /etc/isp/, once
+# populated by the old imx8-isp fork -- becomes a dangling reference on any
+# later image, and an unconditional override would pin the service to it
+# forever. Falling back here recovers Maivin's own measured calibration
+# rather than settling for edgefirst-camera's approximate built-ins, which
+# know nothing about this sensor or lens. EDGEAI-1441.
 if [ -n "$USER_CAM_INFO_PATH" ]; then
-    CAM_INFO_PATH="$USER_CAM_INFO_PATH"
+    if [ -r "$USER_CAM_INFO_PATH" ]; then
+        CAM_INFO_PATH="$USER_CAM_INFO_PATH"
+    else
+        echo "maivin-camera-select-mode: CAM_INFO_PATH override '$USER_CAM_INFO_PATH' is not readable; falling back to the $CAMERA_MODE calibration '$CAM_INFO_PATH'" >&2
+    fi
+fi
+
+if [ -n "$CAM_INFO_PATH" ] && [ ! -r "$CAM_INFO_PATH" ]; then
+    echo "maivin-camera-select-mode: calibration '$CAM_INFO_PATH' is missing; camera/info will be published from edgefirst-camera's built-in defaults and is NOT valid for projection or fusion" >&2
+    CAM_INFO_PATH=""
 fi
 
 {
     echo "ISP_CONFIG=$ISP_CONFIG"
     echo "CAM_INFO_PATH=$CAM_INFO_PATH"
 } > /etc/default/isp
+
 systemctl restart imx8-isp.service
