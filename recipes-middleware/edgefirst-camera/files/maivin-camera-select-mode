@@ -57,4 +57,23 @@ fi
     echo "CAM_INFO_PATH=$CAM_INFO_PATH"
 } > /etc/default/isp
 
+# The restart is unconditional, not conditional on ISP_CONFIG having
+# changed. isp_media_server reliably serves only one client per lifetime:
+# attaching a second client to a session that has already served one
+# segfaults it, and camera gets EINVAL from the half-torn-down pipeline --
+# EDGEAI-1439's "every second time" symptom. Reproduced on
+# verdin-imx8mp-15141091: with this restart made conditional, 3 of 4
+# camera restarts against a live ISP killed it with SIGSEGV and failed the
+# start. Restarting here guarantees camera is always the ISP's first
+# client.
+#
+# This restart used to feed a crash loop: camera.service is Restart=always
+# and this runs as its ExecStartPre, so a camera that could not start
+# SIGKILLed isp_media_server every few seconds, leaking vvcam kernel state
+# until VIDIOC_S_FMT returned EBUSY for every client and only a reboot
+# recovered (19 restarts in ~60s, observed while investigating
+# EDGEAI-1439). That is bounded in camera.service instead, by RestartSec
+# and a StartLimit that can actually trip -- see EDGEAI-1403. Removing the
+# restart itself is not an option until the isp_media_server crash is
+# fixed.
 systemctl restart imx8-isp.service

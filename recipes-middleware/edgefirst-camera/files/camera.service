@@ -3,6 +3,15 @@ Description=Maivin Camera Service
 After=imx8-isp.service network.target
 Wants=imx8-isp.service network.target
 Before=recorder.service
+# Bound the restart loop. Restart=always with systemd's defaults (100ms
+# RestartSec, a 10s StartLimitIntervalSec) can never trip the limiter --
+# one start cycle, ExecStartPre plus the device-open attempt, already
+# outlasts the window -- so a camera that cannot open the device restarts
+# forever at ~100ms intervals. Five attempts inside a minute rides out a
+# transient ISP reload; past that the unit belongs in "failed", where it is
+# visible, instead of hammering the ISP. EDGEAI-1403.
+StartLimitIntervalSec=60
+StartLimitBurst=5
 
 [Service]
 Type=simple
@@ -17,6 +26,11 @@ EnvironmentFile=/etc/default/camera
 # until the first ExecStartPre has run.
 EnvironmentFile=-/etc/default/isp
 Restart=always
+# Paired with StartLimitIntervalSec/StartLimitBurst above: slow enough that
+# five failures fit inside the limiter's window, and that a restart does
+# not re-enter maivin-camera-select-mode before the previous ISP start has
+# settled.
+RestartSec=5s
 
 [Install]
 WantedBy=maivin.target
