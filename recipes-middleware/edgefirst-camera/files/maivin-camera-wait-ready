@@ -12,9 +12,9 @@
 # kernel-driver-level device node still exists and answers basic ioctls.
 # Observed in practice -- isp_media_server logged
 #   AdaptOpen:open sensor failed in v4l2 mode! check sensor driver, cfg is os08a20
-#   HalOpen: open adapter-0 failed in HAL
+#   HalOpen: open adapter-N failed in HAL
 #   CitfApi create error!
-#   initHardware new CitfApi 0 fail!
+#   initHardware new CitfApi N fail!
 # while /dev/video3 kept responding to `v4l2-ctl --info` throughout, and
 # isp_media_server does not retry or restart itself after this failure --
 # it keeps running indefinitely in this degraded state (observed as a
@@ -22,6 +22,33 @@
 # this and force a fresh imx8-isp.service restart ourselves rather than
 # declaring victory on a broken pipeline or passively waiting out the full
 # timeout.
+#
+# The presence of that signature is NOT on its own a failure, which an
+# earlier version of this script got wrong. We run isp_media_server in
+# DUAL_CAMERA mode, so it opens both CSI slots on every start, and a Maivin
+# carrier only ever has one of them populated: the two sensor ports exist
+# to select landscape or portrait orientation and place the imaging sensor
+# at the same physical location, so fitting one excludes the other. The
+# empty port therefore fails to open on every healthy start, and which port
+# is empty depends on the orientation fitted:
+#
+#   landscape  os08a20 1-0036  i2c@30a30000  csi@32e50000  CSI1  adapter-0 empty
+#   portrait   os08a20 2-0036  i2c@30a40000  csi@32e40000  CSI0  adapter-1 empty
+#
+# Matching a single adapter's failure meant this fired on every start of
+# every landscape board -- forcing an ISP restart each time camera.service
+# started, and feeding the restart storm addressed in camera.service and
+# maivin-camera-select-mode. It went unnoticed because the check was
+# validated on a portrait unit, where the empty port's failure did not
+# appear the same way.
+#
+# So count the *distinct* adapters that failed instead. Exactly one is
+# expected; two means the populated port failed as well, which is the real
+# degraded pipeline. isp_media_server reports and initializes each adapter
+# independently -- on a healthy landscape board adapter-0 logs this whole
+# signature and adapter-1 still comes up -- so a failed populated adapter
+# always logs its own line. (If a future carrier ever populates both ports,
+# this needs revisiting: healthy would then be zero failures.)
 #
 # A live functional test (actually requesting a frame) was considered
 # instead of log-scraping, but isp_media_server holds its own persistent
@@ -36,8 +63,10 @@ MAX_TRIES=60
 isp_sensor_open_failed() {
     since=$(systemctl show -p ActiveEnterTimestamp --value imx8-isp.service 2>/dev/null) || return 1
     [ -n "$since" ] || return 1
-    journalctl -u imx8-isp.service --no-pager -S "$since" 2>/dev/null \
-        | grep -qE 'AdaptOpen:open sensor failed|CitfApi create error|initHardware new CitfApi.*fail'
+    failed=$(journalctl -u imx8-isp.service --no-pager -S "$since" 2>/dev/null \
+        | sed -n 's/.*open adapter-\([0-9][0-9]*\) failed.*/\1/p' \
+        | sort -u | wc -l)
+    [ "$failed" -ge 2 ]
 }
 
 i=0
