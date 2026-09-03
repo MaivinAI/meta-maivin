@@ -1,11 +1,11 @@
 #!/bin/sh
-# Poll for $CAMERA to be ready instead of blindly sleeping. isp-imx's
-# run.sh (invoked by maivin-camera-select-mode via ISP_CONFIG) reloads the
-# vvcam/os08a20 kernel modules on every (re)start, which briefly tears
-# down and recreates the device node -- systemd considers imx8-isp.service
-# "active" as soon as start_isp.sh/run.sh starts running, well before that
-# reload finishes, so camera.service needs to wait for the real signal
-# (the device responding) rather than guessing how long the reload takes.
+# Poll for $CAMERA to be ready instead of blindly sleeping.
+# imx8-isp.service is Type=simple, so systemd calls it "active" the moment
+# isp_media_server is exec'd -- well before the server has opened the
+# sensor and the capture device is answering. maivin-camera-select-mode
+# restarts the ISP immediately before this runs, so camera.service has to
+# wait for the real signal (the device responding) rather than guessing
+# how long that takes.
 #
 # Device-node existence alone is NOT sufficient: isp_media_server's
 # userspace sensor/HAL/CITF layer can fail to open the sensor while the
@@ -23,32 +23,12 @@
 # declaring victory on a broken pipeline or passively waiting out the full
 # timeout.
 #
-# The presence of that signature is NOT on its own a failure, which an
-# earlier version of this script got wrong. We run isp_media_server in
-# DUAL_CAMERA mode, so it opens both CSI slots on every start, and a Maivin
-# carrier only ever has one of them populated: the two sensor ports exist
-# to select landscape or portrait orientation and place the imaging sensor
-# at the same physical location, so fitting one excludes the other. The
-# empty port therefore fails to open on every healthy start, and which port
-# is empty depends on the orientation fitted:
-#
-#   landscape  os08a20 1-0036  i2c@30a30000  csi@32e50000  CSI1  adapter-0 empty
-#   portrait   os08a20 2-0036  i2c@30a40000  csi@32e40000  CSI0  adapter-1 empty
-#
-# Matching a single adapter's failure meant this fired on every start of
-# every landscape board -- forcing an ISP restart each time camera.service
-# started, and feeding the restart storm addressed in camera.service and
-# maivin-camera-select-mode. It went unnoticed because the check was
-# validated on a portrait unit, where the empty port's failure did not
-# appear the same way.
-#
-# So count the *distinct* adapters that failed instead. Exactly one is
-# expected; two means the populated port failed as well, which is the real
-# degraded pipeline. isp_media_server reports and initializes each adapter
-# independently -- on a healthy landscape board adapter-0 logs this whole
-# signature and adapter-1 still comes up -- so a failed populated adapter
-# always logs its own line. (If a future carrier ever populates both ports,
-# this needs revisiting: healthy would then be zero failures.)
+# maivin-isp-detect resolves the populated slot and starts the ISP with
+# CAMERA0 or CAMERA1, so only that one pipeline is initialised and a
+# healthy start logs none of this at all. Any occurrence is therefore a
+# real failure. This used to have to count distinct adapters, because
+# DUAL_CAMERA opened both slots and the always-empty one always failed --
+# that is gone along with the run.sh wrappers.
 #
 # A live functional test (actually requesting a frame) was considered
 # instead of log-scraping, but isp_media_server holds its own persistent
@@ -63,10 +43,8 @@ MAX_TRIES=60
 isp_sensor_open_failed() {
     since=$(systemctl show -p ActiveEnterTimestamp --value imx8-isp.service 2>/dev/null) || return 1
     [ -n "$since" ] || return 1
-    failed=$(journalctl -u imx8-isp.service --no-pager -S "$since" 2>/dev/null \
-        | sed -n 's/.*open adapter-\([0-9][0-9]*\) failed.*/\1/p' \
-        | sort -u | wc -l)
-    [ "$failed" -ge 2 ]
+    journalctl -u imx8-isp.service --no-pager -S "$since" 2>/dev/null \
+        | grep -qE 'AdaptOpen:open sensor failed|open adapter-[0-9]+ failed|CitfApi create error|initHardware new CitfApi.*fail'
 }
 
 i=0

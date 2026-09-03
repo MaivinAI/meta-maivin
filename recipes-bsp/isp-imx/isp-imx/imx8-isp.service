@@ -1,0 +1,55 @@
+# Maivin: replaces upstream's unit, which runs start_isp.sh -> run.sh ->
+# isp_media_server. Those two wrappers exist to identify the board from the
+# device tree, reload the kernel modules, and generate sensor configuration
+# into their own directory on every start. None of that applies here: the
+# board is known at build time, the modules are loaded at boot by the
+# softdep in imx8_media_dev.conf, and the sensor configuration is static and
+# shipped in the image.
+#
+# Everything those 400-odd lines computed reduces to two values -- which
+# camera to open, and which sensor mode to use -- so pass both directly and
+# start the server itself. The working directory only has to hold the two
+# Sensor_Entry.cfg files, which is why mode selection is just a matter of
+# pointing at a different directory; every other path inside them is
+# absolute. isp_media_server never writes to its working directory (its
+# only write is the absolute /run/isp_media_server.pid), so that directory
+# can live in the read-only OSTree tree.
+[Unit]
+Description=ISP i.MX 8Mplus daemon
+# Upstream allowed 40 starts per 500s. That was sized for a wrapper script
+# that took seconds to fail; maivin-isp-detect fails in milliseconds when
+# the sensor is not bound, so the whole budget burns in a moment and the
+# unit then refuses to start even once the fault is fixed -- which turns a
+# clear "camera not wired" fault into a confusing "cannot start at all".
+# Five attempts in a minute is enough to ride out a sensor that probes
+# late; past that the unit belongs in "failed" where QA can see it.
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=5s
+
+# ISP_MODE has a default so the ISP can come up on its own at boot, before
+# camera.service has ever written /etc/default/isp. ISP_CAMERA deliberately
+# has none: it comes only from maivin-isp-detect below, which fails the
+# unit outright if it cannot identify the sensor rather than falling back
+# to a mode that would start on any board.
+Environment=ISP_MODE=1080p60
+
+# ISP_MODE (and CAM_INFO_PATH, for camera.service) written by
+# maivin-camera-select-mode from CAMERA_MODE in /etc/default/camera.
+EnvironmentFile=-/etc/default/isp
+
+# ISP_CAMERA written by the ExecStartPre below. Deliberately a separate
+# file on tmpfs: machine detection and operator configuration never
+# overwrite each other, and a detected value cannot go stale across an
+# image upgrade the way a persistent /etc file can.
+EnvironmentFile=-/run/imx8-isp-camera
+
+ExecStartPre=/usr/bin/maivin-isp-detect
+ExecStart=/usr/bin/env --chdir=/usr/lib/imx8-isp/modes/${ISP_MODE} /usr/lib/imx8-isp/isp_media_server ${ISP_CAMERA}
+
+[Install]
+WantedBy=multi-user.target

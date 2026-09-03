@@ -1,9 +1,8 @@
 #!/bin/sh
-# Resolve CAMERA_MODE to an upstream isp-imx run.sh configuration name and
-# its matching camera-info calibration path, write both to
-# /etc/default/isp, and restart imx8-isp.service so start_isp.sh picks up
-# ISP_CONFIG (see meta-maivin's isp-imx bbappend patches for the
-# ISP_CONFIG override and the dual_os08a20_4k configuration). camera.service
+# Resolve CAMERA_MODE to a sensor mode and its matching camera-info
+# calibration path, write both to /etc/default/isp, and restart
+# imx8-isp.service so it picks up ISP_MODE (see meta-maivin's isp-imx
+# bbappend, which ships one working directory per mode). camera.service
 # also sources /etc/default/isp, after the static /etc/default/camera
 # default, so this overrides it.
 #
@@ -53,11 +52,11 @@ if [ -n "$CAM_INFO_PATH" ] && [ ! -r "$CAM_INFO_PATH" ]; then
 fi
 
 {
-    echo "ISP_CONFIG=$ISP_CONFIG"
+    echo "ISP_MODE=$ISP_MODE"
     echo "CAM_INFO_PATH=$CAM_INFO_PATH"
 } > /etc/default/isp
 
-# The restart is unconditional, not conditional on ISP_CONFIG having
+# The restart is unconditional, not conditional on ISP_MODE having
 # changed. isp_media_server reliably serves only one client per lifetime:
 # attaching a second client to a session that has already served one
 # segfaults it, and camera gets EINVAL from the half-torn-down pipeline --

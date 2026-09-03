@@ -1,0 +1,53 @@
+#!/bin/sh
+# Resolve which CSI slot the camera is actually on, and write the matching
+# isp_media_server argument to /run/imx8-isp-camera.
+#
+# A Maivin carrier has two sensor ports -- one for landscape, one for
+# portrait -- which place the imaging sensor at the same physical location,
+# so exactly one is ever populated. The device tree declares both, which is
+# why upstream's start_isp.sh (which counts device-tree nodes) always
+# concluded "dual" and initialised two pipelines on a one-sensor board. The
+# bound i2c client says which port is real:
+#
+#   os08a20 1-0036   i2c@30a30000   csi@32e50000   CSI1   CAMERA1  landscape
+#   os08a20 2-0036   i2c@30a40000   csi@32e40000   CSI0   CAMERA0  portrait
+#
+# Confirmed on verdin-imx8mp-15141091 (landscape, binds 1-0036) and
+# verdin-imx8mp-06976848 (portrait, binds 2-0036).
+#
+# Anything unexpected is a hard failure. isp_media_server does have a
+# DUAL_CAMERA mode that initialises both slots and would therefore start on
+# either orientation, but falling back to it would paper over a camera that
+# is not wired the way a Maivin is supposed to be wired. This is a packaged
+# camera system with one known configuration: a sensor that cannot be
+# located is a fault to be found in QA, not a condition to degrade around.
+# Failing here stops imx8-isp.service, which stops camera.service, which is
+# exactly the signal we want.
+set -eu
+
+# Clear any previous result first, so a failed detection can never leave a
+# stale value behind for something else to pick up.
+rm -f /run/imx8-isp-camera
+
+detected=""
+found=0
+
+for client in /sys/bus/i2c/drivers/os08a20/*-0036; do
+    [ -e "$client" ] || continue
+    found=$((found + 1))
+    bus=$(basename "$client")
+    bus=${bus%%-*}
+    case "$bus" in
+        1) detected=CAMERA1 ;;
+        2) detected=CAMERA0 ;;
+        *) detected="" ;;
+    esac
+done
+
+if [ "$found" -ne 1 ] || [ -z "$detected" ]; then
+    echo "maivin-isp-detect: expected exactly one bound os08a20 sensor on i2c-1 (CSI1) or i2c-2 (CSI0), found $found" >&2
+    echo "maivin-isp-detect: refusing to start the ISP; the camera is not wired as expected" >&2
+    exit 1
+fi
+
+echo "ISP_CAMERA=$detected" > /run/imx8-isp-camera
