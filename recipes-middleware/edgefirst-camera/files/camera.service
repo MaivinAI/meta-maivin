@@ -16,6 +16,13 @@ StartLimitBurst=5
 [Service]
 Type=simple
 User=root
+# maivin-camera-select-mode can now block up to ~65s riding out
+# imx8-isp.service's own StartLimitIntervalSec when its restart is
+# rejected, and maivin-camera-wait-ready's own poll loop can take up to
+# ~60s on top of that. Both are comfortably past systemd's 90s
+# DefaultTimeoutStartSec, which would otherwise SIGTERM the ExecStartPre
+# chain mid-recovery instead of letting it finish.
+TimeoutStartSec=180
 ExecStartPre=/usr/bin/maivin-camera-select-mode
 ExecStartPre=/usr/bin/maivin-camera-wait-ready
 ExecStart=/usr/bin/edgefirst-camera

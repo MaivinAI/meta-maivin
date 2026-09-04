@@ -21,10 +21,21 @@ Description=ISP i.MX 8Mplus daemon
 # the sensor is not bound, so the whole budget burns in a moment and the
 # unit then refuses to start even once the fault is fixed -- which turns a
 # clear "camera not wired" fault into a confusing "cannot start at all".
-# Five attempts in a minute is enough to ride out a sensor that probes
-# late; past that the unit belongs in "failed" where QA can see it.
+#
+# maivin-camera-select-mode unconditionally restarts this unit on every
+# single camera.service start attempt, to guarantee camera.service is
+# always this daemon's first client (see select-mode's own comments).
+# That means camera.service's own StartLimitBurst=5/StartLimitIntervalSec=
+# 60s worth of restarts -- driven by anything that makes edgefirst-camera
+# fail to start, not just a real ISP problem -- lands here too, stacked on
+# top of whatever maivin-camera-wait-ready adds when it detects a genuine
+# sensor-open failure. Five was tripping on that unrelated churn alone.
+# Sized for camera.service's full burst plus real headroom for
+# wait-ready's own fault-driven restarts, so an edgefirst-camera crash loop
+# doesn't take this unit down as a side effect. A real, persistent ISP
+# failure still trips it -- just after more attempts than before.
 StartLimitIntervalSec=60
-StartLimitBurst=5
+StartLimitBurst=15
 
 [Service]
 Type=simple
