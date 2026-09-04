@@ -1,7 +1,7 @@
 inherit toradex-devicetree
 
 SRC_URI = "git://github.com/MaivinAI/maivin-overlays.git;protocol=ssh;branch=main"
-SRCREV = "8e8c3217b9201a39ac4162f69710c8c16134e78f"
+SRCREV = "5c9ab4d263e8c7f2f613e20222bbda5dd236e31b"
 SRCREV:use-head-next = "${AUTOREV}"
 SRCBRANCH = "main"
 

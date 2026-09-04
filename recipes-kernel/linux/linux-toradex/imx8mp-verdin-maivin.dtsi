@@ -142,6 +142,77 @@
 	};
 };
 
+/* Renames SODIMM_19 (GPIO3_IO20) to OUTPUT_1, the open-drain half of the
+ * user-servicable connector pin; see &gpio4 below for its INPUT_1 twin. */
+&gpio3 {
+	gpio-line-names = "SODIMM_52",
+			  "SODIMM_54",
+			  "",
+			  "",
+			  "",
+			  "",
+			  "SODIMM_56",
+			  "SODIMM_58",
+			  "SODIMM_60",
+			  "SODIMM_62",
+			  "",
+			  "",
+			  "",
+			  "",
+			  "SODIMM_66",
+			  "",
+			  "SODIMM_64",
+			  "",
+			  "",
+			  "SODIMM_34",
+			  "OUTPUT_1",
+			  "",
+			  "SODIMM_32",
+			  "",
+			  "",
+			  "SODIMM_30",
+			  "SODIMM_59",
+			  "SODIMM_57",
+			  "SODIMM_63",
+			  "SODIMM_61";
+};
+
+/* Renames SODIMM_21 (GPIO4_IO28) to INPUT_1; see &gpio3 above for OUTPUT_1. */
+&gpio4 {
+	gpio-line-names = "SODIMM_252",
+			  "SODIMM_222",
+			  "SODIMM_36",
+			  "SODIMM_220",
+			  "SODIMM_193",
+			  "SODIMM_191",
+			  "SODIMM_201",
+			  "SODIMM_203",
+			  "SODIMM_205",
+			  "SODIMM_207",
+			  "SODIMM_199",
+			  "SODIMM_197",
+			  "SODIMM_221",
+			  "SODIMM_219",
+			  "SODIMM_217",
+			  "SODIMM_215",
+			  "SODIMM_211",
+			  "SODIMM_213",
+			  "SODIMM_189",
+			  "SODIMM_244",
+			  "SODIMM_38",
+			  "",
+			  "SODIMM_76",
+			  "SODIMM_135",
+			  "SODIMM_133",
+			  "SODIMM_17",
+			  "SODIMM_24",
+			  "SODIMM_26",
+			  "INPUT_1",
+			  "SODIMM_256",
+			  "SODIMM_48",
+			  "SODIMM_44";
+};
+
 /* Verdin PCIE_1 */
 &pcie {
 	status = "disabled";
@@ -280,11 +351,32 @@
 
 &iomuxc {
 	pinctrl-names = "default";
-	pinctrl-0 = <&pinctrl_watchdog>;
+	pinctrl-0 = <&pinctrl_watchdog>, <&pinctrl_gpio_input_1>, <&pinctrl_gpio_output_1>;
 
 	pinctrl_watchdog: watchdog {
 		fsl,pins =
 		<MX8MP_IOMUXC_NAND_ALE__GPIO3_IO00		0x82>;	/* SODIMM 52 - WDI */
+	};
+
+	/*
+	 * User-servicable INPUT_1, external connector.
+	 * Schmitt trigger + weak pull-up backs up the external 100k pull-up;
+	 * a button or external drive pulls this to ground.
+	 */
+	pinctrl_gpio_input_1: gpioinput1grp {
+		fsl,pins =
+		<MX8MP_IOMUXC_SAI3_RXFS__GPIO4_IO28		0x1c4>;	/* SODIMM 21 - INPUT_1 */
+	};
+
+	/*
+	 * User-servicable OUTPUT_1, external connector, wired to the same net
+	 * as INPUT_1. ODE (open drain) so this can only pull the net low or
+	 * release it high via the external 100k pull-up, never contend with
+	 * INPUT_1 or whatever the user has wired to drive the net.
+	 */
+	pinctrl_gpio_output_1: gpiooutput1grp {
+		fsl,pins =
+		<MX8MP_IOMUXC_SAI5_RXC__GPIO3_IO20		0x1e2>;	/* SODIMM 19 - OUTPUT_1 */
 	};
 
 	pinctrl_m2_reg: m2_reg {
