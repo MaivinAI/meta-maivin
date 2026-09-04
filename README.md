@@ -91,11 +91,7 @@ In addition to the services above, the image includes:
 
 ### Pre-loaded Models
 
-The **model** bbappend ships three pre-trained TFLite people detection models installed to `/usr/share/edgefirst/model/`:
-
-- `modelpack-people.tflite` — multi-task (detection + classification)
-- `modelpack-people-mask.tflite` — segmentation
-- `modelpack-people-detect.tflite` — detection-only
+The **model** service runs the YOLOv8n detection model from `edgefirst-modelzoo`, installed to `/usr/share/edgefirst/modelzoo/`. That default is set by the `edgefirst-model` recipe in meta-edgefirst, not here.
 
 The **fusion** bbappend ships three RadarExp radar-camera fusion models installed to `/usr/share/edgefirst/fusion/`.
 
