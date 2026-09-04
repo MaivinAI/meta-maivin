@@ -25,6 +25,16 @@ do_install:append() {
     # Rename config file to short name
     mv ${D}${sysconfdir}/default/edgefirst-fusion ${D}${sysconfdir}/default/fusion
 
+    # Maivin ships a DRVEGRD radar and enables late radar-vision fusion OOTB.
+    # Upstream leaves RADAR_PCD_TOPIC empty (radar fusion off) and defaults
+    # BBOX3D_SRC to lidar, which Maivin does not have. Topics are relative
+    # to the hostname session namespace and carry no rt/ prefix -- the wire
+    # form is {hostname}/radar/targets.
+    sed -i 's|^RADAR_PCD_TOPIC = .*|RADAR_PCD_TOPIC = "radar/targets"|' \
+        ${D}${sysconfdir}/default/fusion
+    sed -i 's|^BBOX3D_SRC = .*|BBOX3D_SRC = "radar"|' \
+        ${D}${sysconfdir}/default/fusion
+
     ln -sf edgefirst-fusion ${D}${bindir}/fusion
 }
 
