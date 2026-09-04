@@ -75,4 +75,10 @@ fi
 # and a StartLimit that can actually trip -- see EDGEAI-1403. Removing the
 # restart itself is not an option until the isp_media_server crash is
 # fixed.
-systemctl restart imx8-isp.service
+#
+# A rejected restart here (imx8-isp.service's own StartLimit already
+# tripped) must not abort this script via set -e, or camera.service fails
+# before maivin-camera-wait-ready gets a real chance to poll.
+if ! systemctl restart imx8-isp.service; then
+    echo "maivin-camera-select-mode: imx8-isp.service restart was refused (likely rate-limited); continuing without forcing a restart this attempt" >&2
+fi

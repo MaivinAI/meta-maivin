@@ -40,13 +40,20 @@ set -eu
 : "${CAMERA:=/dev/video3}"
 MAX_TRIES=60
 
+# The RTC has no backup battery, so the clock is unsynced early in boot.
+# journalctl -S with an unsynced $since can match entries from earlier,
+# already-synced boots instead of just this restart; -b 0 keeps this
+# scoped to the current boot regardless of clock state.
 isp_sensor_open_failed() {
     since=$(systemctl show -p ActiveEnterTimestamp --value imx8-isp.service 2>/dev/null) || return 1
     [ -n "$since" ] || return 1
-    journalctl -u imx8-isp.service --no-pager -S "$since" 2>/dev/null \
+    journalctl -u imx8-isp.service -b 0 --no-pager -S "$since" 2>/dev/null \
         | grep -qE 'AdaptOpen:open sensor failed|open adapter-[0-9]+ failed|CitfApi create error|initHardware new CitfApi.*fail'
 }
 
+# A rejected restart (imx8-isp.service's own StartLimitBurst below) must
+# not abort this script via set -e, or camera.service fails permanently
+# before the ISP gets a real chance to recover.
 i=0
 while [ "$i" -lt "$MAX_TRIES" ]; do
     if v4l2-ctl --device="$CAMERA" --info >/dev/null 2>&1; then
@@ -54,9 +61,14 @@ while [ "$i" -lt "$MAX_TRIES" ]; do
             exit 0
         fi
         echo "maivin-camera-wait-ready: isp_media_server failed to open the sensor, restarting imx8-isp.service" >&2
-        systemctl restart imx8-isp.service
-        sleep 2
-        i=$((i + 2))
+        if systemctl restart imx8-isp.service; then
+            sleep 2
+            i=$((i + 2))
+        else
+            echo "maivin-camera-wait-ready: imx8-isp.service restart was refused (likely rate-limited); waiting for its restart budget to recover" >&2
+            sleep 5
+            i=$((i + 5))
+        fi
         continue
     fi
     i=$((i + 1))
