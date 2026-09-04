@@ -1,0 +1,72 @@
+From: Sébastien Taylor <sebastien@au-zone.com>
+Date: Thu, 4 Sep 2026 00:30:00 +0000
+Subject: [PATCH] clk: imx8mp: raise the CAM2_PIX constraint for 4K capture
+
+From Linux 6.6.87 ("clk: imx8mp: inform CCF of maximum frequency of
+clocks") the CCF enforces per-clock maximums on i.MX8MP. The tables are
+applied unevenly for the two CSI-2 receivers: CAM1_PIX appears only in
+the nominal (400MHz) and overdrive (500MHz) tables, which are gated
+behind the fsl,operating-mode device-tree property, while CAM2_PIX
+carries an unconditional 277MHz entry in the common table.
+
+This platform does not set fsl,operating-mode, so in practice CAM1_PIX
+ends up unconstrained while CAM2_PIX is hard-limited -- and on a
+landscape Maivin the sensor binds to CSI1, which is CAM2_PIX. The result
+is that the only camera port a unit actually uses is the only one capped.
+
+4K capture needs more than 277MHz. Measured on verdin-imx8mp-15141091 as
+camera/frame publish rate:
+
+  266.67MHz (shipped)   4K  2.02fps    1080p60  60.0Hz
+  333.33MHz             4K 30.05fps    1080p60  60.0Hz
+  500.00MHz             4K 30.06fps    1080p60  60.0Hz
+
+Frequency is the variable rather than the clock routing: 266.67MHz
+reached via sys_pll1_266m/1 and via sys_pll1_800m/3 both fail
+identically. No integer divisor of any available parent lands in
+(266.67, 277], so the highest in-spec rate obtainable is the one that
+fails -- 4K on this port is only reachable out of spec.
+
+Without this, maivin-overlays' 333MHz request is silently clamped to
+250MHz, which is below the 266.67MHz that shipped previously, regressing
+4K and endangering 1080p60. That clamp is what produced the ~29x capture
+collapse (60fps -> ~2fps) first seen on Torizon 7.3.0 / kernel 6.6.94.
+
+Raised to 500MHz rather than removed so the clock keeps a bound, and to
+match the sibling receiver's overdrive limit.
+
+Signed-off-by: Sébastien Taylor <sebastien@au-zone.com>
+---
+diff --git a/drivers/clk/imx/clk-imx8mp.c b/drivers/clk/imx/clk-imx8mp.c
+index 7010d0391390..581aa4bc62aa 100644
+--- a/drivers/clk/imx/clk-imx8mp.c
++++ b/drivers/clk/imx/clk-imx8mp.c
+@@ -479,7 +479,27 @@ static const struct imx8mp_clock_constraints imx8mp_clock_common_constraints[] =
+ 	{ IMX8MP_CLK_USDHC3,               400 * HZ_PER_MHZ },
+ 	{ IMX8MP_CLK_MEDIA_MIPI_PHY1_REF,  300 * HZ_PER_MHZ },
+ 	{ IMX8MP_CLK_MEDIA_DISP1_PIX,      250 * HZ_PER_MHZ },
+-	{ IMX8MP_CLK_MEDIA_CAM2_PIX,       277 * HZ_PER_MHZ },
++	/*
++	 * Maivin: raised from the datasheet's 277MHz to match
++	 * CAM1_PIX's overdrive limit. The two CSI-2 receivers are
++	 * symmetric hardware, but CAM1_PIX is constrained only by the
++	 * nominal/overdrive tables (gated behind fsl,operating-mode,
++	 * which this platform does not set) while CAM2_PIX carries an
++	 * unconditional cap here -- so the port a Maivin's sensor
++	 * actually lands on is the only one limited.
++	 *
++	 * 4K capture needs more than the cap allows. Measured on a
++	 * Verdin iMX8MP: 3840x2160 runs at 2.02fps with the pixel
++	 * clock at 266.67MHz and 30.05fps at 333.33MHz, and no
++	 * divisor of any available parent lands in (266.67, 277], so
++	 * the highest in-spec rate is the one that fails. 1080p60 is
++	 * unaffected at either rate.
++	 *
++	 * This is a deliberate out-of-spec decision, kept as a bound
++	 * rather than removed so the clock still cannot be set to an
++	 * arbitrary value.
++	 */
++	{ IMX8MP_CLK_MEDIA_CAM2_PIX,       500 * HZ_PER_MHZ },
+ 	{ IMX8MP_CLK_MEDIA_LDB,            595 * HZ_PER_MHZ },
+ 	{ IMX8MP_CLK_MEDIA_MIPI_TEST_BYTE, 200 * HZ_PER_MHZ },
+ 	{ IMX8MP_CLK_ECSPI3,                80 * HZ_PER_MHZ },
