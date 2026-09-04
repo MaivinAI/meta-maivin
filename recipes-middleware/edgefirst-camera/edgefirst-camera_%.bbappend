@@ -48,22 +48,23 @@ do_install:append() {
 CAMERA_MODE="1080p60"
 
 # ---------------------------------------------------------------------------
-# Camera Calibration (Maivin override)
+# Camera Calibration on Maivin -- see CAM_INFO_PATH above
 # ---------------------------------------------------------------------------
-# Leave empty (the default below) to auto-select Maivin's own OS08A20 +
-# lens calibration matching the active CAMERA_MODE: maivin-camera-select-mode
-# (ExecStartPre, see camera-mode.sh) resolves CAM_INFO_PATH from CAMERA_MODE
-# at every service start, under ${libdir}/imx8-isp/dewarp_config/ -- the
-# same calibration run.sh itself loads (via its /run/imx8-isp mirror) for
-# the live dewarp pipeline, so it's guaranteed to exist on every device.
+# This section only documents what CAM_INFO_PATH means on this platform.
+# Set the value at its own definition earlier in this file; do NOT add a
+# second CAM_INFO_PATH= line here. Both systemd's EnvironmentFile parser
+# and maivin-camera-select-mode (which sources this file) resolve a
+# duplicated key last-wins, so a trailing assignment silently overrides
+# whatever an administrator set at the documented definition.
 #
-# Set this to a non-empty path instead (e.g. a per-unit measured
-# calibration file) to override the auto-selected default -- it always
-# wins over the CAMERA_MODE-derived value, on every service start.
+# Left empty, maivin-camera-select-mode (ExecStartPre, see camera-mode.sh)
+# resolves CAM_INFO_PATH from CAMERA_MODE at every service start, choosing
+# Maivin's own OS08A20 + lens calibration under
+# ${libdir}/imx8-isp/dewarp_config/ -- the same files the ISP loads for the
+# live dewarp pipeline, so they exist on every device.
 #
-# Without this, camera never publishes CameraInfo on camera/info, and
-# consumers that require it (e.g. edgefirst-fusion) can't start.
-CAM_INFO_PATH=""
+# Set it to a readable path (e.g. a per-unit measured calibration) to
+# override that auto-selection on every service start.
 EOF
 
     install -d ${D}${libdir}/maivin
