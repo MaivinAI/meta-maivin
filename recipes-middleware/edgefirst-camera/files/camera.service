@@ -7,10 +7,41 @@ Before=recorder.service
 # RestartSec, a 10s StartLimitIntervalSec) can never trip the limiter --
 # one start cycle, ExecStartPre plus the device-open attempt, already
 # outlasts the window -- so a camera that cannot open the device restarts
-# forever at ~100ms intervals. Five attempts inside a minute rides out a
-# transient ISP reload; past that the unit belongs in "failed", where it is
-# visible, instead of hammering the ISP. EDGEAI-1403.
-StartLimitIntervalSec=60
+# forever at ~100ms intervals. Past a few attempts the unit belongs in
+# "failed", where it is visible, instead of hammering the ISP. EDGEAI-1403.
+#
+# Sizing rule: StartLimitBurst * cycle must fit inside
+# StartLimitIntervalSec. systemd permits StartLimitBurst starts within the
+# window and refuses the next one, so the refusal only ever happens if the
+# whole run of them lands inside a single window. A window shorter than
+# that resets the count before it can be reached and the unit restarts
+# forever -- quietly reintroducing the exact failure this setting exists to
+# prevent. Getting this wrong is invisible until a device is already stuck
+# in the loop, so re-check the arithmetic when any timeout below changes.
+#
+# Cycle time is set by whichever startup step fails:
+#   ~30s  edgefirst-camera cannot open the device. Since camera 2.10.0 it
+#         retries in-process for up to 15s while the vvcam driver reports
+#         EAGAIN -- the ISP is running but not yet serving -- then exits.
+#         Plus a quick ExecStartPre chain and RestartSec below.
+#   ~67s  maivin-camera-wait-ready exhausts MAX_TRIES=60 and fails.
+#   ~70s  maivin-camera-select-mode gives up on a restart imx8-isp.service
+#         keeps refusing (ISP_RESTART_MAX_WAIT=65) and fails.
+# The slowest is ~70s, and 5 * 70s = 350s, so 360s covers all three.
+#
+# Two cases are deliberately left uncovered, both slow ExecStartPre paths
+# that log their own failure, unlike the silent fast restart loop this
+# limiter exists for. Covering either needs a window long enough to start
+# refusing an operator's own `systemctl restart camera`, which counts
+# toward the burst like any other start.
+#   ~130s the two ExecStartPre steps are sequential, so their times add:
+#         select-mode retrying a refused ISP restart for nearly its full
+#         65s and then succeeding, followed by wait-ready exhausting its
+#         own 60s. Under TimeoutStartSec below, so it runs to completion.
+#         Needs ~660s.
+#   ~185s TimeoutStartSec below fires on the ExecStartPre chain. Needs
+#         ~925s. SIGTERMs the chain mid-recovery and systemd logs it.
+StartLimitIntervalSec=360
 StartLimitBurst=5
 
 [Service]
@@ -33,10 +64,10 @@ EnvironmentFile=/etc/default/camera
 # until the first ExecStartPre has run.
 EnvironmentFile=-/etc/default/isp
 Restart=always
-# Paired with StartLimitIntervalSec/StartLimitBurst above: slow enough that
-# five failures fit inside the limiter's window, and that a restart does
-# not re-enter maivin-camera-select-mode before the previous ISP start has
-# settled.
+# A term in the cycle time the StartLimit arithmetic above depends on, so
+# changing this means re-checking that sizing. Also slow enough that a
+# restart does not re-enter maivin-camera-select-mode before the previous
+# ISP start has settled.
 RestartSec=5s
 
 [Install]
