@@ -20,14 +20,23 @@ Before=recorder.service
 # in the loop, so re-check the arithmetic when any timeout below changes.
 #
 # Cycle time is set by whichever startup step fails:
-#   ~30s  edgefirst-camera cannot open the device. Since camera 2.10.0 it
-#         retries in-process for up to 15s while the vvcam driver reports
-#         EAGAIN -- the ISP is running but not yet serving -- then exits.
-#         Plus a quick ExecStartPre chain and RestartSec below.
+#   ~25s  edgefirst-camera cannot open the device. Since camera 2.10.0 it
+#         retries in-process while the vvcam driver reports EAGAIN -- the
+#         ISP is running but not yet serving. Measured at 10s: the open is
+#         rejected immediately, so the 6-attempt cap ends the loop well
+#         before its 15s budget. Plus ExecStartPre and RestartSec below.
 #   ~67s  maivin-camera-wait-ready exhausts MAX_TRIES=60 and fails.
-#   ~70s  maivin-camera-select-mode gives up on a restart imx8-isp.service
-#         keeps refusing (ISP_RESTART_MAX_WAIT=65) and fails.
-# The slowest is ~70s, and 5 * 70s = 350s, so 360s covers all three.
+#    70s  maivin-camera-select-mode gives up on a restart imx8-isp.service
+#         keeps refusing (ISP_RESTART_MAX_WAIT=65) and fails. Measured
+#         exactly: 65s of retries plus RestartSec.
+# The slowest is 70s and 5 * 70s = 350s. 360s covers that but only by 10s,
+# and the failure mode of being one second short is silent -- the counter
+# resets and the unit restarts forever. A wider window only ever makes the
+# refusal more likely, so the margin is nearly free; the only cost is that
+# an operator's own repeated `systemctl restart camera` hits the burst
+# sooner. 420s buys a full extra cycle of slack for one more minute of
+# that. Verified on develop #122: the unit reached "failed" at 361s with a
+# 360s window, so the arithmetic is real, not theoretical.
 #
 # Two cases are deliberately left uncovered, both slow ExecStartPre paths
 # that log their own failure, unlike the silent fast restart loop this
@@ -41,7 +50,7 @@ Before=recorder.service
 #         Needs ~660s.
 #   ~185s TimeoutStartSec below fires on the ExecStartPre chain. Needs
 #         ~925s. SIGTERMs the chain mid-recovery and systemd logs it.
-StartLimitIntervalSec=360
+StartLimitIntervalSec=420
 StartLimitBurst=5
 
 [Service]

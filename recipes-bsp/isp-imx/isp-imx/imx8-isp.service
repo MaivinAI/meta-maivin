@@ -26,7 +26,7 @@ Description=ISP i.MX 8Mplus daemon
 # single camera.service start attempt, to guarantee camera.service is
 # always this daemon's first client (see select-mode's own comments).
 # That means camera.service's own StartLimitBurst=5/StartLimitIntervalSec=
-# 360s worth of restarts -- driven by anything that makes edgefirst-camera
+# 420s worth of restarts -- driven by anything that makes edgefirst-camera
 # fail to start, not just a real ISP problem -- lands here too, stacked on
 # top of whatever maivin-camera-wait-ready adds when it detects a genuine
 # sensor-open failure. Five was tripping on that unrelated churn alone.
@@ -38,10 +38,10 @@ Description=ISP i.MX 8Mplus daemon
 # What matters here is the rate, not camera.service's burst window, and the
 # rate is bounded by its cycle time. Its floor is ~10s -- a quick
 # ExecStartPre chain plus its RestartSec -- when edgefirst-camera fails
-# immediately for a reason that is not the ISP being unready; the ~30s case
+# immediately for a reason that is not the ISP being unready; the ~25s case
 # where it does retry the ISP in-process is slower still. So camera.service
 # contributes at most ~6 restarts per window below, within the budget even
-# before wait-ready's own stack up. Widening its window from 60s to 360s did
+# before wait-ready's own stack up. Widening its window from 60s to 420s did
 # not raise that rate -- it lowered total churn, because camera.service now
 # actually reaches "failed" on the sixth attempt instead of restarting
 # forever.
