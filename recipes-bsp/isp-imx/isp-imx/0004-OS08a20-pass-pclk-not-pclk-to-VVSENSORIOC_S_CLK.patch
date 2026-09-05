@@ -1,0 +1,36 @@
+From e5cfc23bd6d21b376cc2ed76d584d94e95a7aed4 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?S=C3=A9bastien=20Taylor?= <sebastien@au-zone.com>
+Date: Sat, 5 Sep 2026 16:51:39 +0000
+Subject: [PATCH 4/5] OS08a20: pass pclk, not &pclk, to VVSENSORIOC_S_CLK
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+pclk is already a pointer, so the ioctl received the address of the local
+pointer variable. Compare VVSENSORIOC_G_CLK, which passes pclk.
+
+Latent rather than active: the vvcam os08a20 handler for S_CLK is a no-op
+that never dereferences arg, so nothing observable changes on this sensor.
+Corrected so it stays correct if that handler is ever implemented.
+
+Signed-off-by: Sébastien Taylor <sebastien@au-zone.com>
+---
+ units/isi/drv/OS08a20/source/OS08a20.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/units/isi/drv/OS08a20/source/OS08a20.c b/units/isi/drv/OS08a20/source/OS08a20.c
+index 958bcf6..ff72fbf 100644
+--- a/units/isi/drv/OS08a20/source/OS08a20.c
++++ b/units/isi/drv/OS08a20/source/OS08a20.c
+@@ -135,7 +135,7 @@ static RESULT OS08A20_IsiSensorSetClkIss(IsiSensorHandle_t handle,
+     if (pclk == NULL)
+         return RET_NULL_POINTER;
+     
+-    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_CLK, &pclk);
++    ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_CLK, pclk);
+     if (ret != 0) {
+         TRACE(OS08A20_ERROR, "%s set clk error: %s\n", __func__,
+               strerror(errno));
+-- 
+2.43.0
+

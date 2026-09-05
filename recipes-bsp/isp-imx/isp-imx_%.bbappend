@@ -39,12 +39,19 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/isp-imx:"
 # imx8-isp fork. Without this, edgefirst-camera's CAM_INFO_PATH would
 # publish CameraInfo describing someone else's sensor and lens, silently
 # wrong for any consumer doing 2D/3D projection (e.g. edgefirst-fusion).
+# The 000N-* patches are generated from github.com/EdgeFirstAI/isp-imx
+# (branch main), which tracks this otherwise archive-delivered source.
 SRC_URI:append = " \
     file://imx8-isp.service \
     file://maivin-isp-detect \
     file://imx8_media_dev.conf \
     file://sensor_dwe_os08a20_1080P_config.json \
     file://sensor_dwe_os08a20_4K_config.json \
+    file://0001-OS08a20-report-errno-on-ioctl-failures.patch \
+    file://0002-OS08a20-fix-incorrect-and-unsafe-trace-messages.patch \
+    file://0003-OS08a20-free-the-sensor-context-when-open-fails.patch \
+    file://0004-OS08a20-pass-pclk-not-pclk-to-VVSENSORIOC_S_CLK.patch \
+    file://0005-OS08a20-report-the-outcome-of-the-sensor-open.patch \
 "
 
 # CAMERA_MODE name and the matching isp_media_server sensor mode index.

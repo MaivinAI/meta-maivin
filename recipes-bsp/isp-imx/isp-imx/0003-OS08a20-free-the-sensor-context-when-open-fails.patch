@@ -1,0 +1,74 @@
+From 2d3ae29006567cb8f148d56d566870725f9ff905 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?S=C3=A9bastien=20Taylor?= <sebastien@au-zone.com>
+Date: Sat, 5 Sep 2026 16:51:10 +0000
+Subject: [PATCH 3/5] OS08a20: free the sensor context when open fails
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Every error return after the malloc leaked the context and left
+pConfig->hSensor pointing at freed-to-be memory. Each open attempt cost
+one leak, and the ISP is restarted on every camera.service start.
+
+Signed-off-by: Sébastien Taylor <sebastien@au-zone.com>
+---
+ units/isi/drv/OS08a20/source/OS08a20.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
+
+diff --git a/units/isi/drv/OS08a20/source/OS08a20.c b/units/isi/drv/OS08a20/source/OS08a20.c
+index b157519..958bcf6 100644
+--- a/units/isi/drv/OS08a20/source/OS08a20.c
++++ b/units/isi/drv/OS08a20/source/OS08a20.c
+@@ -445,25 +445,25 @@ static RESULT OS08A20_IsiCreateSensorIss(IsiSensorInstanceConfig_t * pConfig)
+     result = OS08A20_IsiSensorSetPowerIss(pSensorCtx, BOOL_TRUE);
+     if (result != RET_SUCCESS) {
+         TRACE(OS08A20_ERROR, "%s set power error\n", __func__);
+-        return RET_FAILURE;
++        goto fail;
+     }
+     struct vvcam_clk_s clk;
+     memset(&clk, 0, sizeof(struct vvcam_clk_s));
+     result = OS08A20_IsiSensorGetClkIss(pSensorCtx, &clk);
+     if (result != RET_SUCCESS) {
+         TRACE(OS08A20_ERROR, "%s get clk error\n", __func__);
+-        return RET_FAILURE;
++        goto fail;
+     }
+     clk.status = 1;
+     result = OS08A20_IsiSensorSetClkIss(pSensorCtx, &clk);
+     if (result != RET_SUCCESS) {
+         TRACE(OS08A20_ERROR, "%s set clk error\n", __func__);
+-        return RET_FAILURE;
++        goto fail;
+     }
+     result = OS08A20_IsiResetSensorIss(pSensorCtx);
+     if (result != RET_SUCCESS) {
+         TRACE(OS08A20_ERROR, "%s retset sensor error\n", __func__);
+-        return RET_FAILURE;
++        goto fail;
+     }
+ 
+     IsiSensorMode_t SensorMode;
+@@ -471,12 +471,18 @@ static RESULT OS08A20_IsiCreateSensorIss(IsiSensorInstanceConfig_t * pConfig)
+     result = OS08A20_IsiSetSensorModeIss(pSensorCtx, &SensorMode);
+     if (result != RET_SUCCESS) {
+         TRACE(OS08A20_ERROR, "%s set sensor mode error\n", __func__);
+-        return RET_FAILURE;
++        goto fail;
+     }
+ 
+     TRACE(OS08A20_INFO, "%s (exit)\n", __func__);
+ 
+     return result;
++
++fail:
++    pConfig->hSensor = NULL;
++    free(pSensorCtx);
++
++    return RET_FAILURE;
+ }
+ 
+ static RESULT OS08A20_IsiReleaseSensorIss(IsiSensorHandle_t handle)
+-- 
+2.43.0
+

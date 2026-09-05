@@ -1,0 +1,177 @@
+From 9cca19d12a7b62e7747a3f3a16e7cf8cf4f5ad04 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?S=C3=A9bastien=20Taylor?= <sebastien@au-zone.com>
+Date: Sat, 5 Sep 2026 18:59:25 +0000
+Subject: [PATCH 5/5] OS08a20: report the outcome of the sensor open
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+isp_media_server cannot report whether the sensor opened: the completion
+it answers the kernel with carries no status, so a failed open looks
+exactly like a successful one from outside the daemon. This driver runs
+inside that daemon and performs the open, so it is the only component
+that knows.
+
+Report on every exit from IsiCreateSensorIss, tagging which step failed
+and carrying the errno from the ioctl that actually failed, on the subdev
+fd the driver already holds. The kernel side records it and exposes it at
+/sys/bus/i2c/devices/<i2c>/open_status.
+
+The call is best effort: a kernel without VVSENSORIOC_S_OPEN_STATUS
+returns an error here, and that must not turn a working open into a
+failed one.
+
+vvcam/common/vvsensor.h is the shared contract with the kernel driver and
+must stay byte-identical to the copy in isp-vvcam.
+
+Signed-off-by: Sébastien Taylor <sebastien@au-zone.com>
+---
+ units/isi/drv/OS08a20/source/OS08a20.c | 47 ++++++++++++++++++++++++++
+ vvcam/common/vvsensor.h                | 26 ++++++++++++++
+ 2 files changed, 73 insertions(+)
+
+diff --git a/units/isi/drv/OS08a20/source/OS08a20.c b/units/isi/drv/OS08a20/source/OS08a20.c
+index ff72fbf..8e59681 100644
+--- a/units/isi/drv/OS08a20/source/OS08a20.c
++++ b/units/isi/drv/OS08a20/source/OS08a20.c
+@@ -423,10 +423,44 @@ static RESULT OS08A20_IsiSensorSetStreamingIss(IsiSensorHandle_t handle,
+     return RET_SUCCESS;
+ }
+ 
++/*
++ * Report the outcome of the sensor open to the kernel sensor driver.
++ * isp_media_server cannot do this itself -- the completion it answers the
++ * kernel with carries no status, so a failed open is indistinguishable from
++ * a successful one to anything outside the daemon. This driver performs the
++ * open, so it is the only component that knows.
++ *
++ * Best effort: a kernel without VVSENSORIOC_S_OPEN_STATUS returns an error
++ * here, which must not turn a working open into a failed one.
++ */
++static void OS08A20_ReportOpenStatus(OS08A20_Context_t *pSensorCtx,
++                                     int32_t res, uint32_t step)
++{
++    HalContext_t *pHalCtx;
++    struct vvcam_sensor_open_status_s status;
++
++    if (!pSensorCtx)
++        return;
++
++    pHalCtx = (HalContext_t *) pSensorCtx->IsiCtx.HalHandle;
++    if (!pHalCtx)
++        return;
++
++    memset(&status, 0, sizeof(status));
++    status.result     = res;
++    status.step       = step;
++    status.mode_index = pSensorCtx->CurMode.index;
++    status.width      = pSensorCtx->CurMode.size.bounds_width;
++    status.height     = pSensorCtx->CurMode.size.bounds_height;
++
++    ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_OPEN_STATUS, &status);
++}
++
+ static RESULT OS08A20_IsiCreateSensorIss(IsiSensorInstanceConfig_t * pConfig)
+ {
+     RESULT result = RET_SUCCESS;
+     OS08A20_Context_t *pSensorCtx;
++    uint32_t fail_step = VVCAM_SENSOR_OPEN_OK;
+ 
+     TRACE(OS08A20_INFO, "%s (enter)\n", __func__);
+ 
+@@ -445,6 +479,7 @@ static RESULT OS08A20_IsiCreateSensorIss(IsiSensorInstanceConfig_t * pConfig)
+     result = OS08A20_IsiSensorSetPowerIss(pSensorCtx, BOOL_TRUE);
+     if (result != RET_SUCCESS) {
+         TRACE(OS08A20_ERROR, "%s set power error\n", __func__);
++        fail_step = VVCAM_SENSOR_OPEN_POWER;
+         goto fail;
+     }
+     struct vvcam_clk_s clk;
+@@ -452,17 +487,20 @@ static RESULT OS08A20_IsiCreateSensorIss(IsiSensorInstanceConfig_t * pConfig)
+     result = OS08A20_IsiSensorGetClkIss(pSensorCtx, &clk);
+     if (result != RET_SUCCESS) {
+         TRACE(OS08A20_ERROR, "%s get clk error\n", __func__);
++        fail_step = VVCAM_SENSOR_OPEN_GET_CLK;
+         goto fail;
+     }
+     clk.status = 1;
+     result = OS08A20_IsiSensorSetClkIss(pSensorCtx, &clk);
+     if (result != RET_SUCCESS) {
+         TRACE(OS08A20_ERROR, "%s set clk error\n", __func__);
++        fail_step = VVCAM_SENSOR_OPEN_SET_CLK;
+         goto fail;
+     }
+     result = OS08A20_IsiResetSensorIss(pSensorCtx);
+     if (result != RET_SUCCESS) {
+         TRACE(OS08A20_ERROR, "%s retset sensor error\n", __func__);
++        fail_step = VVCAM_SENSOR_OPEN_RESET;
+         goto fail;
+     }
+ 
+@@ -471,14 +509,23 @@ static RESULT OS08A20_IsiCreateSensorIss(IsiSensorInstanceConfig_t * pConfig)
+     result = OS08A20_IsiSetSensorModeIss(pSensorCtx, &SensorMode);
+     if (result != RET_SUCCESS) {
+         TRACE(OS08A20_ERROR, "%s set sensor mode error\n", __func__);
++        fail_step = VVCAM_SENSOR_OPEN_SET_MODE;
+         goto fail;
+     }
+ 
++    OS08A20_ReportOpenStatus(pSensorCtx, 0, VVCAM_SENSOR_OPEN_OK);
++
+     TRACE(OS08A20_INFO, "%s (exit)\n", __func__);
+ 
+     return result;
+ 
+ fail:
++    /*
++     * errno is from the ioctl the failing step just made, so it is the
++     * cause. Report before freeing the context -- it carries the handle.
++     */
++    OS08A20_ReportOpenStatus(pSensorCtx, errno ? -errno : -EIO, fail_step);
++
+     pConfig->hSensor = NULL;
+     free(pSensorCtx);
+ 
+diff --git a/vvcam/common/vvsensor.h b/vvcam/common/vvsensor.h
+index a1aa20b..a0fb88f 100644
+--- a/vvcam/common/vvsensor.h
++++ b/vvcam/common/vvsensor.h
+@@ -97,9 +97,35 @@ enum {
+ 	VVSENSORIOC_G_EXPAND_CURVE,
+ 	VVSENSORIOC_S_TEST_PATTERN,
+ 	VVSENSORIOC_G_LENS,
++	VVSENSORIOC_S_OPEN_STATUS,
+ 	VVSENSORIOC_MAX,
+ };
+ 
++/* Which step of the sensor open failed, for VVSENSORIOC_S_OPEN_STATUS. */
++enum {
++	VVCAM_SENSOR_OPEN_OK = 0,
++	VVCAM_SENSOR_OPEN_POWER,
++	VVCAM_SENSOR_OPEN_GET_CLK,
++	VVCAM_SENSOR_OPEN_SET_CLK,
++	VVCAM_SENSOR_OPEN_RESET,
++	VVCAM_SENSOR_OPEN_SET_MODE,
++	VVCAM_SENSOR_OPEN_SETUP,
++};
++
++/*
++ * Reported by the userspace ISI sensor driver once it has finished opening
++ * the sensor. isp_media_server cannot report this itself: its completion
++ * ioctl carries no status, so a failed open is indistinguishable from a
++ * successful one to anything outside the daemon.
++ */
++struct vvcam_sensor_open_status_s {
++	int32_t  result;      /* 0 on success, negative errno otherwise */
++	uint32_t step;        /* which step failed; VVCAM_SENSOR_OPEN_OK if none */
++	uint32_t mode_index;
++	uint32_t width;
++	uint32_t height;
++};
++
+ struct vvcam_clk_s {
+ 	uint32_t      status;
+ 	unsigned long sensor_mclk;
+-- 
+2.43.0
+

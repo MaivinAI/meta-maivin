@@ -1,0 +1,116 @@
+From b2acbbb24c92b06ad94268baebcdf24c4548ec37 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?S=C3=A9bastien=20Taylor?= <sebastien@au-zone.com>
+Date: Sat, 5 Sep 2026 16:49:12 +0000
+Subject: [PATCH 1/5] OS08a20: report errno on ioctl failures
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Every ioctl failure path logged only which call failed, never why, so a
+missing device, a busy device and a rejected argument were reported
+identically. Add strerror(errno) to each, and the mode index and format
+size where they are the argument being rejected.
+
+Uses the existing OS08A20_ERROR tracer; no new logging mechanism.
+
+Signed-off-by: Sébastien Taylor <sebastien@au-zone.com>
+---
+ units/isi/drv/OS08a20/source/OS08a20.c | 27 ++++++++++++++++++--------
+ 1 file changed, 19 insertions(+), 8 deletions(-)
+
+diff --git a/units/isi/drv/OS08a20/source/OS08a20.c b/units/isi/drv/OS08a20/source/OS08a20.c
+index 3a45584..ffda9a8 100644
+--- a/units/isi/drv/OS08a20/source/OS08a20.c
++++ b/units/isi/drv/OS08a20/source/OS08a20.c
+@@ -31,6 +31,8 @@
+ #include <common/misc.h>
+ #include <sys/ioctl.h>
+ #include <fcntl.h>
++#include <errno.h>
++#include <string.h>
+ #include "isi.h"
+ #include "isi_iss.h"
+ #include "isi_priv.h"
+@@ -83,7 +85,8 @@ static RESULT OS08A20_IsiSensorSetPowerIss(IsiSensorHandle_t handle, bool_t on)
+     int32_t power = on;
+     ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_POWER, &power);
+     if (ret != 0){
+-        TRACE(OS08A20_ERROR, "%s set power %d error\n", __func__,power);
++        TRACE(OS08A20_ERROR, "%s set power %d error: %s\n", __func__, power,
++              strerror(errno));
+         return RET_FAILURE;
+     }
+ 
+@@ -107,7 +110,8 @@ static RESULT OS08A20_IsiSensorGetClkIss(IsiSensorHandle_t handle,
+ 
+     ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_G_CLK, pclk);
+     if (ret != 0) {
+-        TRACE(OS08A20_ERROR, "%s get clock error\n", __func__);
++        TRACE(OS08A20_ERROR, "%s get clock error: %s\n", __func__,
++              strerror(errno));
+         return RET_FAILURE;
+     } 
+     
+@@ -133,7 +137,8 @@ static RESULT OS08A20_IsiSensorSetClkIss(IsiSensorHandle_t handle,
+     
+     ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_CLK, &pclk);
+     if (ret != 0) {
+-        TRACE(OS08A20_ERROR, "%s set clk error\n", __func__);
++        TRACE(OS08A20_ERROR, "%s set clk error: %s\n", __func__,
++              strerror(errno));
+         return RET_FAILURE;
+     }
+ 
+@@ -156,7 +161,8 @@ static RESULT OS08A20_IsiResetSensorIss(IsiSensorHandle_t handle)
+ 
+     ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_RESET, NULL);
+     if (ret != 0) {
+-        TRACE(OS08A20_ERROR, "%s set reset error\n", __func__);
++        TRACE(OS08A20_ERROR, "%s set reset error: %s\n", __func__,
++              strerror(errno));
+         return RET_FAILURE;
+     }
+ 
+@@ -373,14 +379,16 @@ static RESULT OS08A20_IsiSetSensorModeIss(IsiSensorHandle_t handle,
+ 
+     ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_SENSOR_MODE, &sensor_mode);
+     if (ret != 0) {
+-        TRACE(OS08A20_ERROR, "%s set sensor mode error\n", __func__);
++        TRACE(OS08A20_ERROR, "%s set sensor mode %d error: %s\n", __func__,
++              pMode->index, strerror(errno));
+         return RET_FAILURE;
+     }
+ 
+     memset(&sensor_mode, 0, sizeof(struct vvcam_mode_info_s));
+     ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_G_SENSOR_MODE, &sensor_mode);
+     if (ret != 0) {
+-        TRACE(OS08A20_ERROR, "%s set sensor mode failed", __func__);
++        TRACE(OS08A20_ERROR, "%s get sensor mode error: %s\n", __func__,
++              strerror(errno));
+         return RET_FAILURE;
+     }
+     memcpy(&pSensorCtx->CurMode, &sensor_mode, sizeof(struct vvcam_mode_info_s));
+@@ -603,7 +611,9 @@ static RESULT OS08A20_IsiSetupSensorIss(IsiSensorHandle_t handle,
+     format.pad = 0;
+     ret = ioctl(pHalCtx->sensor_fd, VIDIOC_SUBDEV_S_FMT, &format);
+     if (ret != 0){
+-        TRACE(OS08A20_ERROR, "%s: sensor set format error!\n", __func__);
++        TRACE(OS08A20_ERROR, "%s: sensor set format %dx%d error: %s\n",
++              __func__, format.format.width, format.format.height,
++              strerror(errno));
+         return RET_FAILURE;
+     }
+ #else
+@@ -633,7 +643,8 @@ static RESULT OS08A20_IsiGetSensorRevisionIss(IsiSensorHandle_t handle, uint32_t
+ 
+     ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_G_CHIP_ID, pValue);
+     if (ret != 0) {
+-        TRACE(OS08A20_ERROR, "%s: get chip id error!\n", __func__);
++        TRACE(OS08A20_ERROR, "%s: get chip id error: %s\n", __func__,
++              strerror(errno));
+         return RET_FAILURE;
+     }
+ 
+-- 
+2.43.0
+

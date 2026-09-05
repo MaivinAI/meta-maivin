@@ -1,0 +1,43 @@
+From 8aeb4f7a444a95872b4600fb1c379846ba8e7490 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?S=C3=A9bastien=20Taylor?= <sebastien@au-zone.com>
+Date: Sat, 5 Sep 2026 16:50:21 +0000
+Subject: [PATCH 2/5] OS08a20: fix incorrect and unsafe trace messages
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The streaming trace had two conversions and one argument, so it read a
+garbage vararg on every streaming failure. The connection check reported
+ChipID=0x2770 (OV2775's ID) while comparing against 0x530841.
+
+Signed-off-by: Sébastien Taylor <sebastien@au-zone.com>
+---
+ units/isi/drv/OS08a20/source/OS08a20.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/units/isi/drv/OS08a20/source/OS08a20.c b/units/isi/drv/OS08a20/source/OS08a20.c
+index ffda9a8..b157519 100644
+--- a/units/isi/drv/OS08a20/source/OS08a20.c
++++ b/units/isi/drv/OS08a20/source/OS08a20.c
+@@ -412,7 +412,8 @@ static RESULT OS08A20_IsiSensorSetStreamingIss(IsiSensorHandle_t handle,
+     uint32_t status = on;
+     ret = ioctl(pHalCtx->sensor_fd, VVSENSORIOC_S_STREAM, &status);
+     if (ret != 0){
+-        TRACE(OS08A20_ERROR, "%s set sensor stream %d error\n", __func__);
++        TRACE(OS08A20_ERROR, "%s set sensor stream %d error: %s\n", __func__,
++              on, strerror(errno));
+         return RET_FAILURE;
+     }
+ 
+@@ -668,7 +669,7 @@ static RESULT OS08A20_IsiCheckSensorConnectionIss(IsiSensorHandle_t handle)
+ 
+     if (ChipId != 0x530841) {
+         TRACE(OS08A20_ERROR,
+-            "%s:ChipID=0x2770,while read sensor Id=0x%x error!\n",
++            "%s: expected ChipID=0x530841, read sensor Id=0x%x error!\n",
+              __func__, ChipId);
+         return RET_FAILURE;
+     }
+-- 
+2.43.0
+

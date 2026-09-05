@@ -51,6 +51,16 @@ isp_sensor_open_failed() {
         | grep -qE 'AdaptOpen:open sensor failed|open adapter-[0-9]+ failed|CitfApi create error|initHardware new CitfApi.*fail'
 }
 
+# Logged for diagnosis only, not used to decide: the value survives an ISP
+# restart so it can be a session stale, and stays "unknown" when the failure
+# was in libhal before the sensor driver was reached.
+isp_open_status() {
+    for f in /sys/bus/i2c/devices/*/open_status; do
+        [ -r "$f" ] && { cat "$f" 2>/dev/null; return 0; }
+    done
+    return 1
+}
+
 # A rejected restart (imx8-isp.service's own StartLimitBurst below) must
 # not abort this script via set -e, or camera.service fails permanently
 # before the ISP gets a real chance to recover.
@@ -60,7 +70,7 @@ while [ "$i" -lt "$MAX_TRIES" ]; do
         if ! isp_sensor_open_failed; then
             exit 0
         fi
-        echo "maivin-camera-wait-ready: isp_media_server failed to open the sensor, restarting imx8-isp.service" >&2
+        echo "maivin-camera-wait-ready: isp_media_server failed to open the sensor (sensor driver last reported: $(isp_open_status || echo 'no status attribute')), restarting imx8-isp.service" >&2
         if systemctl restart imx8-isp.service; then
             sleep 2
             i=$((i + 2))
