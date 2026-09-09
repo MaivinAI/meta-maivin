@@ -221,3 +221,15 @@ PSEUDO_PASSWD:prepend = "${@bb.utils.contains('DISTRO_FEATURES', 'stateless-syst
 TORADEX_PRODUCT_IDS:remove:colibri-imx6 = "0014 0016"
 
 EXTRA_USERS_PARAMS += "usermod -a -G docker torizon;"
+
+# Upstream deploys ${OSTREE_OSNAME}:${OSTREE_BRANCHNAME}, a remote absent on the
+# device, leaving `ostree admin upgrade` silently reporting no updates.
+IMAGE_CMD:ota:append () {
+	ostree_maivin_refspec="maivin:${MAIVIN_OSTREE_BRANCH}"
+	ostree_maivin_hash=$(cat ${WORKDIR}/ostree_manifest)
+
+	ostree --repo=${OTA_SYSROOT}/ostree/repo refs \
+	       --create="${ostree_maivin_refspec}" "${ostree_maivin_hash}"
+	sed -i -e "s|^refspec=.*|refspec=${ostree_maivin_refspec}|" \
+	       ${OTA_SYSROOT}/ostree/deploy/${OSTREE_OSNAME}/deploy/*.origin
+}
