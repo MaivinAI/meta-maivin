@@ -68,6 +68,8 @@ CORE_IMAGE_BASE_INSTALL:append = " \
 # Maivin BSP
 CORE_IMAGE_BASE_INSTALL:append = " \
     udev-maivin-rules \
+    maivin-etc-defaults \
+    maivin-provision \
     update-overlays \
     ostree-maivin \
     mwifiexap \

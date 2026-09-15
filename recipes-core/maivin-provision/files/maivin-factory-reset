@@ -1,0 +1,101 @@
+#!/bin/sh
+# Restore a unit to factory shipping state. Does not change systemd enablement
+# of Torizon OTA, PTP, or ModemManager.
+set -eu
+
+usage() {
+    cat <<'EOF'
+Usage: maivin-factory-reset --confirm
+
+Run this LAST, after any intentional per-unit customization, not instead of
+it. Configure whatever this specific unit needs first -- e.g. a non-default
+radarpub radar variant, or enabling lidarpub for a unit paired with a LiDAR
+module -- then run this command to seal the unit for shipping. It does NOT
+touch /etc/default: maivin-etc-defaults.conf (systemd-tmpfiles) already
+guarantees every service has at least the shipped default and never
+overwrites a file that's already there, so customization made before this
+runs is preserved, not reset.
+
+Clear /usr/local (leftover locally-installed/dev-deployed files), vacuum
+journals, recreate /home/torizon and /root, set the torizon password to
+"torizon", and expire it so the next login must change it.
+
+Does not disable aktualizr, remote-access, fluent-bit, ptp4l, or ModemManager.
+Does not rewrite /etc/overlays.txt (hardware-specific) or /etc/default
+(per-unit customization -- see above).
+EOF
+}
+
+if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+    usage
+    exit 0
+fi
+
+if [ "${1:-}" != "--confirm" ]; then
+    usage >&2
+    exit 2
+fi
+
+if [ "$(id -u)" -ne 0 ]; then
+    echo "maivin-factory-reset: must run as root" >&2
+    exit 1
+fi
+
+# Run from a directory this script never touches. An interactive `sudo
+# maivin-factory-reset` is almost always invoked from /home/torizon, which
+# gets rm -rf'd below; the delete itself doesn't care about cwd (it's an
+# absolute path) but leaves the *caller's* shell sitting on an orphaned
+# inode afterwards, so a subsequent relative-path command (or a bare `cd`)
+# in that same shell fails with "No such file or directory" until it cd's
+# somewhere real. Rebooting immediately afterwards sidesteps it (the session
+# is torn down anyway), but don't depend on that ordering.
+cd /
+
+echo "maivin-factory-reset: clearing /usr/local"
+if [ -d /usr/local ]; then
+    find /usr/local -mindepth 1 -delete
+fi
+
+echo "maivin-factory-reset: vacuuming journals"
+journalctl --rotate || true
+journalctl --vacuum-time=1s || true
+
+echo "maivin-factory-reset: resetting /home/torizon"
+rm -rf /home/torizon
+install -d -m 0755 -o torizon -g torizon /home/torizon
+if [ -d /etc/skel ] && [ -n "$(ls -A /etc/skel 2>/dev/null || true)" ]; then
+    cp -a /etc/skel/. /home/torizon/
+    chown -R torizon:torizon /home/torizon
+else
+    cat > /home/torizon/.bashrc <<'EOF'
+# ~/.bashrc: executed by bash(1) for non-login shells.
+
+umask 022
+
+export LS_OPTIONS='--color=auto'
+alias ls='ls $LS_OPTIONS'
+alias ll='ls $LS_OPTIONS -l'
+alias l='ls $LS_OPTIONS -lA'
+EOF
+    cat > /home/torizon/.profile <<'EOF'
+# ~/.profile: executed by Bourne-compatible login shells.
+
+if [ -f ~/.bashrc ]; then
+  . ~/.bashrc
+fi
+
+mesg n 2>/dev/null
+EOF
+    chown torizon:torizon /home/torizon/.bashrc /home/torizon/.profile
+    chmod 0755 /home/torizon/.bashrc /home/torizon/.profile
+fi
+
+echo "maivin-factory-reset: resetting /root"
+rm -rf /root
+install -d -m 0700 /root
+
+echo "maivin-factory-reset: setting torizon password and requiring change at next login"
+echo 'torizon:torizon' | chpasswd
+passwd -e torizon
+
+echo "maivin-factory-reset: done"

@@ -1,0 +1,236 @@
+#!/bin/sh
+# Idempotent Maivin/Raivin provisioning checks (and optional fixes).
+#
+# Deliberately no `set -e`: each check_* function records failure via the
+# fail()/$FAILED bookkeeping below and returns, sometimes with a non-zero
+# status, so every check runs and every failure is reported in one pass.
+# errexit would abort at the first non-zero return -- e.g. check_ostree_remote
+# failing would skip check_overlays, check_default_target, check_sd, etc. entirely,
+# turning a full report into a whack-a-mole "fix one, rerun to see the next"
+# loop. Confirmed by reproduction: with set -e, only the first FAIL: line
+# ever printed.
+set -u
+
+PLATFORM="maivin-2"
+SD_CARD=0
+FIX=0
+FAILED=0
+
+usage() {
+    cat <<'EOF'
+Usage: maivin-provision [--fix] [--platform maivin-1|maivin-2|raivin]
+                         [--sd-card]
+
+Check (default) or fix remaining per-unit provisioning. Exit 0 only when
+every requested check passes.
+
+The systemd default target is always maivin.target (fix: set-default).
+raivin.target still exists as a symlink to it for legacy compatibility and
+will eventually be removed -- this tool never sets it, and nothing should.
+
+  --fix              apply missing configuration
+  --platform maivin-1|maivin-2|raivin
+                     require /etc/overlays.txt to match this hardware
+                     (fix: (re)writes it and runs update-overlays, which
+                     reboots if the content changed). maivin-2 is the
+                     default hardware and what maivin-etc-defaults.conf
+                     seeds unattended; pass maivin-1 only for that older
+                     AR0521 carrier. raivin uses the same overlays as
+                     maivin-2 (same camera) and additionally requires
+                     radarpub.service enabled (fix: systemctl enable --now).
+                     fusion.service is never touched by this flag or by
+                     --fix -- enabling it stays a manual decision.
+  --sd-card          require LABEL=DATA mounted at /media/DATA
+EOF
+}
+
+fail() {
+    echo "FAIL: $*" >&2
+    FAILED=1
+}
+
+ok() {
+    echo "OK: $*"
+}
+
+check_ostree_remote() {
+    if [ ! -f /etc/ostree/remotes.d/maivin.conf ]; then
+        if [ "$FIX" -eq 1 ] && [ -f /usr/etc/ostree/remotes.d/maivin.conf ]; then
+            install -d /etc/ostree/remotes.d
+            cp -a /usr/etc/ostree/remotes.d/maivin.conf /etc/ostree/remotes.d/maivin.conf
+            ok "copied maivin OSTree remote from /usr/etc"
+            return 0
+        fi
+        fail "missing /etc/ostree/remotes.d/maivin.conf"
+        return 1
+    fi
+    ok "OSTree remote maivin.conf present"
+}
+
+check_ostree_origin() {
+    origin=$(ostree admin status 2>/dev/null | awk '/origin refspec:/ {print $3; exit}')
+    case "$origin" in
+        maivin:*)
+            ok "OSTree origin is $origin"
+            ;;
+        *)
+            fail "OSTree origin is '${origin:-unset}'; expected maivin:... (redeploy with maivin: prefix)"
+            ;;
+    esac
+}
+
+# Echoes the expected /etc/overlays.txt content for a --platform value.
+# raivin shares maivin-2's overlays: same carrier generation and camera,
+# the only Raivin-specific requirement is radarpub (see check_radarpub).
+overlays_for_platform() {
+    case "$1" in
+        maivin-1) echo "fdt_overlays=maivin1.dtbo maivin1-ar0521.dtbo" ;;
+        maivin-2|raivin) echo "fdt_overlays=maivin2.dtbo maivin2-os08a20.dtbo" ;;
+    esac
+}
+
+check_overlays() {
+    expected=$(overlays_for_platform "$PLATFORM")
+    current=""
+    [ -f /etc/overlays.txt ] && current=$(cat /etc/overlays.txt)
+
+    if [ "$current" = "$expected" ]; then
+        ok "/etc/overlays.txt matches platform $PLATFORM"
+    elif [ "$FIX" -eq 1 ]; then
+        echo "$expected" > /etc/overlays.txt
+        ok "wrote /etc/overlays.txt for platform $PLATFORM"
+    else
+        fail "/etc/overlays.txt does not match platform $PLATFORM (expected '$expected', got '${current:-missing}')"
+    fi
+
+    if [ "$FIX" -eq 1 ]; then
+        systemctl start update-overlays.service || fail "update-overlays.service failed"
+    fi
+    if systemctl is-failed update-overlays.service >/dev/null 2>&1; then
+        fail "update-overlays.service is failed"
+    else
+        ok "update-overlays.service is not failed"
+    fi
+}
+
+check_radarpub() {
+    [ "$PLATFORM" = "raivin" ] || return 0
+    if systemctl is-enabled radarpub.service >/dev/null 2>&1; then
+        ok "radarpub.service is enabled"
+    elif [ "$FIX" -eq 1 ]; then
+        systemctl enable --now radarpub.service
+        ok "enabled and started radarpub.service"
+    else
+        fail "radarpub.service is not enabled (platform raivin)"
+    fi
+}
+
+check_nm_unmanaged() {
+    conf=/etc/NetworkManager/conf.d/unmanaged.conf
+    extra=$(find /etc/NetworkManager/conf.d -maxdepth 1 -type f ! -name unmanaged.conf 2>/dev/null || true)
+    if [ ! -f "$conf" ]; then
+        fail "missing $conf"
+    else
+        ok "NetworkManager unmanaged.conf present"
+    fi
+    if [ -n "$extra" ]; then
+        fail "unexpected NetworkManager conf.d files: $extra"
+    else
+        ok "only unmanaged.conf in NetworkManager conf.d"
+    fi
+}
+
+check_default_target() {
+    current=$(systemctl get-default)
+    if [ "$current" = "maivin.target" ]; then
+        ok "default target is maivin.target"
+        return 0
+    fi
+    if [ "$FIX" -eq 1 ]; then
+        systemctl set-default maivin.target
+        ok "set default target to maivin.target"
+        return 0
+    fi
+    fail "default target is $current, expected maivin.target (never raivin.target -- legacy, being removed)"
+}
+
+check_sd() {
+    [ "$SD_CARD" -eq 1 ] || return 0
+    if [ ! -b /dev/mmcblk1 ]; then
+        fail "mmcblk1 not present"
+        return 1
+    fi
+    if [ ! -e /dev/disk/by-label/DATA ]; then
+        fail "no filesystem label DATA on SD card"
+        return 1
+    fi
+    if findmnt /media/DATA >/dev/null 2>&1; then
+        ok "/media/DATA is mounted"
+    else
+        if [ "$FIX" -eq 1 ]; then
+            systemctl start media-DATA.mount || true
+        fi
+        if findmnt /media/DATA >/dev/null 2>&1; then
+            ok "/media/DATA is mounted"
+        else
+            fail "/media/DATA is not mounted"
+        fi
+    fi
+}
+
+check_ethernet1_master() {
+    [ "$PLATFORM" = "raivin" ] || return 0
+    if systemctl is-failed ethernet1-master.service >/dev/null 2>&1; then
+        fail "ethernet1-master.service is failed"
+        return 1
+    fi
+    ok "ethernet1-master.service is not failed"
+}
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        --fix)
+            FIX=1
+            ;;
+        --sd-card)
+            SD_CARD=1
+            ;;
+        --platform)
+            shift
+            PLATFORM="${1:-}"
+            case "$PLATFORM" in
+                maivin-1|maivin-2|raivin) ;;
+                *)
+                    echo "maivin-provision: --platform must be maivin-1, maivin-2, or raivin" >&2
+                    exit 2
+                    ;;
+            esac
+            ;;
+        *)
+            echo "maivin-provision: unknown argument: $1" >&2
+            usage >&2
+            exit 2
+            ;;
+    esac
+    shift
+done
+
+check_ostree_remote
+check_ostree_origin
+check_overlays
+check_radarpub
+check_nm_unmanaged
+check_default_target
+check_sd
+check_ethernet1_master
+
+if [ "$FAILED" -ne 0 ]; then
+    echo "maivin-provision: one or more checks failed" >&2
+    exit 1
+fi
+echo "maivin-provision: all checks passed"
+exit 0
