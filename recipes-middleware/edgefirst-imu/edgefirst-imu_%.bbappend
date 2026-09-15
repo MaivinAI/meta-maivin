@@ -2,6 +2,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
 SRC_URI:append = " \
     file://imu.service \
+    file://maivin-imu-configure \
 "
 
 SYSTEMD_SERVICE:${PN} = "imu.service"
@@ -15,4 +16,6 @@ do_install:append() {
     mv ${D}${sysconfdir}/default/edgefirst-imu ${D}${sysconfdir}/default/imu
 
     ln -sf edgefirst-imu ${D}${bindir}/imu
+
+    install -m 0755 ${S}/maivin-imu-configure ${D}${bindir}/maivin-imu-configure
 }

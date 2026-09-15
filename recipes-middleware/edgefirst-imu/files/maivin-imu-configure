@@ -1,0 +1,24 @@
+#!/bin/sh
+# Idempotent IMU FRS configuration before imu.service starts.
+# The service binary holds the SPI device; `imu --configure` must run while
+# the daemon is stopped (systemd ExecStartPre guarantees that). Retry
+# driver-init failures that used to require a manual stop/start dance.
+set -eu
+
+MAX_TRIES="${IMU_CONFIGURE_TRIES:-5}"
+SLEEP_SEC="${IMU_CONFIGURE_RETRY_SEC:-2}"
+
+i=0
+while [ "$i" -lt "$MAX_TRIES" ]; do
+    if /usr/bin/imu --configure; then
+        exit 0
+    fi
+    i=$((i + 1))
+    if [ "$i" -lt "$MAX_TRIES" ]; then
+        echo "maivin-imu-configure: imu --configure failed, retry $i/${MAX_TRIES}" >&2
+        sleep "$SLEEP_SEC"
+    fi
+done
+
+echo "maivin-imu-configure: imu --configure failed after ${MAX_TRIES} attempts" >&2
+exit 1
