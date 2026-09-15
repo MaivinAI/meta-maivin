@@ -191,6 +191,16 @@ check_nm_unmanaged() {
 # that an earlier version of this check flagged as failed. Never touch
 # `systemctl set-default` here; raivin.target (legacy symlink, being
 # removed) must especially never be set, and neither target needs to be.
+#
+# maivin.target's own unit file orders it After= every service it Wants=
+# (camera, imu, model, ...), so it's reached last, as an "everything is up"
+# checkpoint -- not first. Right after boot, there's a real window where
+# SSH is already reachable and every individual service is already active,
+# but this specific check still reports inactive because the target itself
+# hasn't flipped yet. Seen directly: FAIL moments after reboot, PASS
+# checking again seconds later with nothing else changed. Not a bug to
+# chase -- if this fails right after a fresh boot/reboot, wait a few
+# seconds and rerun before treating it as real.
 check_maivin_target() {
     active=$(systemctl is-active maivin.target 2>/dev/null)
     enabled=$(systemctl is-enabled maivin.target 2>/dev/null)
