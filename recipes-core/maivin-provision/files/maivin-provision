@@ -15,6 +15,7 @@ PLATFORM="maivin-2"
 SD_CARD=0
 FIX=0
 FAILED=0
+PENDING=0
 
 usage() {
     cat <<'EOF'
@@ -22,7 +23,9 @@ Usage: maivin-provision [--fix] [--platform maivin-1|maivin-2|raivin]
                          [--sd-card]
 
 Check (default) or fix remaining per-unit provisioning. Exit 0 only when
-every requested check passes.
+every requested check passes; exit 2 if nothing failed but something (e.g.
+maivin.target right after boot) is still starting -- rerun shortly; exit 1
+on a real failure.
 
 maivin.target must be enabled and active (fix: systemctl enable --now).
 It never needs to be the *system default* target -- its own [Install] is
@@ -59,6 +62,11 @@ fail() {
 
 ok() {
     echo "OK: $*"
+}
+
+starting() {
+    echo "STARTING: $*"
+    PENDING=1
 }
 
 check_ostree_remote() {
@@ -191,16 +199,6 @@ check_nm_unmanaged() {
 # that an earlier version of this check flagged as failed. Never touch
 # `systemctl set-default` here; raivin.target (legacy symlink, being
 # removed) must especially never be set, and neither target needs to be.
-#
-# maivin.target's own unit file orders it After= every service it Wants=
-# (camera, imu, model, ...), so it's reached last, as an "everything is up"
-# checkpoint -- not first. Right after boot, there's a real window where
-# SSH is already reachable and every individual service is already active,
-# but this specific check still reports inactive because the target itself
-# hasn't flipped yet. Seen directly: FAIL moments after reboot, PASS
-# checking again seconds later with nothing else changed. Not a bug to
-# chase -- if this fails right after a fresh boot/reboot, wait a few
-# seconds and rerun before treating it as real.
 check_maivin_target() {
     active=$(systemctl is-active maivin.target 2>/dev/null)
     enabled=$(systemctl is-enabled maivin.target 2>/dev/null)
@@ -208,12 +206,32 @@ check_maivin_target() {
         ok "maivin.target is enabled and active"
         return 0
     fi
+    # maivin.target's own unit file orders it After= every service it
+    # Wants= (camera, imu, model, ...), so it's reached last, as an
+    # "everything is up" checkpoint, not first. Right after boot there's a
+    # real multi-second window where every individual service is already
+    # active but the target itself hasn't flipped yet -- and `is-active`
+    # is no help telling that apart from "never going to start": targets
+    # have no "activating" sub-state to observe here. Verified directly on
+    # verdin-imx8mp-15141091 with a tight poll loop across a real reboot:
+    # `is-active`/SubState sat at plain "inactive"/"dead" for the full ~19s
+    # while a start job for maivin.target sat in `systemctl list-jobs`
+    # ("start waiting"), then both flipped to active in the same instant
+    # the job cleared -- no transitional state visible via is-active at
+    # any point. A queued job is therefore the only reliable signal that
+    # it's genuinely on its way rather than stuck: report that distinctly
+    # instead of either lying with an OK or crying FAIL on a unit that's
+    # doing exactly what it should.
+    if systemctl list-jobs --plain --no-legend 2>/dev/null | awk '{print $2}' | grep -qx maivin.target; then
+        starting "maivin.target has a start job queued, waiting on its dependencies -- rerun shortly"
+        return 0
+    fi
     if [ "$FIX" -eq 1 ]; then
         systemctl enable --now maivin.target
         ok "enabled and started maivin.target"
         return 0
     fi
-    fail "maivin.target is not enabled+active (is-active: ${active:-unknown}, is-enabled: ${enabled:-unknown})"
+    fail "maivin.target is not enabled+active and no start job is queued (is-active: ${active:-unknown}, is-enabled: ${enabled:-unknown})"
 }
 
 check_sd() {
@@ -294,6 +312,10 @@ check_ethernet1_master
 if [ "$FAILED" -ne 0 ]; then
     echo "maivin-provision: one or more checks failed" >&2
     exit 1
+fi
+if [ "$PENDING" -ne 0 ]; then
+    echo "maivin-provision: nothing failed, but something is still starting -- rerun shortly" >&2
+    exit 2
 fi
 echo "maivin-provision: all checks passed"
 exit 0
