@@ -10,7 +10,7 @@ SRC_URI = "\
     file://reario_eeprom.sh \
     file://maivin-sd-format \
     file://maivin-sd-format.service \
-    file://media-DATA.mount \
+    file://var-rootdirs-media-DATA.mount \
 "
 
 S = "${@d.getVar('UNPACKDIR') or d.getVar('WORKDIR')}"
@@ -32,11 +32,11 @@ do_install () {
 
     install -m 0755 ${S}/maivin-sd-format ${D}${libexecdir}/maivin-sd-format
     install -m 0644 ${S}/maivin-sd-format.service ${D}${systemd_system_unitdir}/
-    install -m 0644 ${S}/media-DATA.mount ${D}${systemd_system_unitdir}/
+    install -m 0644 ${S}/var-rootdirs-media-DATA.mount ${D}${systemd_system_unitdir}/
 }
 
 REQUIRED_DISTRO_FEATURES = "systemd"
-SYSTEMD_SERVICE:${PN} = "maivin-sd-format.service media-DATA.mount"
+SYSTEMD_SERVICE:${PN} = "maivin-sd-format.service var-rootdirs-media-DATA.mount"
 SYSTEMD_AUTO_ENABLE = "enable"
 
 RDEPENDS:${PN} += "e2fsprogs parted util-linux"

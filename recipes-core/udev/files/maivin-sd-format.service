@@ -3,7 +3,7 @@ Description=Format blank Maivin DATA SD card
 ConditionPathExists=/dev/mmcblk1
 DefaultDependencies=no
 After=systemd-udevd.service
-Before=media-DATA.mount local-fs.target
+Before=var-rootdirs-media-DATA.mount local-fs.target
 
 [Service]
 Type=oneshot

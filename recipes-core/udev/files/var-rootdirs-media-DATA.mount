@@ -1,0 +1,22 @@
+[Unit]
+Description=DATA SD card
+DefaultDependencies=no
+After=maivin-sd-format.service systemd-udevd.service
+Before=local-fs.target
+ConditionPathExists=/dev/disk/by-label/DATA
+
+[Mount]
+What=/dev/disk/by-label/DATA
+# /media is a symlink to var/rootdirs/media on this platform's stateless
+# rootfs (Torizon's DISTRO_FEATURES stateless-system); systemd's native
+# .mount units require Where= to be the canonical, symlink-free path or
+# refuse to load ("Mount path /media/DATA is not canonical") -- unlike the
+# fstab generator, which resolves it. Confirmed failing on real hardware
+# (verdin-imx8mp-15141091) with Where=/media/DATA. findmnt and tmpfiles'
+# `d` lines both follow the symlink fine; only this unit type is strict.
+Where=/var/rootdirs/media/DATA
+Type=ext4
+Options=defaults,nofail,x-systemd.device-timeout=5s
+
+[Install]
+WantedBy=local-fs.target

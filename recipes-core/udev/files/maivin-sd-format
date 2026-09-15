@@ -40,5 +40,5 @@ udevadm settle || true
 
 install -d -m 0755 /media/DATA
 chown torizon:torizon /media/DATA 2>/dev/null || true
-systemctl start media-DATA.mount || true
+systemctl start var-rootdirs-media-DATA.mount || true
 chown torizon:torizon /media/DATA 2>/dev/null || true
