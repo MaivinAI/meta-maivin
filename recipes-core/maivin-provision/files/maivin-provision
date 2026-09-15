@@ -37,9 +37,14 @@ will eventually be removed -- this tool never sets it, and nothing should.
                      seeds unattended; pass maivin-1 only for that older
                      AR0521 carrier. raivin uses the same overlays as
                      maivin-2 (same camera) and additionally requires
-                     radarpub.service enabled (fix: systemctl enable --now).
-                     fusion.service is never touched by this flag or by
-                     --fix -- enabling it stays a manual decision.
+                     radarpub.service enabled (fix: systemctl enable --now)
+                     and the ethernet1-radar NM connection actually pointed
+                     at ethernet1 (fix: nmcli modify + up, then restart
+                     radarpub -- a live mismatch here has been seen on real
+                     hardware and silently breaks radar connectivity despite
+                     the link itself showing up). fusion.service is never
+                     touched by this flag or by --fix -- enabling it stays
+                     a manual decision.
   --sd-card          require LABEL=DATA mounted at /media/DATA
 EOF
 }
@@ -122,6 +127,38 @@ check_radarpub() {
         ok "enabled and started radarpub.service"
     else
         fail "radarpub.service is not enabled (platform raivin)"
+    fi
+}
+
+check_ethernet1_radar() {
+    [ "$PLATFORM" = "raivin" ] || return 0
+    current=$(nmcli -g connection.interface-name connection show ethernet1-radar 2>/dev/null)
+    if [ "$current" = "ethernet1" ]; then
+        ok "ethernet1-radar connection targets ethernet1"
+        return 0
+    fi
+    if [ -z "$current" ]; then
+        fail "ethernet1-radar connection profile not found"
+        return 1
+    fi
+    # The shipped profile has always said interface-name=ethernet1 (since
+    # f0e566a) -- a live mismatch here is drift on this specific unit (e.g.
+    # a hand-run `nmcli connection add`/`modify` that typed a connection
+    # NAME, like the "network1" profile from the old manual networking
+    # steps, into the interface-name field by mistake), not a stale image
+    # default, so there's nothing to seed this from in /usr/etc. Confirmed
+    # on real hardware: link was up (1 Gbps) but the address never applied
+    # to ethernet1, so the radar at .11 was unreachable and cube UDP never
+    # arrived. Restarting radarpub after the fix is required -- if it
+    # already started against the dead connection it won't pick up the
+    # corrected route on its own.
+    if [ "$FIX" -eq 1 ]; then
+        nmcli connection modify ethernet1-radar connection.interface-name ethernet1
+        nmcli connection up ethernet1-radar
+        systemctl restart radarpub.service 2>/dev/null || true
+        ok "corrected ethernet1-radar interface-name to ethernet1, brought it up, restarted radarpub"
+    else
+        fail "ethernet1-radar connection.interface-name is '$current', expected ethernet1 (radar traffic on that LAN never arrives)"
     fi
 }
 
@@ -223,6 +260,7 @@ check_ostree_remote
 check_ostree_origin
 check_overlays
 check_radarpub
+check_ethernet1_radar
 check_nm_unmanaged
 check_default_target
 check_sd
