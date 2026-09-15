@@ -14,3 +14,6 @@ SUBSYSTEM=="iio", KERNEL=="iio*", ATTR{name}=="htu21", RUN+="/etc/udev/scripts/c
 # in probe order, so pps-gpio, the ethernet PHC and the uart line discipline
 # swap numbers between boots.  Chrony refers to this symlink instead.
 SUBSYSTEM=="pps", ATTR{name}=="pps-gps*", SYMLINK+="pps-gps"
+
+# Blank SD card format (mmcblk1). systemd starts maivin-sd-format.service.
+ACTION=="add", SUBSYSTEM=="block", KERNEL=="mmcblk1", ENV{DEVTYPE}=="disk", TAG+="systemd", ENV{SYSTEMD_WANTS}+="maivin-sd-format.service"

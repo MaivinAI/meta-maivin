@@ -1,0 +1,14 @@
+[Unit]
+Description=Format blank Maivin DATA SD card
+ConditionPathExists=/dev/mmcblk1
+DefaultDependencies=no
+After=systemd-udevd.service
+Before=media-DATA.mount local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/maivin-sd-format
+RemainAfterExit=yes
+
+[Install]
+WantedBy=local-fs.target
