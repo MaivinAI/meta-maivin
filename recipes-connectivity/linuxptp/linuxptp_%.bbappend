@@ -13,13 +13,6 @@ do_install:append() {
 
     install -d ${D}${sysconfdir}
     install -m 0644 ${WORKDIR}/ptp4l.conf ${D}${sysconfdir}
-
-    # Enable ptp4l and phc2sys-master on ethernet1 by default
-    install -d ${D}${sysconfdir}/systemd/system/multi-user.target.wants
-    ln -sf ${systemd_system_unitdir}/ptp4l.service \
-        ${D}${sysconfdir}/systemd/system/multi-user.target.wants/ptp4l.service
-    ln -sf ${systemd_system_unitdir}/phc2sys-master@.service \
-        ${D}${sysconfdir}/systemd/system/multi-user.target.wants/phc2sys-master@ethernet1.service
 }
 
 REQUIRED_DISTRO_FEATURES = "systemd"
