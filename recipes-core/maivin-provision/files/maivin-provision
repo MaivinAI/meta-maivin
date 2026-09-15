@@ -5,7 +5,7 @@
 # fail()/$FAILED bookkeeping below and returns, sometimes with a non-zero
 # status, so every check runs and every failure is reported in one pass.
 # errexit would abort at the first non-zero return -- e.g. check_ostree_remote
-# failing would skip check_overlays, check_default_target, check_sd, etc. entirely,
+# failing would skip check_overlays, check_maivin_target, check_sd, etc. entirely,
 # turning a full report into a whack-a-mole "fix one, rerun to see the next"
 # loop. Confirmed by reproduction: with set -e, only the first FAIL: line
 # ever printed.
@@ -24,9 +24,12 @@ Usage: maivin-provision [--fix] [--platform maivin-1|maivin-2|raivin]
 Check (default) or fix remaining per-unit provisioning. Exit 0 only when
 every requested check passes.
 
-The systemd default target is always maivin.target (fix: set-default).
-raivin.target still exists as a symlink to it for legacy compatibility and
-will eventually be removed -- this tool never sets it, and nothing should.
+maivin.target must be enabled and active (fix: systemctl enable --now).
+It never needs to be the *system default* target -- its own [Install] is
+WantedBy=multi-user.target, so it activates alongside the normal default.
+raivin.target still exists as a symlink to maivin.target for legacy
+compatibility and will eventually be removed -- this tool never sets
+either target as default, and nothing should.
 
   --fix              apply missing configuration
   --platform maivin-1|maivin-2|raivin
@@ -177,18 +180,30 @@ check_nm_unmanaged() {
     fi
 }
 
-check_default_target() {
-    current=$(systemctl get-default)
-    if [ "$current" = "maivin.target" ]; then
-        ok "default target is maivin.target"
+# NOT `systemctl get-default` == maivin.target. maivin.target's own
+# [Install] is WantedBy=multi-user.target (see maivin_1.1.bb's comment) and
+# ships SYSTEMD_AUTO_ENABLE=enable, so the intended, sufficient activation
+# path is enabled+active alongside the *unchanged* system default -- it
+# never needs to itself become the default target. Confirmed on real
+# hardware (verdin-imx8mp-15141091): `get-default` reported multi-user.target
+# while maivin.target and every service under it (camera, imu, model,
+# navsat, radarpub, fusion) were enabled and active -- a fully healthy unit
+# that an earlier version of this check flagged as failed. Never touch
+# `systemctl set-default` here; raivin.target (legacy symlink, being
+# removed) must especially never be set, and neither target needs to be.
+check_maivin_target() {
+    active=$(systemctl is-active maivin.target 2>/dev/null)
+    enabled=$(systemctl is-enabled maivin.target 2>/dev/null)
+    if [ "$active" = "active" ] && [ "$enabled" = "enabled" ]; then
+        ok "maivin.target is enabled and active"
         return 0
     fi
     if [ "$FIX" -eq 1 ]; then
-        systemctl set-default maivin.target
-        ok "set default target to maivin.target"
+        systemctl enable --now maivin.target
+        ok "enabled and started maivin.target"
         return 0
     fi
-    fail "default target is $current, expected maivin.target (never raivin.target -- legacy, being removed)"
+    fail "maivin.target is not enabled+active (is-active: ${active:-unknown}, is-enabled: ${enabled:-unknown})"
 }
 
 check_sd() {
@@ -205,7 +220,7 @@ check_sd() {
         ok "/media/DATA is mounted"
     else
         if [ "$FIX" -eq 1 ]; then
-            systemctl start media-DATA.mount || true
+            systemctl start var-rootdirs-media-DATA.mount || true
         fi
         if findmnt /media/DATA >/dev/null 2>&1; then
             ok "/media/DATA is mounted"
@@ -262,7 +277,7 @@ check_overlays
 check_radarpub
 check_ethernet1_radar
 check_nm_unmanaged
-check_default_target
+check_maivin_target
 check_sd
 check_ethernet1_master
 
