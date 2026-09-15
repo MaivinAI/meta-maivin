@@ -12,5 +12,9 @@ do_install:append() {
     # Rename config file to short name
     mv ${D}${sysconfdir}/default/edgefirst-model ${D}${sysconfdir}/default/model
 
+    # Maivin ships the VeriSilicon NPU; CPU-only is not a useful default.
+    sed -i 's|^DELEGATE=.*|DELEGATE="/usr/lib/libvx_delegate.so"|' \
+        ${D}${sysconfdir}/default/model
+
     ln -sf edgefirst-model ${D}${bindir}/model
 }
