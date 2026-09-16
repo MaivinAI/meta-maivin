@@ -1,7 +1,7 @@
 [Unit]
 Description=Maivin Camera Service
-After=imx8-isp.service network.target
-Wants=imx8-isp.service network.target
+After=imx8-isp.service network.target vsidaemon.service
+Wants=imx8-isp.service network.target vsidaemon.service
 Before=recorder.service
 # Bound the restart loop. Restart=always with systemd's defaults (100ms
 # RestartSec, a 10s StartLimitIntervalSec) can never trip the limiter --

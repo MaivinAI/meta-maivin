@@ -7,7 +7,9 @@ SRC_URI:append = " \
     file://maivin-camera-wait-ready \
 "
 
-RDEPENDS:${PN}:append = " isp-imx imx-vpu-hantro-vc v4l-utils"
+# imx-vpu-hantro-daemon provides vsidaemon.service, the backend
+# camera.service now Wants= (libvideostream dlopens the Hantro codec libs).
+RDEPENDS:${PN}:append = " isp-imx imx-vpu-hantro-vc imx-vpu-hantro-daemon v4l-utils"
 
 SYSTEMD_SERVICE:${PN} = "camera.service"
 SYSTEMD_AUTO_ENABLE = "enable"

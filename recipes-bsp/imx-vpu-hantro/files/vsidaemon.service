@@ -1,0 +1,22 @@
+[Unit]
+Description=Hantro VPU V4L2 Bridge Daemon
+# Required backend for /dev/video0 (G1/G2 decode) and /dev/video1
+# (VC8000E encode): without it, opens on those nodes never complete the
+# real V4L2 M2M ioctl exchange, so v4l2h264dec/v4l2h264enc and any direct
+# libhantro.so.1 client (e.g. libvideostream, used by camera and replay)
+# fail. Not auto-started by the kernel driver or by any client library.
+
+[Service]
+# vsidaemon double-forks and detaches to the root cgroup on its own
+# (confirmed: unlike a normal unit's process, its worker shows up in
+# /proc/<pid>/cgroup as "0::/", fully outside vsidaemon.service's cgroup),
+# so systemd can never supervise or restart the real worker regardless of
+# Type=. oneshot+RemainAfterExit just records "launched successfully"
+# instead of misreporting the unit as inactive/dead once the tracked
+# process exits, which is what Type=simple does here.
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/vsidaemon
+
+[Install]
+WantedBy=multi-user.target

@@ -87,6 +87,73 @@ Two things drift silently if not kept in sync by hand:
   `meta-deepview` stays a required layer there until that's ported. Don't
   assume ADIS can drop the layer just because Maivin did.
 
+## Local OSTree deployment for testing (skip the Jenkins round trip)
+
+For testing a local build change on real hardware, deploy straight from the
+build host over LAN instead of waiting on Jenkins → S3 → CloudFront → device
+OTA. Verified working 2026-09-16 against `verdin-imx8mp-15141091`: a 3-package
+`IMAGE_INSTALL` change built locally, deployed, and booted in well under the
+time a single Jenkins round trip takes, with **zero impact on the device's
+real `maivin` OTA remote** — aktualizr does not read the deployment's origin
+refspec (see `ostree-channel-origin-model` project memory), so this never
+collides with production updates.
+
+Every local `bitbake <image>` run already produces a complete, self-contained
+OSTree archive repo — no extra recipe/task needed:
+
+```
+build/deploy/images/verdin-imx8mp/ostree_repo
+```
+
+Steps:
+
+1. **Build normally** (`DISTRO=torizon-maivin bitbake torizon-core-maivin`).
+2. **Find the ref to deploy.** Refs follow Toradex's
+   `0/<machine>/<distro>/<image-basename>/<purpose-lowercase>` scheme, e.g.
+   `0/verdin-imx8mp/torizon-maivin/torizon-core-maivin/develop` (from
+   `TDX_PURPOSE ?= "Develop"`). List them and confirm the commit you expect:
+   ```shell
+   ostree --repo=build/deploy/images/verdin-imx8mp/ostree_repo refs
+   ostree --repo=build/deploy/images/verdin-imx8mp/ostree_repo log <ref>
+   ```
+3. **Serve the repo over HTTP** from the build host (needs no auth — this is
+   why it must never be left running against anything but a trusted LAN):
+   ```shell
+   cd build/deploy/images/verdin-imx8mp/ostree_repo
+   python3 -m http.server 8765 --bind 0.0.0.0
+   ```
+4. **On the target**, add a one-off remote and pull:
+   ```shell
+   sudo ostree remote add --no-gpg-verify --if-not-exists local-test http://<build-host-ip>:8765/
+   sudo ostree pull local-test <ref>
+   sudo ostree admin deploy --os=torizon local-test:<ref>
+   sudo reboot
+   ```
+   `ostree admin deploy` stages the new commit as `pending` and demotes the
+   previously-current deployment to `rollback` — it does **not** delete it.
+   Confirm before and after with `sudo ostree admin status`.
+5. **Roll back** if needed: `sudo ostree admin rollback`, or just re-deploy
+   the production `maivin:torizon/maivin/<channel>` ref once a real OTA
+   build lands. Do not run `ostree admin cleanup` while you still need the
+   rollback slot.
+
+Gotchas hit while validating this:
+
+- If the device already has an in-progress `ostree admin unlock --hotfix`
+  overlay (persistent, unlike a plain transient unlock), `deploy` leaves that
+  deployment untouched and current — it only replaces the *other* slot. Check
+  `ostree admin status` first so you know what you might be about to demote.
+- `ostree pull` over a plain HTTP remote needs `--no-gpg-verify` (no signing
+  keys involved for a local dev repo).
+- A LAN pull of a small incremental change (~115 MB compressed / ~330 MB
+  content, three added packages) took ~18 seconds — the actual bottleneck in
+  this workflow is the local `bitbake` build, not the deploy step. A
+  follow-up iteration changing only a single systemd unit file pulled ~92 KB
+  in ~3 seconds — OSTree's content-addressed storage means each redeploy
+  only ever costs what actually changed.
+- Kill the `http.server` and remove the `local-test` remote when done if the
+  device shouldn't keep trusting your build host indefinitely.
+
 ## Conventions / guardrails
 
 - **Sign every commit and tag with `-s`.** The author is the engineer, never

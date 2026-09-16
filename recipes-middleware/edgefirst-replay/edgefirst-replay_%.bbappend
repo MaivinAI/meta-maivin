@@ -4,6 +4,11 @@ SRC_URI:append = " \
     file://replay.service \
 "
 
+# libvideostream (pulled in via the videostream RDEPENDS) dlopens
+# libhantro.so.1 for H.264 decode; imx-vpu-hantro-daemon provides the
+# vsidaemon.service replay.service now depends on.
+RDEPENDS:${PN}:append = " imx-vpu-hantro imx-vpu-hantro-daemon"
+
 SYSTEMD_SERVICE:${PN} = "replay.service"
 SYSTEMD_AUTO_ENABLE = "disable"
 
