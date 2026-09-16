@@ -19,7 +19,8 @@ PENDING=0
 
 usage() {
     cat <<'EOF'
-Usage: maivin-provision [--fix] [--platform maivin-1|maivin-2|raivin]
+Usage: maivin-provision [--fix]
+                         [--platform maivin-1-ar0521|maivin-1-os08a20|maivin-2|raivin]
                          [--sd-card]
 
 Check (default) or fix remaining per-unit provisioning. Exit 0 only when
@@ -35,22 +36,29 @@ compatibility and will eventually be removed -- this tool never sets
 either target as default, and nothing should.
 
   --fix              apply missing configuration
-  --platform maivin-1|maivin-2|raivin
+  --platform maivin-1-ar0521|maivin-1-os08a20|maivin-2|raivin
                      require /etc/overlays.txt to match this hardware
                      (fix: (re)writes it and runs update-overlays, which
                      reboots if the content changed). maivin-2 is the
                      default hardware and what maivin-etc-defaults.conf
-                     seeds unattended; pass maivin-1 only for that older
-                     AR0521 carrier. raivin uses the same overlays as
-                     maivin-2 (same camera) and additionally requires
-                     radarpub.service enabled (fix: systemctl enable --now)
-                     and the ethernet1-radar NM connection actually pointed
-                     at ethernet1 (fix: nmcli modify + up, then restart
-                     radarpub -- a live mismatch here has been seen on real
-                     hardware and silently breaks radar connectivity despite
-                     the link itself showing up). fusion.service is never
-                     touched by this flag or by --fix -- enabling it stays
-                     a manual decision.
+                     seeds unattended. Maivin 1 has two carrier-mounted
+                     camera options, on different physical CSI connectors
+                     (MVN2-203) -- pass whichever this unit actually has:
+                     maivin-1-ar0521 for the older e-ConSystems module, or
+                     maivin-1-os08a20 for the shared-with-Maivin-2 sensor.
+                     `maivin-1` (bare) is accepted as a deprecated alias for
+                     maivin-1-ar0521, kept only for scripts/docs predating
+                     the OS08A20 option -- prefer the explicit form. raivin
+                     uses the same overlays as maivin-2 (same camera) and
+                     additionally requires radarpub.service enabled (fix:
+                     systemctl enable --now) and the ethernet1-radar NM
+                     connection actually pointed at ethernet1 (fix: nmcli
+                     modify + up, then restart radarpub -- a live mismatch
+                     here has been seen on real hardware and silently
+                     breaks radar connectivity despite the link itself
+                     showing up). fusion.service is never touched by this
+                     flag or by --fix -- enabling it stays a manual
+                     decision.
   --sd-card          require LABEL=DATA mounted at /media/DATA
 EOF
 }
@@ -96,11 +104,15 @@ check_ostree_origin() {
 }
 
 # Echoes the expected /etc/overlays.txt content for a --platform value.
-# raivin shares maivin-2's overlays: same carrier generation and camera,
-# the only Raivin-specific requirement is radarpub (see check_radarpub).
+# maivin-1-ar0521 and maivin-1-os08a20 are on different physical CSI
+# connectors on the same carrier (MVN2-203) -- confirmed on real hardware,
+# not interchangeable. raivin shares maivin-2's overlays: same carrier
+# generation and camera, the only Raivin-specific requirement is radarpub
+# (see check_radarpub).
 overlays_for_platform() {
     case "$1" in
-        maivin-1) echo "fdt_overlays=maivin1.dtbo maivin1-ar0521.dtbo" ;;
+        maivin-1-ar0521) echo "fdt_overlays=maivin1.dtbo maivin1-ar0521.dtbo" ;;
+        maivin-1-os08a20) echo "fdt_overlays=maivin1.dtbo maivin1-os08a20.dtbo" ;;
         maivin-2|raivin) echo "fdt_overlays=maivin2.dtbo maivin2-os08a20.dtbo" ;;
     esac
 }
@@ -283,9 +295,12 @@ while [ $# -gt 0 ]; do
             shift
             PLATFORM="${1:-}"
             case "$PLATFORM" in
-                maivin-1|maivin-2|raivin) ;;
+                # Deprecated alias predating the OS08A20 option (MVN2-203) --
+                # kept for scripts/docs that already say plain "maivin-1".
+                maivin-1) PLATFORM="maivin-1-ar0521" ;;
+                maivin-1-ar0521|maivin-1-os08a20|maivin-2|raivin) ;;
                 *)
-                    echo "maivin-provision: --platform must be maivin-1, maivin-2, or raivin" >&2
+                    echo "maivin-provision: --platform must be maivin-1-ar0521, maivin-1-os08a20, maivin-2, or raivin" >&2
                     exit 2
                     ;;
             esac
