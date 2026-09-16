@@ -5,6 +5,7 @@ SRC_URI:append = " \
     file://camera-mode.sh \
     file://maivin-camera-select-mode \
     file://maivin-camera-wait-ready \
+    file://maivin-camera-set-fps \
 "
 
 # imx-vpu-hantro-daemon provides vsidaemon.service, the backend
@@ -39,15 +40,27 @@ do_install:append() {
 # requested, so CAMERA_SIZE may be smaller than the native mode's
 # resolution (e.g. 4k sensor mode with a smaller CAMERA_SIZE for lower
 # bandwidth/CPU use) but must not exceed it -- the ISP does not upscale.
-# Accepted values: 4k, 1080p60
+# Accepted values: 4k, 1080p60, 1080p30
 #   4k       - 3840x2160, BGGR12, full-resolution linear, 30fps
 #   1080p60  - 1920x1080, BGGR10, horizontal-binned, 60fps
+#   1080p30  - same sensor readout as 1080p60, frame rate capped to 30fps
+#              at runtime (no native 30fps 1080p sensor mode exists -- see
+#              camera-mode.sh). Use this when 60fps is more than a consumer
+#              (e.g. the web UI, or the H.264 encoder under load) can keep
+#              up with; dropping frames at the source is cheaper than
+#              capturing and then discarding them downstream.
 #
-# Maivin default: 1080p60. Binned readout gives better low-light/
-# fast-exposure handling than 4k's full-resolution linear readout, which
-# is what the shipped example model is tuned for; 4k is a known separate
-# issue (unreliable capture, tracked independently) not a hard requirement.
-CAMERA_MODE="1080p60"
+# Maivin default: 1080p30. 60fps overwhelms the H.264 path to the web UI --
+# enabling overlays (segmentation/detection boxes) on top of a 60fps stream
+# freezes/stutters the feed, worse with segmentation models. 30fps
+# eliminates it. 1080p60 remains available for a consumer that specifically
+# needs the higher rate and can actually keep up with it.
+#
+# Binned readout gives better low-light/fast-exposure handling than 4k's
+# full-resolution linear readout, which is what the shipped example model
+# is tuned for; 4k is a known separate issue (unreliable capture, tracked
+# independently) not a hard requirement.
+CAMERA_MODE="1080p30"
 
 # ---------------------------------------------------------------------------
 # Camera Calibration on Maivin -- see CAM_INFO_PATH above
@@ -74,6 +87,7 @@ EOF
 
     install -m 0755 ${S}/maivin-camera-select-mode ${D}${bindir}/maivin-camera-select-mode
     install -m 0755 ${S}/maivin-camera-wait-ready ${D}${bindir}/maivin-camera-wait-ready
+    install -m 0755 ${S}/maivin-camera-set-fps ${D}${bindir}/maivin-camera-set-fps
 }
 
 FILES:${PN} += "${libdir}/maivin"

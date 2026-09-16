@@ -54,6 +54,7 @@ fi
 {
     echo "ISP_MODE=$ISP_MODE"
     echo "CAM_INFO_PATH=$CAM_INFO_PATH"
+    echo "TARGET_FPS=$TARGET_FPS"
 } > /etc/default/isp
 
 # The restart is unconditional, not conditional on ISP_MODE having

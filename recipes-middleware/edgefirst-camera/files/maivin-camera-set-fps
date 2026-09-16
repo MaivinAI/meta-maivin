@@ -1,0 +1,58 @@
+#!/bin/sh
+# Cap the running camera stream's frame rate to TARGET_FPS (written to
+# /etc/default/isp by maivin-camera-select-mode, from CAMERA_MODE -- see
+# camera-mode.sh). A no-op unless TARGET_FPS is set (only CAMERA_MODE=1080p30
+# sets it today).
+#
+# This has to be an ExecStartPost, not an ExecStartPre alongside
+# maivin-camera-select-mode/maivin-camera-wait-ready: the OS08A20 has no
+# native 1080p/30fps sensor mode (see camera-mode.sh), so this works by
+# changing the running stream's VTS at runtime via isp_media_server's
+# private FPS control, issued through vvext's command-mode
+# (`vvext <videoid> FPS <n>`) -- and that override only affects whichever
+# session is already STREAMON'd when it's applied.
+# It does not persist: the next fresh STREAMON (e.g. edgefirst-camera
+# restarting) resets back to the mode's native fps. Nothing before
+# ExecStart ever calls STREAMON -- maivin-camera-wait-ready deliberately
+# avoids it, to not race edgefirst-camera's own device open -- so
+# edgefirst-camera's is the only STREAMON in this unit's startup, and this
+# has to run after it.
+#
+# vvext's command mode gives no success/failure feedback (its only visible
+# output is from the interactive menu's dump(), not the scriptable
+# `vvext <videoid> <window> <param>` form used here), and there's no signal
+# from outside this script for exactly when edgefirst-camera's STREAMON has
+# happened -- ExecStartPost fires right after it's forked, not after it's
+# finished opening the device, and a slow ISP can push that out several
+# seconds (see camera.service's own startup-timing comments). So this
+# retries the (idempotent) set across a window wide enough to cover a
+# normal start rather than trying to detect the exact moment, and always
+# exits 0 -- an ExecStartPost that exits non-zero fails the whole unit
+# (Restart= and all) over what is a stream-quality setting, not a
+# functional requirement; camera keeps running at the sensor's native fps
+# if this never lands.
+set -u
+
+: "${CAMERA:=/dev/video3}"
+: "${TARGET_FPS:=}"
+
+[ -n "$TARGET_FPS" ] || exit 0
+
+case "$CAMERA" in
+    /dev/video*) videoid=${CAMERA#/dev/video} ;;
+    *)
+        echo "maivin-camera-set-fps: CAMERA='$CAMERA' is not /dev/videoN, cannot derive vvext's videoid argument" >&2
+        exit 0
+        ;;
+esac
+
+MAX_TRIES=15
+i=0
+while [ "$i" -lt "$MAX_TRIES" ]; do
+    /usr/lib/imx8-isp/vvext "$videoid" FPS "$TARGET_FPS" >/dev/null 2>&1
+    i=$((i + 1))
+    sleep 1
+done
+
+echo "maivin-camera-set-fps: applied ${TARGET_FPS}fps cap to $CAMERA (best-effort, not verified -- vvext's scriptable mode has no readback)" >&2
+exit 0
