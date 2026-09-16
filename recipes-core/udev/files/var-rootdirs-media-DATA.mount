@@ -16,7 +16,16 @@ What=/dev/disk/by-label/DATA
 # `d` lines both follow the symlink fine; only this unit type is strict.
 Where=/var/rootdirs/media/DATA
 Type=ext4
-Options=defaults,nofail,x-systemd.device-timeout=5s
+# nofail keeps a missing card from failing local-fs.target, but What= still
+# makes systemd order this unit After= the auto-generated device unit for
+# /dev/disk/by-label/DATA, and that ordering wait is NOT shortened by
+# x-systemd.device-timeout= here -- that pseudo-option is only parsed by
+# systemd-fstab-generator for /etc/fstab entries, and is a silent no-op on a
+# native .mount unit like this one (confirmed on real hardware: a card-less
+# boot sat on "Timed out waiting for device" for the default 90s). The real
+# timeout lives on the device unit itself via the drop-in shipped alongside
+# this file: dev-disk-by\x2dlabel-DATA.device.d/timeout.conf.
+Options=defaults,nofail
 
 [Install]
 WantedBy=local-fs.target

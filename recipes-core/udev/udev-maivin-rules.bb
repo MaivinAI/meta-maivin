@@ -11,6 +11,7 @@ SRC_URI = "\
     file://maivin-sd-format \
     file://maivin-sd-format.service \
     file://var-rootdirs-media-DATA.mount \
+    file://dev-disk-by-label-DATA.device.timeout.conf \
 "
 
 S = "${@d.getVar('UNPACKDIR') or d.getVar('WORKDIR')}"
@@ -33,6 +34,13 @@ do_install () {
     install -m 0755 ${S}/maivin-sd-format ${D}${libexecdir}/maivin-sd-format
     install -m 0644 ${S}/maivin-sd-format.service ${D}${systemd_system_unitdir}/
     install -m 0644 ${S}/var-rootdirs-media-DATA.mount ${D}${systemd_system_unitdir}/
+
+    # Caps the wait for a missing/absent DATA SD card to 5s instead of the
+    # default 90s device-unit timeout -- see the comment in
+    # var-rootdirs-media-DATA.mount for why this can't just be a mount option.
+    install -d '${D}${systemd_system_unitdir}/dev-disk-by\x2dlabel-DATA.device.d'
+    install -m 0644 ${S}/dev-disk-by-label-DATA.device.timeout.conf \
+        '${D}${systemd_system_unitdir}/dev-disk-by\x2dlabel-DATA.device.d/timeout.conf'
 }
 
 REQUIRED_DISTRO_FEATURES = "systemd"
