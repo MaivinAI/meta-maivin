@@ -42,8 +42,8 @@ either target as default, and nothing should.
                      reboots if the content changed). maivin-2 is the
                      default hardware and what maivin-etc-defaults.conf
                      seeds unattended. Maivin 1 has two carrier-mounted
-                     camera options, on different physical CSI connectors
-                     (MVN2-203) -- pass whichever this unit actually has:
+                     camera options, on different physical CSI connectors --
+                     pass whichever this unit actually has:
                      maivin-1-ar0521 for the older e-ConSystems module, or
                      maivin-1-os08a20 for the shared-with-Maivin-2 sensor.
                      `maivin-1` (bare) is accepted as a deprecated alias for
@@ -105,10 +105,9 @@ check_ostree_origin() {
 
 # Echoes the expected /etc/overlays.txt content for a --platform value.
 # maivin-1-ar0521 and maivin-1-os08a20 are on different physical CSI
-# connectors on the same carrier (MVN2-203) -- confirmed on real hardware,
-# not interchangeable. raivin shares maivin-2's overlays: same carrier
-# generation and camera, the only Raivin-specific requirement is radarpub
-# (see check_radarpub).
+# connectors on the same carrier, not interchangeable. raivin shares
+# maivin-2's overlays: same carrier generation and camera, the only
+# Raivin-specific requirement is radarpub (see check_radarpub).
 overlays_for_platform() {
     case "$1" in
         maivin-1-ar0521) echo "fdt_overlays=maivin1.dtbo maivin1-ar0521.dtbo" ;;
@@ -295,8 +294,8 @@ while [ $# -gt 0 ]; do
             shift
             PLATFORM="${1:-}"
             case "$PLATFORM" in
-                # Deprecated alias predating the OS08A20 option (MVN2-203) --
-                # kept for scripts/docs that already say plain "maivin-1".
+                # Deprecated alias predating the OS08A20 option -- kept for
+                # scripts/docs that already say plain "maivin-1".
                 maivin-1) PLATFORM="maivin-1-ar0521" ;;
                 maivin-1-ar0521|maivin-1-os08a20|maivin-2|raivin) ;;
                 *)
