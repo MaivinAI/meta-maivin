@@ -1,14 +1,9 @@
 #!/bin/sh
 # Idempotent Maivin/Raivin provisioning checks (and optional fixes).
 #
-# Deliberately no `set -e`: each check_* function records failure via the
-# fail()/$FAILED bookkeeping below and returns, sometimes with a non-zero
-# status, so every check runs and every failure is reported in one pass.
-# errexit would abort at the first non-zero return -- e.g. check_ostree_remote
-# failing would skip check_overlays, check_maivin_target, check_sd, etc. entirely,
-# turning a full report into a whack-a-mole "fix one, rerun to see the next"
-# loop. Confirmed by reproduction: with set -e, only the first FAIL: line
-# ever printed.
+# Deliberately no `set -e`: each check_* function records failure via
+# fail()/$FAILED and returns, so every check runs and every failure is
+# reported in one pass instead of stopping at the first one.
 set -u
 
 PLATFORM="maivin-2"
@@ -20,7 +15,7 @@ PENDING=0
 usage() {
     cat <<'EOF'
 Usage: maivin-provision [--fix]
-                         [--platform maivin-1-ar0521|maivin-1-os08a20|maivin-2|raivin]
+                         [--platform maivin-1-ar0521|maivin-1-os08a20|maivin-2|raivin|maivin-e1r]
                          [--sd-card]
 
 Check (default) or fix remaining per-unit provisioning. Exit 0 only when
@@ -36,29 +31,36 @@ compatibility and will eventually be removed -- this tool never sets
 either target as default, and nothing should.
 
   --fix              apply missing configuration
-  --platform maivin-1-ar0521|maivin-1-os08a20|maivin-2|raivin
+  --platform maivin-1-ar0521|maivin-1-os08a20|maivin-2|raivin|maivin-e1r
                      require /etc/overlays.txt to match this hardware
                      (fix: (re)writes it and runs update-overlays, which
                      reboots if the content changed). maivin-2 is the
                      default hardware and what maivin-etc-defaults.conf
-                     seeds unattended. Maivin 1 has two carrier-mounted
-                     camera options, on different physical CSI connectors --
-                     pass whichever this unit actually has:
-                     maivin-1-ar0521 for the older e-ConSystems module, or
-                     maivin-1-os08a20 for the shared-with-Maivin-2 sensor.
-                     `maivin-1` (bare) is accepted as a deprecated alias for
-                     maivin-1-ar0521, kept only for scripts/docs predating
-                     the OS08A20 option -- prefer the explicit form. raivin
-                     uses the same overlays as maivin-2 (same camera) and
-                     additionally requires radarpub.service enabled (fix:
-                     systemctl enable --now) and the ethernet1-radar NM
-                     connection actually pointed at ethernet1 (fix: nmcli
-                     modify + up, then restart radarpub -- a live mismatch
-                     here has been seen on real hardware and silently
-                     breaks radar connectivity despite the link itself
-                     showing up). fusion.service is never touched by this
-                     flag or by --fix -- enabling it stays a manual
-                     decision.
+                     seeds unattended. maivin-1-ar0521 is the older
+                     e-ConSystems camera module; maivin-1-os08a20 is the
+                     shared-with-Maivin-2 sensor on the Maivin 1 carrier.
+                     `maivin-1` (bare) is a deprecated alias for
+                     maivin-1-ar0521. raivin uses the same overlays as
+                     maivin-2 and additionally requires radarpub.service
+                     enabled (fix: systemctl enable --now) and the
+                     ethernet1-radar NM connection pointed at ethernet1
+                     (fix: nmcli modify + up, then restart radarpub).
+                     maivin-e1r also uses the same overlays as maivin-2
+                     and additionally requires: radarpub.service disabled
+                     (fix: systemctl disable --now); /etc/default/lidarpub
+                     installed from the shipped maivin-e1r profile and
+                     lidarpub.service enabled (fix: cp the profile,
+                     systemctl enable --now); the ethernet1-lidar NM
+                     connection active on ethernet1 (fix: nmcli up); and
+                     /etc/default/fusion's RADAR_PCD_TOPIC, LIDAR_PCD_TOPIC,
+                     BBOX3D_SRC and GRID_SRC set for LiDAR (fix: sed, then
+                     restart fusion). An M.2 card (e.g. an NPU) is an
+                     independent per-unit addition and never part of the
+                     expected overlay list for any platform. fusion.service
+                     and lidarpub's Ouster settings are never touched by
+                     this flag or by --fix outside the maivin-e1r case
+                     above -- fusion enablement and non-E1R sensor
+                     configuration stay a manual decision.
   --sd-card          require LABEL=DATA mounted at /media/DATA
 EOF
 }
@@ -104,15 +106,14 @@ check_ostree_origin() {
 }
 
 # Echoes the expected /etc/overlays.txt content for a --platform value.
-# maivin-1-ar0521 and maivin-1-os08a20 are on different physical CSI
-# connectors on the same carrier, not interchangeable. raivin shares
-# maivin-2's overlays: same carrier generation and camera, the only
-# Raivin-specific requirement is radarpub (see check_radarpub).
+# raivin and maivin-e1r share maivin-2's overlays -- the radar/LiDAR swap
+# is a service-level change, not a DT overlay (see check_radarpub /
+# check_lidarpub). An M.2 card is a separate, per-unit addition.
 overlays_for_platform() {
     case "$1" in
         maivin-1-ar0521) echo "fdt_overlays=maivin1.dtbo maivin1-ar0521.dtbo" ;;
         maivin-1-os08a20) echo "fdt_overlays=maivin1.dtbo maivin1-os08a20.dtbo" ;;
-        maivin-2|raivin) echo "fdt_overlays=maivin2.dtbo maivin2-os08a20.dtbo" ;;
+        maivin-2|raivin|maivin-e1r) echo "fdt_overlays=maivin2.dtbo maivin2-os08a20.dtbo" ;;
     esac
 }
 
@@ -141,14 +142,108 @@ check_overlays() {
 }
 
 check_radarpub() {
-    [ "$PLATFORM" = "raivin" ] || return 0
-    if systemctl is-enabled radarpub.service >/dev/null 2>&1; then
-        ok "radarpub.service is enabled"
+    case "$PLATFORM" in
+        raivin)
+            if systemctl is-enabled radarpub.service >/dev/null 2>&1; then
+                ok "radarpub.service is enabled"
+            elif [ "$FIX" -eq 1 ]; then
+                systemctl enable --now radarpub.service
+                ok "enabled and started radarpub.service"
+            else
+                fail "radarpub.service is not enabled (platform raivin)"
+            fi
+            ;;
+        maivin-e1r)
+            if ! systemctl is-enabled radarpub.service >/dev/null 2>&1; then
+                ok "radarpub.service is disabled"
+            elif [ "$FIX" -eq 1 ]; then
+                systemctl disable --now radarpub.service
+                ok "disabled radarpub.service (platform maivin-e1r has no radar)"
+            else
+                fail "radarpub.service is enabled but platform maivin-e1r has no radar"
+            fi
+            ;;
+    esac
+}
+
+# Read-only reference profile installed by edgefirst-lidarpub's bbappend.
+LIDARPUB_E1R_PROFILE=/usr/share/maivin/lidarpub/maivin-e1r.default
+
+check_lidarpub() {
+    [ "$PLATFORM" = "maivin-e1r" ] || return 0
+
+    if [ ! -f "$LIDARPUB_E1R_PROFILE" ]; then
+        fail "missing $LIDARPUB_E1R_PROFILE"
+    elif cmp -s "$LIDARPUB_E1R_PROFILE" /etc/default/lidarpub 2>/dev/null; then
+        ok "/etc/default/lidarpub matches the maivin-e1r profile"
     elif [ "$FIX" -eq 1 ]; then
-        systemctl enable --now radarpub.service
-        ok "enabled and started radarpub.service"
+        cp "$LIDARPUB_E1R_PROFILE" /etc/default/lidarpub
+        ok "installed the maivin-e1r lidarpub profile"
     else
-        fail "radarpub.service is not enabled (platform raivin)"
+        fail "/etc/default/lidarpub does not match the maivin-e1r profile"
+    fi
+
+    if systemctl is-enabled lidarpub.service >/dev/null 2>&1; then
+        ok "lidarpub.service is enabled"
+    elif [ "$FIX" -eq 1 ]; then
+        systemctl enable --now lidarpub.service
+        ok "enabled and started lidarpub.service"
+    else
+        fail "lidarpub.service is not enabled (platform maivin-e1r)"
+    fi
+
+    if [ "$FIX" -eq 1 ]; then
+        systemctl restart lidarpub.service 2>/dev/null || true
+    fi
+}
+
+check_ethernet1_lidar() {
+    [ "$PLATFORM" = "maivin-e1r" ] || return 0
+    if nmcli -g GENERAL.STATE connection show ethernet1-lidar 2>/dev/null | grep -qx activated; then
+        ok "ethernet1-lidar connection is active"
+        return 0
+    fi
+    if [ "$FIX" -eq 1 ]; then
+        nmcli connection up ethernet1-lidar
+        ok "brought up ethernet1-lidar connection"
+    else
+        fail "ethernet1-lidar connection is not active (platform maivin-e1r)"
+    fi
+}
+
+# Reads KEY's value out of /etc/default/fusion, accepting both
+# "KEY=value" and "KEY = \"value\"" spacing and stripping quotes. Last
+# match wins.
+fusion_var() {
+    grep "^$1[[:space:]]*=" /etc/default/fusion 2>/dev/null | tail -n1 | \
+        sed -e 's/^[^=]*=[[:space:]]*//' -e 's/^"//' -e 's/"[[:space:]]*$//'
+}
+
+# Only /etc/default/fusion's content -- never fusion.service's enablement.
+check_fusion_sensor() {
+    [ "$PLATFORM" = "maivin-e1r" ] || return 0
+    if [ ! -f /etc/default/fusion ]; then
+        fail "/etc/default/fusion is missing"
+        return 1
+    fi
+
+    for pair in RADAR_PCD_TOPIC: LIDAR_PCD_TOPIC:lidar/points \
+                BBOX3D_SRC:lidar GRID_SRC:lidar; do
+        key="${pair%%:*}"
+        expected="${pair#*:}"
+        current=$(fusion_var "$key")
+        if [ "$current" = "$expected" ]; then
+            ok "/etc/default/fusion $key=\"$expected\""
+        elif [ "$FIX" -eq 1 ]; then
+            sed -i "s|^$key[[:space:]]*=.*|$key = \"$expected\"|" /etc/default/fusion
+            ok "set /etc/default/fusion $key=\"$expected\""
+        else
+            fail "/etc/default/fusion $key is '$current', expected '$expected' (platform maivin-e1r)"
+        fi
+    done
+
+    if [ "$FIX" -eq 1 ]; then
+        systemctl restart fusion.service 2>/dev/null || true
     fi
 }
 
@@ -163,17 +258,9 @@ check_ethernet1_radar() {
         fail "ethernet1-radar connection profile not found"
         return 1
     fi
-    # The shipped profile has always said interface-name=ethernet1 (since
-    # f0e566a) -- a live mismatch here is drift on this specific unit (e.g.
-    # a hand-run `nmcli connection add`/`modify` that typed a connection
-    # NAME, like the "network1" profile from the old manual networking
-    # steps, into the interface-name field by mistake), not a stale image
-    # default, so there's nothing to seed this from in /usr/etc. Confirmed
-    # on real hardware: link was up (1 Gbps) but the address never applied
-    # to ethernet1, so the radar at .11 was unreachable and cube UDP never
-    # arrived. Restarting radarpub after the fix is required -- if it
-    # already started against the dead connection it won't pick up the
-    # corrected route on its own.
+    # A mismatch here is per-unit drift, not a stale image default -- the
+    # shipped profile always targets ethernet1. radarpub is restarted
+    # because it won't pick up a corrected route on its own.
     if [ "$FIX" -eq 1 ]; then
         nmcli connection modify ethernet1-radar connection.interface-name ethernet1
         nmcli connection up ethernet1-radar
@@ -199,17 +286,10 @@ check_nm_unmanaged() {
     fi
 }
 
-# NOT `systemctl get-default` == maivin.target. maivin.target's own
-# [Install] is WantedBy=multi-user.target (see maivin_1.1.bb's comment) and
-# ships SYSTEMD_AUTO_ENABLE=enable, so the intended, sufficient activation
-# path is enabled+active alongside the *unchanged* system default -- it
-# never needs to itself become the default target. Confirmed on real
-# hardware (verdin-imx8mp-15141091): `get-default` reported multi-user.target
-# while maivin.target and every service under it (camera, imu, model,
-# navsat, radarpub, fusion) were enabled and active -- a fully healthy unit
-# that an earlier version of this check flagged as failed. Never touch
-# `systemctl set-default` here; raivin.target (legacy symlink, being
-# removed) must especially never be set, and neither target needs to be.
+# Not `systemctl get-default` -- maivin.target's [Install] is
+# WantedBy=multi-user.target, so it activates alongside the unchanged
+# system default and never needs to become the default target itself.
+# Never touch `systemctl set-default` here.
 check_maivin_target() {
     active=$(systemctl is-active maivin.target 2>/dev/null)
     enabled=$(systemctl is-enabled maivin.target 2>/dev/null)
@@ -217,22 +297,10 @@ check_maivin_target() {
         ok "maivin.target is enabled and active"
         return 0
     fi
-    # maivin.target's own unit file orders it After= every service it
-    # Wants= (camera, imu, model, ...), so it's reached last, as an
-    # "everything is up" checkpoint, not first. Right after boot there's a
-    # real multi-second window where every individual service is already
-    # active but the target itself hasn't flipped yet -- and `is-active`
-    # is no help telling that apart from "never going to start": targets
-    # have no "activating" sub-state to observe here. Verified directly on
-    # verdin-imx8mp-15141091 with a tight poll loop across a real reboot:
-    # `is-active`/SubState sat at plain "inactive"/"dead" for the full ~19s
-    # while a start job for maivin.target sat in `systemctl list-jobs`
-    # ("start waiting"), then both flipped to active in the same instant
-    # the job cleared -- no transitional state visible via is-active at
-    # any point. A queued job is therefore the only reliable signal that
-    # it's genuinely on its way rather than stuck: report that distinctly
-    # instead of either lying with an OK or crying FAIL on a unit that's
-    # doing exactly what it should.
+    # maivin.target orders After= every service it Wants=, so right after
+    # boot it can still be inactive while those services are already up.
+    # Targets have no "activating" substate, so a queued start job is the
+    # only way to tell "still starting" from "never going to start".
     if systemctl list-jobs --plain --no-legend 2>/dev/null | awk '{print $2}' | grep -qx maivin.target; then
         starting "maivin.target has a start job queued, waiting on its dependencies -- rerun shortly"
         return 0
@@ -297,9 +365,9 @@ while [ $# -gt 0 ]; do
                 # Deprecated alias predating the OS08A20 option -- kept for
                 # scripts/docs that already say plain "maivin-1".
                 maivin-1) PLATFORM="maivin-1-ar0521" ;;
-                maivin-1-ar0521|maivin-1-os08a20|maivin-2|raivin) ;;
+                maivin-1-ar0521|maivin-1-os08a20|maivin-2|raivin|maivin-e1r) ;;
                 *)
-                    echo "maivin-provision: --platform must be maivin-1-ar0521, maivin-1-os08a20, maivin-2, or raivin" >&2
+                    echo "maivin-provision: --platform must be maivin-1-ar0521, maivin-1-os08a20, maivin-2, raivin, or maivin-e1r" >&2
                     exit 2
                     ;;
             esac
@@ -318,6 +386,9 @@ check_ostree_origin
 check_overlays
 check_radarpub
 check_ethernet1_radar
+check_lidarpub
+check_ethernet1_lidar
+check_fusion_sensor
 check_nm_unmanaged
 check_maivin_target
 check_sd

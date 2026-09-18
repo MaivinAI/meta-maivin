@@ -1,0 +1,64 @@
+# EdgeFirst LiDAR Publisher (/etc/default/lidarpub)
+# Installed by `maivin-provision --fix --platform maivin-e1r`. Written for
+# a Maivin 2 unit fitted with a Robosense E1R in place of the DRVEGRD
+# radar. Ouster or other sensor variants are not covered by a --platform
+# profile yet -- configure the upstream-shipped default by hand instead.
+
+# ---------------------------------------------------------------------------
+# Common settings
+# ---------------------------------------------------------------------------
+
+RUST_LOG="info"
+
+SENSOR_TYPE="robosense"
+
+# Filters incoming UDP packets to only accept from this source IP. Leave
+# unset unless multiple Robosense sensors share the network.
+#TARGET=
+
+# LiDAR frame transformation from base_link (camera). Maivin's E1R mount:
+# 5cm forward, 5cm left, 5cm below the camera, near-zero rotation.
+TF_VEC="0.05 -0.05 -0.05"
+TF_QUAT="0.000050 0.002618 -0.019197 0.999812"
+
+#BASE_FRAME_ID="base_link"
+#FRAME_ID="lidar"
+
+# Zenoh base topic. Published topics: {LIDAR_TOPIC}/points,
+# {LIDAR_TOPIC}/clusters, etc. Left at the binary default (unprefixed
+# "lidar") to match every other EdgeFirst service's current topic
+# convention -- see /etc/default/fusion's LIDAR_PCD_TOPIC.
+#LIDAR_TOPIC="lidar"
+
+#TRACY="false"
+
+# ---------------------------------------------------------------------------
+# Clustering settings
+# ---------------------------------------------------------------------------
+
+# Voxel clustering: ~13ms on E1R's 25k points/frame (aarch64), vs ~70ms
+# for dbscan. Coarser (objects within one voxel width always merge) but
+# fast enough to run every frame.
+CLUSTERING="voxel"
+CLUSTERING_EPS="200"
+CLUSTERING_MINPTS="4"
+CLUSTERING_BRIDGE="8"
+
+# ---------------------------------------------------------------------------
+# Ground plane filter settings
+# ---------------------------------------------------------------------------
+
+# Off by default: enable if nearby objects are merging across the floor.
+# Requires the E1R's IMU (carried via DIFOP packets).
+#GROUND_FILTER="false"
+#GROUND_THICKNESS="150"
+#SENSOR_HEIGHT=
+
+# ---------------------------------------------------------------------------
+# Robosense E1R settings
+# ---------------------------------------------------------------------------
+
+#MSOP_PORT="6699"
+#DIFOP_PORT="7788"
+#INCLUDE_NOISY="false"
+#DISCOVER="false"
