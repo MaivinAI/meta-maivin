@@ -166,8 +166,8 @@ CORE_IMAGE_BASE_INSTALL:append = " \
 
 # Kinara Ara-2 NPU accelerator
 CORE_IMAGE_BASE_INSTALL:append = " \
-    ara2 \
-    ara2-python \
+    imx-nxp-ara2 \
+    edgefirst-ara2 \
 "
 
 # Docker container runtime

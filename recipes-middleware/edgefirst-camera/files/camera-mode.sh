@@ -3,11 +3,9 @@
 # camera-info calibration path to /etc/default/isp before
 # imx8-isp.service (re)starts).
 #
-# CAMERA_MODE selects the sensor's native readout mode -- it is independent
-# of CAMERA_SIZE in /etc/default/camera: the ISP's own dewarp/scale stage
-# downscales from the native mode to whatever CAMERA_SIZE the client
-# requests. CAMERA_SIZE must not exceed the selected mode's native
-# resolution -- the ISP does not upscale.
+# CAMERA_MODE selects the sensor's native readout mode. edgefirst-camera
+# reads the same key as its capture size and rate, so values use its
+# SIZExFPS form (4K30, 1080p60, 1080p30), matched case-insensitively.
 #
 # ISP_MODE names a working directory under /usr/lib/imx8-isp/modes/, each
 # holding the Sensor_Entry.cfg pair for that sensor mode; imx8-isp.service
@@ -30,10 +28,10 @@
 DEWARP_CONFIG_DIR="/usr/lib/imx8-isp/dewarp_config"
 
 resolve_camera_mode() {
-    : "${CAMERA_MODE:=4k}"
+    : "${CAMERA_MODE:=4K30}"
     TARGET_FPS=""
-    case "$CAMERA_MODE" in
-        4k)
+    case "$(echo "$CAMERA_MODE" | tr '[:upper:]' '[:lower:]')" in
+        4k30)
             ISP_MODE="4k"
             CAM_INFO_PATH="$DEWARP_CONFIG_DIR/sensor_dwe_os08a20_4K_config.json"
             ;;
@@ -47,8 +45,8 @@ resolve_camera_mode() {
             TARGET_FPS="30"
             ;;
         *)
-            echo "camera-mode: unknown CAMERA_MODE '$CAMERA_MODE', defaulting to 4k" >&2
-            CAMERA_MODE=4k
+            echo "camera-mode: unknown CAMERA_MODE '$CAMERA_MODE', defaulting to 4K30" >&2
+            CAMERA_MODE=4K30
             ISP_MODE="4k"
             CAM_INFO_PATH="$DEWARP_CONFIG_DIR/sensor_dwe_os08a20_4K_config.json"
             ;;

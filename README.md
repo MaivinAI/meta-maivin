@@ -42,7 +42,7 @@ Kinara Ara-2 NPU accelerator runtime (proprietary, NDA-licensed):
 
 | Recipe | Description |
 |--------|-------------|
-| `ara2` | Proxy daemon, firmware, client libraries, hw_utils, Python bindings |
+| `imx-nxp-ara2` | Proxy daemon, firmware, client libraries, hw_utils (Kinara SDK packaging) |
 | `kernel-module-uiodma` | UIO DMA kernel module for Ara-2 PCIe communication |
 
 Requires `KINARA_MIRROR` set in `local.conf` to access the NDA-licensed download server. The Ara-2 is an external PCIe accelerator card installed in the Maivin carrier board's M.2 slot.

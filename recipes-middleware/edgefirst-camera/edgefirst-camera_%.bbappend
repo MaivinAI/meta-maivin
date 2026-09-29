@@ -35,13 +35,10 @@ do_install:append() {
 # ---------------------------------------------------------------------------
 # Selects the OS08A20 sensor's native readout mode, applied by restarting
 # imx8-isp.service (isp-imx) with the matching upstream run.sh
-# configuration before this service starts. Independent of CAMERA_SIZE
-# above: the ISP downscales from the native mode to whatever CAMERA_SIZE is
-# requested, so CAMERA_SIZE may be smaller than the native mode's
-# resolution (e.g. 4k sensor mode with a smaller CAMERA_SIZE for lower
-# bandwidth/CPU use) but must not exceed it -- the ISP does not upscale.
-# Accepted values: 4k, 1080p60, 1080p30
-#   4k       - 3840x2160, BGGR12, full-resolution linear, 30fps
+# configuration before this service starts. edgefirst-camera reads the same
+# key, so it also sets the capture size and rate and CAMERA_SIZE above is
+# ignored. Values are case-insensitive:
+#   4K30     - 3840x2160, BGGR12, full-resolution linear, 30fps
 #   1080p60  - 1920x1080, BGGR10, horizontal-binned, 60fps
 #   1080p30  - same sensor readout as 1080p60, frame rate capped to 30fps
 #              at runtime (no native 30fps 1080p sensor mode exists -- see
