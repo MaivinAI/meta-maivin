@@ -8,6 +8,7 @@ set -u
 
 PLATFORM="maivin-2"
 SD_CARD=0
+FORMAT_SD=0
 FIX=0
 FAILED=0
 PENDING=0
@@ -16,7 +17,7 @@ usage() {
     cat <<'EOF'
 Usage: maivin-provision [--fix]
                          [--platform maivin-1-ar0521|maivin-1-os08a20|maivin-2|raivin|maivin-e1r]
-                         [--sd-card]
+                         [--sd-card] [--format-sd]
 
 Check (default) or fix remaining per-unit provisioning. Exit 0 only when
 every requested check passes; exit 2 if nothing failed but something (e.g.
@@ -61,7 +62,14 @@ either target as default, and nothing should.
                      this flag or by --fix outside the maivin-e1r case
                      above -- fusion enablement and non-E1R sensor
                      configuration stay a manual decision.
-  --sd-card          require LABEL=DATA mounted at /media/DATA
+  --sd-card          require /etc/fstab to mount /media/DATA by LABEL=DATA
+                     and the SD card mounted there as ext4 LABEL=DATA (fix:
+                     replace any other /etc/fstab entry for /media/DATA with
+                     the LABEL=DATA entry, then mount it)
+  --format-sd        implies --sd-card; with --fix, reformat an SD card that
+                     is not ext4 LABEL=DATA as GPT + ext4 LABEL=DATA.
+                     DESTROYS the card's contents. Without this flag --fix
+                     never formats a card that already has data.
 EOF
 }
 
@@ -319,21 +327,55 @@ check_sd() {
         fail "mmcblk1 not present"
         return 1
     fi
-    if [ ! -e /dev/disk/by-label/DATA ]; then
-        fail "no filesystem label DATA on SD card"
-        return 1
-    fi
-    if findmnt /media/DATA >/dev/null 2>&1; then
-        ok "/media/DATA is mounted"
-    else
+
+    # /media/DATA must be mounted by label; any other fstab entry for it
+    # generates a unit that overrides the LABEL=DATA mount.
+    data_line="LABEL=DATA           /media/DATA          ext4       defaults,nofail,x-systemd.device-timeout=5s  0  0"
+    entries=$(awk '$1 !~ /^#/ && ($2 == "/media/DATA" || $2 == "/var/rootdirs/media/DATA")' /etc/fstab)
+    other=$(echo "$entries" | awk '$1 != "LABEL=DATA"')
+    if [ -n "$other" ] || [ -z "$entries" ]; then
         if [ "$FIX" -eq 1 ]; then
-            systemctl start var-rootdirs-media-DATA.mount || true
-        fi
-        if findmnt /media/DATA >/dev/null 2>&1; then
-            ok "/media/DATA is mounted"
+            awk '!($1 !~ /^#/ && ($2 == "/media/DATA" || $2 == "/var/rootdirs/media/DATA"))' /etc/fstab > /etc/fstab.new
+            echo "$data_line" >> /etc/fstab.new
+            mv /etc/fstab.new /etc/fstab
+            systemctl daemon-reload
+            ok "set /etc/fstab entry for /media/DATA to LABEL=DATA"
         else
-            fail "/media/DATA is not mounted"
+            fail "/etc/fstab has no LABEL=DATA entry for /media/DATA${other:+ (found: $other)}"
         fi
+    else
+        ok "/etc/fstab mounts /media/DATA by LABEL=DATA"
+    fi
+
+    label_dev=$(readlink -f /dev/disk/by-label/DATA 2>/dev/null)
+    fstype=""
+    [ -n "$label_dev" ] && fstype=$(blkid -o value -s TYPE "$label_dev" 2>/dev/null)
+    case "$label_dev" in /dev/mmcblk1p*) ;; *) label_dev="" ;; esac
+    if [ -z "$label_dev" ] || [ "$fstype" != "ext4" ]; then
+        if [ "$FIX" -eq 1 ] && [ "$FORMAT_SD" -eq 1 ]; then
+            if /usr/libexec/maivin-sd-format --force; then
+                ok "formatted SD card as ext4 LABEL=DATA"
+            else
+                fail "maivin-sd-format --force failed"
+                return 1
+            fi
+        else
+            fail "SD card is not ext4 LABEL=DATA (fix: --fix --format-sd, destroys its contents)"
+            return 1
+        fi
+    fi
+
+    src=$(findmnt -n -o SOURCE /media/DATA 2>/dev/null)
+    if [ -z "$src" ] && [ "$FIX" -eq 1 ]; then
+        systemctl start var-rootdirs-media-DATA.mount || true
+        src=$(findmnt -n -o SOURCE /media/DATA 2>/dev/null)
+    fi
+    if [ -z "$src" ]; then
+        fail "/media/DATA is not mounted"
+    elif [ "$(readlink -f "$src")" != "$(readlink -f /dev/disk/by-label/DATA)" ]; then
+        fail "/media/DATA is mounted from $src, not LABEL=DATA"
+    else
+        ok "/media/DATA is mounted from LABEL=DATA ($src)"
     fi
 }
 
@@ -357,6 +399,10 @@ while [ $# -gt 0 ]; do
             ;;
         --sd-card)
             SD_CARD=1
+            ;;
+        --format-sd)
+            SD_CARD=1
+            FORMAT_SD=1
             ;;
         --platform)
             shift
