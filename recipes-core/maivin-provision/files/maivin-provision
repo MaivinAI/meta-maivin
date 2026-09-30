@@ -65,7 +65,9 @@ either target as default, and nothing should.
   --sd-card          require /etc/fstab to mount /media/DATA by LABEL=DATA
                      and the SD card mounted there as ext4 LABEL=DATA (fix:
                      replace any other /etc/fstab entry for /media/DATA with
-                     the LABEL=DATA entry, then mount it)
+                     the LABEL=DATA entry, then mount it), and recorder's
+                     STORAGE in /etc/default/recorder set to /media/DATA
+                     (fix: rewrite STORAGE, restart recorder if running)
   --format-sd        implies --sd-card; with --fix, reformat an SD card that
                      is not ext4 LABEL=DATA as GPT + ext4 LABEL=DATA.
                      DESTROYS the card's contents. Without this flag --fix
@@ -376,6 +378,21 @@ check_sd() {
         fail "/media/DATA is mounted from $src, not LABEL=DATA"
     else
         ok "/media/DATA is mounted from LABEL=DATA ($src)"
+    fi
+
+    storage=$(sed -n -E 's/^STORAGE[[:space:]]*=[[:space:]]*"?([^"]*)"?.*/\1/p' /etc/default/recorder 2>/dev/null | tail -1)
+    if [ "$storage" = "/media/DATA" ]; then
+        ok "recorder STORAGE is /media/DATA"
+    elif [ "$FIX" -eq 1 ] && [ -f /etc/default/recorder ]; then
+        if grep -q -E '^STORAGE[[:space:]]*=' /etc/default/recorder; then
+            sed -i -E 's@^STORAGE[[:space:]]*=.*@STORAGE="/media/DATA"@' /etc/default/recorder
+        else
+            echo 'STORAGE="/media/DATA"' >> /etc/default/recorder
+        fi
+        systemctl try-restart recorder.service
+        ok "set recorder STORAGE to /media/DATA (was '${storage:-unset}')"
+    else
+        fail "recorder STORAGE is '${storage:-unset}', expected /media/DATA"
     fi
 }
 
