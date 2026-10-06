@@ -79,6 +79,18 @@ CAMERA_MODE="1080p30"
 # override that auto-selection on every service start.
 EOF
 
+    # Six capture buffers give subscribers that import camera frames by
+    # DMA-BUF (model, fusion) about 158 ms at 30fps to convert a frame
+    # before its buffer is reused, instead of 100 ms with the default 4.
+    # Cost: two more 1080p YUYV buffers (about 8 MB of CMA). Set in place at
+    # the upstream definition so an administrator's edit there is not
+    # silently overridden by a trailing duplicate.
+    if grep -q '^CAMERA_BUFFERS=' ${D}${sysconfdir}/default/camera; then
+        sed -i 's/^CAMERA_BUFFERS=.*/CAMERA_BUFFERS="6"/' ${D}${sysconfdir}/default/camera
+    else
+        printf '\n# V4L2 capture buffers (2-32); see edgefirst-camera --help.\nCAMERA_BUFFERS="6"\n' >> ${D}${sysconfdir}/default/camera
+    fi
+
     install -d ${D}${libdir}/maivin
     install -m 0644 ${S}/camera-mode.sh ${D}${libdir}/maivin/camera-mode.sh
 
