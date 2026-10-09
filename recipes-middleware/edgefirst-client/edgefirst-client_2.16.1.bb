@@ -4,9 +4,9 @@ LIC_FILES_CHKSUM = "file://${COMMON_LICENSE_DIR}/Apache-2.0;md5=89aea4e17d99a7ca
 
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 SRC_URI = "https://github.com/EdgeFirstAI/client/releases/download/v${PV}/edgefirst_client-${PV}-cp38-abi3-manylinux_2_17_${TARGET_ARCH}.manylinux2014_${TARGET_ARCH}.whl"
-SRC_URI[sha256sum] = "ab629ca6408bd83ed0fe60973917291af9e6f807ace779eea991ecb4deed164a"
+SRC_URI[sha256sum] = "2538bd12cee8409ec9acaced686f6f1816a1a4f424fad6aedab672a1a6036056"
 
-S = "${WORKDIR}"
+S = "${@d.getVar('UNPACKDIR') or d.getVar('WORKDIR')}"
 
 inherit python3-dir
 
@@ -19,11 +19,7 @@ do_install () {
     install -d ${D}${bindir}
     install -d ${D}${PYTHON_SITEPACKAGES_DIR}
 
-    if [ "${UNPACKDIR}" != "" ]; then
-        unzip ${UNPACKDIR}/edgefirst_client-${PV}-cp38-abi3-manylinux_2_17_${TARGET_ARCH}.manylinux2014_${TARGET_ARCH}.whl -d ${D}${PYTHON_SITEPACKAGES_DIR}
-    else
-        unzip ${WORKDIR}/edgefirst_client-${PV}-cp38-abi3-manylinux_2_17_${TARGET_ARCH}.manylinux2014_${TARGET_ARCH}.whl -d ${D}${PYTHON_SITEPACKAGES_DIR}
-    fi
+    unzip ${S}/edgefirst_client-${PV}-cp38-abi3-manylinux_2_17_${TARGET_ARCH}.manylinux2014_${TARGET_ARCH}.whl -d ${D}${PYTHON_SITEPACKAGES_DIR}
     mv ${D}${PYTHON_SITEPACKAGES_DIR}/edgefirst_client-${PV}.data/scripts/edgefirst-client ${D}${bindir}
     rm -rf ${D}${PYTHON_SITEPACKAGES_DIR}/edgefirst_client-${PV}.data
 }
