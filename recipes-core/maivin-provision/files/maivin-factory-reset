@@ -14,7 +14,9 @@ module -- then run this command to seal the unit for shipping. It does NOT
 touch /etc/default: maivin-etc-defaults.conf (systemd-tmpfiles) already
 guarantees every service has at least the shipped default and never
 overwrites a file that's already there, so customization made before this
-runs is preserved, not reset.
+runs is preserved, not reset. If the DATA SD card is mounted but the
+recorder does not store to it, a reminder to run
+`maivin-provision --fix --sd-card` is printed.
 
 Clear /usr/local (leftover locally-installed/dev-deployed files), vacuum
 journals, recreate /home/torizon and /root, set the torizon password to
@@ -97,5 +99,13 @@ install -d -m 0700 /root
 echo "maivin-factory-reset: setting torizon password and requiring change at next login"
 echo 'torizon:torizon' | chpasswd
 passwd -e torizon
+
+if [ "$(findmnt -n -o SOURCE /media/DATA 2>/dev/null || true)" != "" ]; then
+    storage=$(sed -n -E 's/^STORAGE[[:space:]]*=[[:space:]]*"?([^"]*)"?.*/\1/p' /etc/default/recorder 2>/dev/null | tail -1)
+    if [ "$storage" != "/media/DATA" ]; then
+        echo "maivin-factory-reset: /media/DATA is mounted but recorder STORAGE is '${storage:-unset}';" \
+            "run 'maivin-provision --fix --sd-card' to record to the SD card"
+    fi
+fi
 
 echo "maivin-factory-reset: done"

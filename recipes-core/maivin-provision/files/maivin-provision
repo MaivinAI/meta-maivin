@@ -65,7 +65,8 @@ either target as default, and nothing should.
   --sd-card          require /etc/fstab to mount /media/DATA by LABEL=DATA
                      and the SD card mounted there as ext4 LABEL=DATA (fix:
                      replace any other /etc/fstab entry for /media/DATA with
-                     the LABEL=DATA entry, then mount it), and recorder's
+                     the LABEL=DATA entry, then mount it), writable by the
+                     torizon user (fix: chown torizon:torizon), and recorder's
                      STORAGE in /etc/default/recorder set to /media/DATA
                      (fix: rewrite STORAGE, restart recorder if running)
   --format-sd        implies --sd-card; with --fix, reformat an SD card that
@@ -378,6 +379,13 @@ check_sd() {
         fail "/media/DATA is mounted from $src, not LABEL=DATA"
     else
         ok "/media/DATA is mounted from LABEL=DATA ($src)"
+        if runuser -u torizon -- test -w /media/DATA; then
+            ok "/media/DATA is writable by torizon"
+        elif [ "$FIX" -eq 1 ] && chown torizon:torizon /media/DATA; then
+            ok "set /media/DATA owner to torizon:torizon"
+        else
+            fail "/media/DATA is not writable by torizon (fix: --fix)"
+        fi
     fi
 
     storage=$(sed -n -E 's/^STORAGE[[:space:]]*=[[:space:]]*"?([^"]*)"?.*/\1/p' /etc/default/recorder 2>/dev/null | tail -1)
