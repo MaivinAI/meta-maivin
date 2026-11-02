@@ -83,7 +83,7 @@ Services enabled by default (camera, model, imu, navsat, websrv) constitute the 
 In addition to the services above, the image includes:
 
 - **edgefirst-webui** — static HTML/CSS/JavaScript frontend, installed to `/usr/share/edgefirst/webui/` and served by the `websrv` service
-- **edgefirst-client** — Python SDK and CLI tool for interacting with Maivin services
+- **edgefirst-client** — Python SDK and CLI tool for interacting with Maivin services (provided by meta-edgefirst)
 - **publisher** — MCAP data publisher CLI utility
 - **edgefirst-schemas** — data schema definitions (with Python bindings)
 - **zenohd** — Zenoh messaging daemon used for inter-service communication
