@@ -1,0 +1,91 @@
+From 46f9f79473f8abe02111624584278e6f0bca2ce4 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?S=C3=A9bastien=20Taylor?= <sebastien@au-zone.com>
+Date: Thu, 19 Nov 2026 16:18:53 +0000
+Subject: [PATCH 1/2] mxc: hantro_v4l2: bound the daemon exit wait and admit
+ one daemon
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The control pipe admitted a daemon with a separate read and increment of
+daemon_fn, so two daemons opening together could both connect and split
+the command stream between them. Claim the slot with a single
+atomic_cmpxchg() instead.
+
+On the last instance close, quit_daemonapp() sent EXIT and then waited
+without a timeout for the daemon to disconnect, holding instance_lock.
+If the daemon never disconnected, the closing thread blocked forever in
+vsi_v4l2_quitinstance() and every later open blocked in
+vsi_v4l2_addinstance(). Wait at most 3 s and log when the daemon is
+still connected.
+
+invoke_daemonapp() no longer starts another daemon while one is already
+connected, and vsi_v4l2_quitinstance() takes instance_lock
+uninterruptibly so an interrupted close cannot leave the instance count
+raised.
+
+Signed-off-by: Sébastien Taylor <sebastien@au-zone.com>
+---
+ drivers/mxc/hantro_v4l2/vsi-v4l2daemon.c | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/mxc/hantro_v4l2/vsi-v4l2daemon.c b/drivers/mxc/hantro_v4l2/vsi-v4l2daemon.c
+index 6e8033d112a7..22cf72c5bff7 100644
+--- a/drivers/mxc/hantro_v4l2/vsi-v4l2daemon.c
++++ b/drivers/mxc/hantro_v4l2/vsi-v4l2daemon.c
+@@ -47,6 +47,7 @@
+ 
+ #if !defined(CONFIG_ANDROID)
+ #define CONFIG_INVOKE_VSIDAEMON		1
++#define VSI_DAEMON_EXIT_TIMEOUT_MS	3000
+ static bool invoke_vsidaemon = 1;
+ module_param(invoke_vsidaemon, bool, 0644);
+ #endif
+@@ -544,7 +545,9 @@ static int invoke_daemonapp(void)
+ 	int ret = 0;
+ 
+ #if defined(CONFIG_INVOKE_VSIDAEMON)
+-	if (invoke_vsidaemon) {
++	if (invoke_vsidaemon && atomic_read(&daemon_fn) > 0) {
++		v4l2_klog(LOGLVL_BRIEF, "daemon already connected\n");
++	} else if (invoke_vsidaemon) {
+ 		char loglvl[20] = {0};
+ 		char *argv[] = {VSI_DAEMON_PATH, NULL};
+ 		char *env[] = {"LD_LIBRARY_PATH=/usr/lib",
+@@ -583,7 +586,11 @@ static void quit_daemonapp(void)
+ 		return;
+ 
+ 	vsiv4l2_execcmd(NULL, V4L2_DAEMON_VIDIOC_EXIT, NULL);
+-	wait_event_interruptible(instance_queue, atomic_read(&daemon_fn) <= 0);
++	if (wait_event_interruptible_timeout(instance_queue,
++			atomic_read(&daemon_fn) <= 0,
++			msecs_to_jiffies(VSI_DAEMON_EXIT_TIMEOUT_MS)) <= 0)
++		v4l2_klog(LOGLVL_ERROR, "daemon did not exit within %d ms\n",
++			  VSI_DAEMON_EXIT_TIMEOUT_MS);
+ #endif
+ }
+ 
+@@ -619,8 +626,7 @@ int vsi_v4l2_addinstance(pid_t *ppid)
+ int vsi_v4l2_quitinstance(void)
+ {
+ 	v4l2_klog(LOGLVL_BRIEF, "%s from instnum %d", __func__, v4l2_fn);
+-	if (mutex_lock_interruptible(&instance_lock))
+-		return -EBUSY;
++	mutex_lock(&instance_lock);
+ 	v4l2_fn--;
+ 	if (v4l2_fn == 0) {
+ 		struct timespec64 curtime;
+@@ -736,9 +742,8 @@ static int v4l2_daemon_open(struct inode *inode,	struct file *filp)
+ {
+ 	/*we need single daemon. Each deamon uses 2 handles for ioctl and mmap*/
+ 	v4l2_klog(LOGLVL_BRIEF, "%s:%d", __func__, atomic_read(&daemon_fn));
+-	if (atomic_read(&daemon_fn) >= 1)
++	if (atomic_cmpxchg(&daemon_fn, 0, 1) != 0)
+ 		return -EBUSY;
+-	atomic_inc(&daemon_fn);
+ 	wake_up_interruptible_all(&instance_queue);
+ 	return 0;
+ }
+-- 
+2.43.0
+

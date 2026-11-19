@@ -18,6 +18,8 @@ SRC_URI:append = " file://TI-DP83TG720-PHY-for-Raivin-ETH2.patch"
 # below the 266.67MHz that shipped before, regressing 4K and endangering
 # 1080p60. Harmless on kernels that predate the enforcement.
 SRC_URI:append = " file://clk-imx8mp-raise-cam2-pix-constraint.patch"
+SRC_URI:append = " file://hantro-v4l2-bound-daemon-exit-wait.patch"
+SRC_URI:append = " file://imx8-mipi-csi2-sam-error-irqs-after-first-frame.patch"
 
 SRC_URI:append = " file://imx8mp-verdin-maivin.dtsi;subdir=git/arch/arm64/boot/dts/freescale"
 SRC_URI:append = " file://imx8mp-verdin-nonwifi-maivin.dts;subdir=git/arch/arm64/boot/dts/freescale"
