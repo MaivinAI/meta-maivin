@@ -48,10 +48,22 @@ Description=ISP i.MX 8Mplus daemon
 StartLimitIntervalSec=60
 StartLimitBurst=15
 
+# Starts after udev has created the /dev/v4l/by-path links of the Hantro VPU
+# decoder and encoder (platform device vpu_v4l2), which the device units below
+# track through 70-maivin-vpu-systemd.rules. Each device unit has
+# JobRunningTimeoutSec=10s, so a missing link delays the start by at most 10 s.
+Wants=dev-v4l-by\x2dpath-platform\x2dvpu_v4l2\x2dvideo\x2dindex0.device dev-v4l-by\x2dpath-platform\x2dvpu_v4l2\x2dvideo\x2dindex1.device
+After=dev-v4l-by\x2dpath-platform\x2dvpu_v4l2\x2dvideo\x2dindex0.device dev-v4l-by\x2dpath-platform\x2dvpu_v4l2\x2dvideo\x2dindex1.device
+
 [Service]
 Type=simple
 Restart=on-failure
 RestartSec=5s
+
+# Hides the VPU decoder and encoder nodes from isp_media_server, which opens
+# every /dev/video* node at start-up. Other processes still see them. "-" skips
+# a link that does not exist.
+InaccessiblePaths=-/dev/v4l/by-path/platform-vpu_v4l2-video-index0 -/dev/v4l/by-path/platform-vpu_v4l2-video-index1
 
 # ISP_MODE has a default so the ISP can come up on its own at boot, before
 # camera.service has ever written /etc/default/isp. ISP_CAMERA deliberately
