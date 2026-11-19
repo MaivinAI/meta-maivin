@@ -8,8 +8,8 @@ SRC_URI:append = " \
     file://maivin-camera-set-fps \
 "
 
-# imx-vpu-hantro-daemon provides vsidaemon.service, the backend
-# camera.service now Wants= (libvideostream dlopens the Hantro codec libs).
+# libvideostream dlopens the Hantro codec libraries. imx-vpu-hantro-daemon
+# provides /usr/bin/vsidaemon, which the VPU driver starts on first use.
 RDEPENDS:${PN}:append = " isp-imx imx-vpu-hantro-vc imx-vpu-hantro-daemon v4l-utils"
 
 SYSTEMD_SERVICE:${PN} = "camera.service"

@@ -5,8 +5,8 @@ SRC_URI:append = " \
 "
 
 # libvideostream (pulled in via the videostream RDEPENDS) dlopens
-# libhantro.so.1 for H.264 decode; imx-vpu-hantro-daemon provides the
-# vsidaemon.service replay.service now depends on.
+# libhantro.so.1 for H.264 decode. imx-vpu-hantro-daemon provides
+# /usr/bin/vsidaemon, which the VPU driver starts on first use.
 RDEPENDS:${PN}:append = " imx-vpu-hantro imx-vpu-hantro-daemon"
 
 SYSTEMD_SERVICE:${PN} = "replay.service"
