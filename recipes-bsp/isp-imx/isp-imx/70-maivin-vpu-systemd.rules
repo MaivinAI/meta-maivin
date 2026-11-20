@@ -1,0 +1,5 @@
+# Tags the Hantro VPU decoder and encoder nodes (platform device vpu_v4l2) for
+# systemd, which then creates device units for their /dev/v4l/by-path links.
+ACTION=="remove", GOTO="maivin_vpu_end"
+SUBSYSTEM=="video4linux", KERNELS=="vpu_v4l2", TAG+="systemd"
+LABEL="maivin_vpu_end"

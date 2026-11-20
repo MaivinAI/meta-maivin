@@ -1,0 +1,121 @@
+From e24ab476a8995f4d9b621d944654d9dee179b223 Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?S=C3=A9bastien=20Taylor?= <sebastien@au-zone.com>
+Date: Thu, 19 Nov 2026 16:19:39 +0000
+Subject: [PATCH 2/2] media: imx8-mipi-csi2-sam: enable error interrupts once
+ frames arrive
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+The receiver enabled every error interrupt as soon as it started,
+before the sensor was streaming. Lost frame start, SOT, ECC and CRC
+errors then fire for every packet, and a receiver left in that state
+interrupted the CPU hundreds of thousands of times per second without
+delivering frames.
+
+Stream on now enables only the frame start and end interrupts. The
+interrupt handler enables the error interrupts on the first frame
+start. If more than 64 error interrupts arrive without a frame start,
+the handler masks them again until the next frame start and logs a
+rate-limited warning.
+
+imx-mipi-csis.c enables its interrupts after starting the sensor. In
+the ISP path the sensor is started through a vvcam ioctl, not through
+this subdevice, so the first frame start is used as the signal that the
+source is streaming.
+
+Signed-off-by: Sébastien Taylor <sebastien@au-zone.com>
+---
+ .../staging/media/imx/imx8-mipi-csi2-sam.c    | 45 ++++++++++++++++++-
+ 1 file changed, 43 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/staging/media/imx/imx8-mipi-csi2-sam.c b/drivers/staging/media/imx/imx8-mipi-csi2-sam.c
+index 1143ce3ddd4b..3aafaea088fb 100644
+--- a/drivers/staging/media/imx/imx8-mipi-csi2-sam.c
++++ b/drivers/staging/media/imx/imx8-mipi-csi2-sam.c
+@@ -129,6 +129,10 @@
+ #define MIPI_CSIS_INTSRC_ERR_CRC		(1 << 1)
+ #define MIPI_CSIS_INTSRC_ERR_UNKNOWN		(1 << 0)
+ #define MIPI_CSIS_INTSRC_ERRORS			0xfffff
++#define MIPI_CSIS_INTMSK_FRAME_EVENTS		0x0ff00000
++#define MIPI_CSIS_INTMSK_ERRORS			0x000fff1f
++/* Error interrupts allowed between two frame starts before they are masked */
++#define MIPI_CSIS_ERR_IRQ_LIMIT			64
+ 
+ /* D-PHY status control */
+ #define MIPI_CSIS_DPHYSTATUS			0x20
+@@ -425,6 +429,8 @@ struct csi_state {
+ 	spinlock_t slock;
+ 	struct csis_pktbuf pkt_buf;
+ 	struct mipi_csis_event events[MIPI_CSIS_NUM_EVENTS];
++	bool err_irqs_on;
++	u32 err_irqs_since_fs;
+ 
+ 	struct v4l2_async_connection asd;
+ 	struct v4l2_async_notifier  subdev_notifier;
+@@ -699,18 +705,40 @@ static void mipi_csis_clean_irq(struct csi_state *state)
+ 	mipi_csis_write(state, MIPI_CSIS_INTMSK, status);
+ }
+ 
++/*
++ * Enabling streaming enables only the frame start/end interrupts. The error
++ * interrupts are enabled by the interrupt handler on the first frame start,
++ * once the source is streaming.
++ */
+ static void mipi_csis_enable_interrupts(struct csi_state *state, bool on)
+ {
++	unsigned long flags;
+ 	u32 val;
+ 
+ 	mipi_csis_clean_irq(state);
+ 
++	spin_lock_irqsave(&state->slock, flags);
+ 	val = mipi_csis_read(state, MIPI_CSIS_INTMSK);
++	val &= ~(MIPI_CSIS_INTMSK_FRAME_EVENTS | MIPI_CSIS_INTMSK_ERRORS);
+ 	if (on)
+-		val |= 0x0FFFFF1F;
++		val |= MIPI_CSIS_INTMSK_FRAME_EVENTS;
++	state->err_irqs_on = false;
++	state->err_irqs_since_fs = 0;
++	mipi_csis_write(state, MIPI_CSIS_INTMSK, val);
++	spin_unlock_irqrestore(&state->slock, flags);
++}
++
++static void mipi_csis_mask_error_irqs(struct csi_state *state, bool mask)
++{
++	u32 val;
++
++	val = mipi_csis_read(state, MIPI_CSIS_INTMSK);
++	if (mask)
++		val &= ~MIPI_CSIS_INTMSK_ERRORS;
+ 	else
+-		val &= ~0x0FFFFF1F;
++		val |= MIPI_CSIS_INTMSK_ERRORS;
+ 	mipi_csis_write(state, MIPI_CSIS_INTMSK, val);
++	state->err_irqs_on = !mask;
+ }
+ 
+ static void mipi_csis_sw_reset(struct csi_state *state)
+@@ -1568,6 +1596,19 @@ static irqreturn_t mipi_csis_irq_handler(int irq, void *dev_id)
+ 		}
+ 		v4l2_dbg(2, debug, &state->sd, "status: %08x\n", status);
+ 	}
++
++	if (status & MIPI_CSIS_INTSRC_FRAME_START) {
++		state->err_irqs_since_fs = 0;
++		if (!state->err_irqs_on)
++			mipi_csis_mask_error_irqs(state, false);
++	}
++	if ((status & MIPI_CSIS_INTSRC_ERRORS) && state->err_irqs_on &&
++	    ++state->err_irqs_since_fs > MIPI_CSIS_ERR_IRQ_LIMIT) {
++		mipi_csis_mask_error_irqs(state, true);
++		dev_warn_ratelimited(state->dev,
++			"more than %d error interrupts without a frame start, masked until the next frame start (status %08x)\n",
++			MIPI_CSIS_ERR_IRQ_LIMIT, status);
++	}
+ 	spin_unlock_irqrestore(&state->slock, flags);
+ 
+ 	mipi_csis_write(state, MIPI_CSIS_INTSRC, status);
+-- 
+2.43.0
+

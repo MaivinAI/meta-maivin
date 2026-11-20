@@ -52,6 +52,8 @@ SRC_URI:append = " \
     file://0003-OS08a20-free-the-sensor-context-when-open-fails.patch \
     file://0004-OS08a20-pass-pclk-not-pclk-to-VVSENSORIOC_S_CLK.patch \
     file://0005-OS08a20-report-the-outcome-of-the-sensor-open.patch \
+    file://70-maivin-vpu-systemd.rules \
+    file://vpu-device-timeout.conf \
 "
 
 # CAMERA_MODE name and the matching isp_media_server sensor mode index.
@@ -133,10 +135,22 @@ EOF
     # Replace upstream's unit, which execs start_isp.sh.
     install -d ${D}${systemd_system_unitdir}
     install -m 0644 ${WORKDIR}/imx8-isp.service ${D}${systemd_system_unitdir}/imx8-isp.service
+
+    # Device units for the VPU nodes imx8-isp.service hides, and a 10 s cap on
+    # waiting for each of them.
+    install -d ${D}${nonarch_base_libdir}/udev/rules.d
+    install -m 0644 ${WORKDIR}/70-maivin-vpu-systemd.rules ${D}${nonarch_base_libdir}/udev/rules.d/
+    for idx in 0 1; do
+        dropin='${D}${systemd_system_unitdir}/dev-v4l-by\x2dpath-platform\x2dvpu_v4l2\x2dvideo\x2dindex'$idx'.device.d'
+        install -d "$dropin"
+        install -m 0644 ${WORKDIR}/vpu-device-timeout.conf "$dropin/timeout.conf"
+    done
 }
 
 FILES:${PN} += " \
     ${sysconfdir}/modprobe.d/imx8_media_dev.conf \
     ${libdir}/imx8-isp \
     ${bindir}/maivin-isp-detect \
+    ${nonarch_base_libdir}/udev/rules.d/70-maivin-vpu-systemd.rules \
+    ${systemd_system_unitdir} \
 "
